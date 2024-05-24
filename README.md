@@ -108,9 +108,9 @@ IDE. Nothing exotic about the goals, just clean and install should do:
     mvn clean package
 
 ## Database Configuration
-The service uses hibernate to initialise the database structure. The database
-connection parameters such as the URL and username/password should be provided
-in the application properties. Here is an example:
+The service uses flyway and hibernate to initialise the database structure. The
+database connection parameters such as the URL and username/password should be
+provided in the application properties. Here is an example:
 
 ```yaml
 spring:
@@ -146,6 +146,13 @@ postgres=# GRANT ALL PRIVILEGES ON DATABASE aton_service to sysadmin;
 If you, like me don't remember your PostgreSQL command
 [here](https://gist.github.com/Kartones/dd3ff5ec5ea238d4c546) is a quick
 cheatsheet.
+
+Just as a note, if you would like to dump the database to generate a migration
+or something yoy use pgdump as follows:
+
+```
+pg_dump --schema-only --no-owner  aton_service -h localhost -U atonservice -W > aton_service_dump.sql
+```
 
 ## How to Run
 
