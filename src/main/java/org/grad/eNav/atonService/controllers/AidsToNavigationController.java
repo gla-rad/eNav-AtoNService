@@ -72,7 +72,7 @@ public class AidsToNavigationController {
     DomainDtoMapper<AidsToNavigation, AidsToNavigationDto> aidsToNavigationToDtoMapper;
 
     /**
-     * GET /api/atons/all : Returns a full list of all current Aids to
+     * GET /api/atons/list : Returns a full list of the current Aids to
      * navigation that match the provided criteria.
      *
      * @param idCode the Aids to Navigation number
@@ -81,12 +81,12 @@ public class AidsToNavigationController {
      * @param endDate the end date for AtoN message filtering
      * @return the ResponseEntity with status 200 (OK) and the list of stations in body
      */
-    @GetMapping(value="/all", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value="/list", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<AidsToNavigationDto>> getAllAidsToNavigation(@RequestParam("idCode") Optional<String> idCode,
                                                                             @RequestParam("geometry") Optional<Geometry> geometry,
                                                                             @RequestParam("startDate") Optional<LocalDateTime> startDate,
                                                                             @RequestParam("endDate") Optional<LocalDateTime> endDate) {
-        log.debug("REST request to get page of Aids to Navigation");
+        log.debug("REST request to get list of Aids to Navigation");
         idCode.ifPresent(v -> log.debug("Aids to Navigation ID code specified as: {}", idCode));
         geometry.ifPresent(v -> log.debug("Aids to Navigation geometry specified as: {}", GeometryJSONConverter.convertFromGeometry(v).toString()));
         startDate.ifPresent(v -> log.debug("Aids to Navigation start date specified as: {}", startDate));

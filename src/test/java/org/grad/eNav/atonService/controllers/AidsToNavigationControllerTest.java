@@ -149,8 +149,8 @@ class AidsToNavigationControllerTest {
     }
 
     /**
-     * Test that we can retrieve all the Aids to Navigation currently in the
-     * database in a single result.
+     * Test that we can retrieve a list of the Aids to Navigation currently in
+     * the database in a single result.
      */
     @Test
     void testGetAllAidsToNavigation() throws Exception {
@@ -159,7 +159,7 @@ class AidsToNavigationControllerTest {
         doReturn(page).when(this.aidsToNavigationService).findAll(any(), any(), any(), any(), any());
 
         // Perform the MVC request
-        MvcResult mvcResult = this.mockMvc.perform(get("/api/atons/all"))
+        MvcResult mvcResult = this.mockMvc.perform(get("/api/atons/list"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andReturn();
