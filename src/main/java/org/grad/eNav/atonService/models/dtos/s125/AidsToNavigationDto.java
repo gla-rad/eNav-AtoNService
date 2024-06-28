@@ -69,6 +69,8 @@ public class AidsToNavigationDto {
 
     private String atonType;
 
+    private BigInteger mmsiCode;
+
     private String content;
 
     /**
@@ -303,6 +305,24 @@ public class AidsToNavigationDto {
      */
     public void setAtonType(String atonType) {
         this.atonType = atonType;
+    }
+
+    /**
+     * Gets mmsi code.
+     *
+     * @return the mmsi code
+     */
+    public BigInteger getMmsiCode() {
+        return mmsiCode;
+    }
+
+    /**
+     * Sets mmsi code.
+     *
+     * @param mmsiCode the mmsi code
+     */
+    public void setMmsiCode(BigInteger mmsiCode) {
+        this.mmsiCode = mmsiCode;
     }
 
     /**
