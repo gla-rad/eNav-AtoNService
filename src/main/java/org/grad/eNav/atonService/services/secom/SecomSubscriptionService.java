@@ -49,6 +49,7 @@ import org.grad.secom.core.models.enums.SubscriptionEventEnum;
 import org.grad.secom.springboot3.components.SecomClient;
 import org.hibernate.search.backend.lucene.LuceneExtension;
 import org.hibernate.search.backend.lucene.search.sort.dsl.LuceneSearchSortFactory;
+import org.hibernate.search.engine.search.predicate.SearchPredicate;
 import org.hibernate.search.engine.search.predicate.dsl.BooleanPredicateClausesStep;
 import org.hibernate.search.engine.search.query.SearchQuery;
 import org.hibernate.search.mapper.orm.Search;
@@ -490,7 +491,7 @@ public class SecomSubscriptionService implements MessageHandler {
         SearchSession searchSession = Search.session( this.entityManager );
         SearchScope<SubscriptionRequest> scope = searchSession.scope( SubscriptionRequest.class );
         return searchSession.search( scope )
-                .where( f -> {
+                .where(f -> {
                     BooleanPredicateClausesStep<?> step = f.bool()
                             .must(f.matchAll());
                     Optional.ofNullable(containerType).ifPresent(v -> {
@@ -518,12 +519,17 @@ public class SecomSubscriptionService implements MessageHandler {
                                 .matching("NULL"));
                     });
                     Optional.ofNullable(dataReference).ifPresent(v -> {
-                        step.should(f.match()
+                        final SearchPredicate existingValuePred = f.match()
                                 .field("dataReference")
-                                .matching(v.toString()));
-                        step.should(f.match()
+                                .matching(v.toString())
+                                .toPredicate();
+                        final SearchPredicate emptyValuePred = f.match()
                                 .field("dataReference")
-                                .matching("NULL"));
+                                .matching("NULL")
+                                .toPredicate();
+                        step.must(f.bool()
+                                .should(existingValuePred)
+                                .should(emptyValuePred));
                     });
                     Optional.ofNullable(geometry).ifPresent(g -> {
                         step.must(f.extension(LuceneExtension.get())
