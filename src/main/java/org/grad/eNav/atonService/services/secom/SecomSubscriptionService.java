@@ -518,12 +518,9 @@ public class SecomSubscriptionService implements MessageHandler {
                                 .matching("NULL"));
                     });
                     Optional.ofNullable(dataReference).ifPresent(v -> {
-                        step.should(f.match()
+                        step.must(f.match()
                                 .field("dataReference")
                                 .matching(v.toString()));
-                        step.should(f.match()
-                                .field("dataReference")
-                                .matching("NULL"));
                     });
                     Optional.ofNullable(geometry).ifPresent(g -> {
                         step.must(f.extension(LuceneExtension.get())
