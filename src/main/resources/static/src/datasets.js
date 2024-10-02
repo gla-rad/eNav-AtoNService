@@ -448,7 +448,8 @@ function loadDatasetGeometry(event, table, button, config) {
     // Recreate the drawn items feature group
     drawnItems.clearLayers();
     if(geometry) {
-        var geomLayer = L.geoJson(geometry);
+        var geomLayer = L.geoJson(geometry, {coordsToLatLng: (coords)=>coords});
+        //var geomLayer = L.geoJson(geometry);
         addNonGroupLayers(geomLayer, drawnItems);
         datasetMap.setView(geomLayer.getBounds().getCenter(), 5);
     }
@@ -538,9 +539,12 @@ function saveGeometry() {
             type: "GeometryCollection",
             geometries: []
         };
-        drawnItems.toGeoJSON().features.forEach(feature => {
-            dataset.geometry.geometries.push(feature.geometry);
-        });
+        L.geoJson(drawnItems.toGeoJSON(), {coordsToLatLng: (coords)=>coords})
+            .toGeoJSON()
+            .features
+            .forEach(feature => {
+               dataset.geometry.geometries.push(feature.geometry);
+            });
 
         $.ajax({
             url: `./api/dataset/${dataset.uuid}`,

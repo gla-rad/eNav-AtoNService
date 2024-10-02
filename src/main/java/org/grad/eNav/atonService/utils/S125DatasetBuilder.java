@@ -219,9 +219,7 @@ public class S125DatasetBuilder {
         return Optional.ofNullable(prefix)
                 .filter(StringUtils::isNotBlank)
                 .map(p -> p.endsWith(":") ? p : p+":")
-                .orElse("urn:mrn:test:s125:") +
-                Optional.ofNullable(uuid)
-                        .orElse(UUID.randomUUID());
+                .orElse("urn:mrn:test:s125:") + Optional.ofNullable(uuid).orElse(UUID.randomUUID());
     }
 
 }
