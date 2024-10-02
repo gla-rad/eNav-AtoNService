@@ -493,37 +493,41 @@ public class SecomSubscriptionService implements MessageHandler {
                 .where( f -> {
                     BooleanPredicateClausesStep<?> step = f.bool()
                         .must(f.matchAll());
-                    Optional.ofNullable(containerType).ifPresent(v -> {
-                        step.should(f.match()
+                    Optional.ofNullable(containerType).ifPresentOrElse(v -> {
+                        step.must(f.match()
                                 .field("containerType")
                                 .matching(v.name()));
-                        step.should(f.match()
+                    }, () -> {
+                        step.must(f.match()
                                 .field("containerType")
                                 .matching("NULL"));
                     });
-                    Optional.ofNullable(dataProductType).ifPresent(v -> {
-                        step.should(f.match()
+                    Optional.ofNullable(dataProductType).ifPresentOrElse(v -> {
+                        step.must(f.match()
                                 .field("dataProductType")
                                 .matching(v.name()));
-                        step.should(f.match()
+                    }, () -> {
+                        step.must(f.match()
                                 .field("dataProductType")
                                 .matching("NULL"));
                     });
-                    Optional.ofNullable(productVersion).ifPresent(v -> {
-                        step.must(step.should(f.match()
-                                        .field("productVersion")
-                                        .matching(v))
-                                .should(f.match()
-                                        .field("productVersion")
-                                        .matching("NULL")));
+                    Optional.ofNullable(productVersion).ifPresentOrElse(v -> {
+                        step.must(f.match()
+                                .field("productVersion")
+                                .matching(v));
+                    }, () -> {
+                        step.must(f.match()
+                                .field("dataReference")
+                                .matching("NULL"));
                     });
-                    Optional.ofNullable(dataReference).ifPresent(v -> {
-                        step.must(step.should(f.match()
-                                        .field("dataReference")
-                                        .matching(v.toString()))
-                                .should(f.match()
-                                        .field("dataReference")
-                                        .matching("NULL")));
+                    Optional.ofNullable(dataReference).ifPresentOrElse(v -> {
+                        step.must(f.match()
+                            .field("dataReference")
+                            .matching(v.toString()));
+                    }, () -> {
+                        step.must(f.match()
+                            .field("dataReference")
+                            .matching("NULL"));
                     });
                     Optional.ofNullable(geometry).ifPresent(g -> {
                         step.must(f.extension(LuceneExtension.get())
