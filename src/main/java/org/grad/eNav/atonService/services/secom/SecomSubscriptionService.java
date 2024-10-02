@@ -495,28 +495,43 @@ public class SecomSubscriptionService implements MessageHandler {
                     BooleanPredicateClausesStep<?> step = f.bool()
                             .must(f.matchAll());
                     Optional.ofNullable(containerType).ifPresent(v -> {
-                        step.should(f.match()
+                        final SearchPredicate existingValuePred = f.match()
                                 .field("containerType")
-                                .matching(v.name()));
-                        step.should(f.match()
+                                .matching(v.name())
+                                .toPredicate();
+                        final SearchPredicate emptyValuePred = f.match()
                                 .field("containerType")
-                                .matching("NULL"));
+                                .matching("NULL")
+                                .toPredicate();
+                        step.must(f.bool()
+                                .should(existingValuePred)
+                                .should(emptyValuePred));
                     });
                     Optional.ofNullable(dataProductType).ifPresent(v -> {
-                        step.should(f.match()
+                        final SearchPredicate existingValuePred = f.match()
                                 .field("dataProductType")
-                                .matching(v.name()));
-                        step.should(f.match()
+                                .matching(v.name())
+                                .toPredicate();
+                        final SearchPredicate emptyValuePred = f.match()
                                 .field("dataProductType")
-                                .matching("NULL"));
+                                .matching("NULL")
+                                .toPredicate();
+                        step.must(f.bool()
+                                .should(existingValuePred)
+                                .should(emptyValuePred));
                     });
                     Optional.ofNullable(productVersion).ifPresent(v -> {
-                        step.should(f.match()
+                        final SearchPredicate existingValuePred = f.match()
                                 .field("productVersion")
-                                .matching(v));
-                        step.should(f.match()
+                                .matching(v)
+                                .toPredicate();
+                        final SearchPredicate emptyValuePred = f.match()
                                 .field("productVersion")
-                                .matching("NULL"));
+                                .matching("NULL")
+                                .toPredicate();
+                        step.must(f.bool()
+                                .should(existingValuePred)
+                                .should(emptyValuePred));
                     });
                     Optional.ofNullable(dataReference).ifPresent(v -> {
                         final SearchPredicate existingValuePred = f.match()
