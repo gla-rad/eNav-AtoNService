@@ -347,7 +347,14 @@ public class SecomSubscriptionService implements MessageHandler {
         // Inform to the subscription client (identify through MRN) - asynchronous
         this.secomSubscriptionNotificationService.sendNotification(subscriptionRequest.getClientMrn(),
                 result.getUuid(),
-                SubscriptionEventEnum.SUBSCRIPTION_CREATED);
+                SubscriptionEventEnum.SUBSCRIPTION_CREATED)
+                .whenCompleteAsync((snr, ex) -> {
+                    if(ex != null) {
+                        log.error("Notification to client {} failed with message {}", mrn, ex.getMessage());
+                    } else {
+                        log.debug("Sent notification to client {} for subscription {}", mrn, result.getUuid());
+                    }
+                });
 
         // Now save for each type
         return result;
@@ -374,7 +381,14 @@ public class SecomSubscriptionService implements MessageHandler {
         // Inform to the subscription client (identify through MRN) - asynchronous
         this.secomSubscriptionNotificationService.sendNotification(subscriptionRequest.getClientMrn(),
                 subscriptionRequest.getUuid(),
-                SubscriptionEventEnum.SUBSCRIPTION_REMOVED);
+                SubscriptionEventEnum.SUBSCRIPTION_REMOVED)
+                .whenCompleteAsync((snr, ex) -> {
+                    if(ex != null) {
+                        log.error("Notification to client {} failed with message {}", subscriptionRequest.getClientMrn(), ex.getMessage());
+                    } else {
+                        log.debug("Sent notification to client {} for subscription {}", subscriptionRequest.getClientMrn(), subscriptionRequest.getUuid());
+                    }
+                });;
 
         // If all OK, then return the subscription UUID
         return subscriptionRequest.getUuid();

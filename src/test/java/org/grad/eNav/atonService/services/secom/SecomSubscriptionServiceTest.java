@@ -46,10 +46,7 @@ import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.PrecisionModel;
-import org.mockito.ArgumentCaptor;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.Spy;
+import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.integration.channel.PublishSubscribeChannel;
@@ -62,6 +59,7 @@ import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -479,6 +477,7 @@ class SecomSubscriptionServiceTest {
         // Mock the HTTP servlet request
         final HttpServletRequest httpServletRequestMock = mock(HttpServletRequest.class);
         doReturn(this.existingSubscriptionRequest).when(this.secomSubscriptionRepo).save(any());
+        doReturn(mock(CompletableFuture.class)).when(this.secomSubscriptionNotificationService).sendNotification(any(), any(), any());
 
         // Perform the service call
         SubscriptionRequest result = this.secomSubscriptionService.save("urn:mrn:org:test", this.newSubscriptionRequest);
@@ -519,6 +518,7 @@ class SecomSubscriptionServiceTest {
     @Test
     void testDelete() {
         doReturn(Optional.of(this.existingSubscriptionRequest)).when(this.secomSubscriptionRepo).findById(this.existingSubscriptionRequest.getUuid());
+        doReturn(mock(CompletableFuture.class)).when(this.secomSubscriptionNotificationService).sendNotification(any(), any(), any());
 
         // Perform the service call
         UUID result = this.secomSubscriptionService.delete(this.existingSubscriptionRequest.getUuid());
