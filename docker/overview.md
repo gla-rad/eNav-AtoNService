@@ -216,7 +216,7 @@ server like keycloak, logging configuration, the eureka client connection etc.:
     # Service properties
     server.port=8766
     spring.application.name=aton-service
-    spring.application.version=0.0.4
+    spring.application.version=0.0.6
     
     # Disable the cloud config
     spring.cloud.config.enabled=false
