@@ -16,17 +16,17 @@
 
 package org.grad.eNav.atonService.utils;
 
-import _int.iho.s125.s100.gml.base._5_0.*;
-import _int.iho.s125.s100.gml.base._5_0.CurveType;
-import _int.iho.s125.s100.gml.base._5_0.PointType;
-import _int.iho.s125.s100.gml.base._5_0.SurfaceType;
-import _int.iho.s125.s100.gml.base._5_0.impl.*;
-import _int.iho.s125.s100.gml.base._5_0.impl.CurveTypeImpl;
-import _int.iho.s125.s100.gml.base._5_0.impl.PointTypeImpl;
-import _int.iho.s125.s100.gml.base._5_0.impl.SurfaceTypeImpl;
-import _int.iho.s125.s100.gml.profiles._5_0.*;
-import _int.iho.s125.s100.gml.profiles._5_0.ObjectFactory;
-import _int.iho.s125.s100.gml.profiles._5_0.impl.*;
+import _int.iho.s125.s100.gml.base._5_2.*;
+import _int.iho.s125.s100.gml.base._5_2.CurveType;
+import _int.iho.s125.s100.gml.base._5_2.PointType;
+import _int.iho.s125.s100.gml.base._5_2.SurfaceType;
+import _int.iho.s125.s100.gml.base._5_2.impl.*;
+import _int.iho.s125.s100.gml.base._5_2.impl.CurveTypeImpl;
+import _int.iho.s125.s100.gml.base._5_2.impl.PointTypeImpl;
+import _int.iho.s125.s100.gml.base._5_2.impl.SurfaceTypeImpl;
+import _int.iho.s125.s100.gml.profiles._5_2.*;
+import _int.iho.s125.s100.gml.profiles._5_2.ObjectFactory;
+import _int.iho.s125.s100.gml.profiles._5_2.impl.*;
 import _int.iho.s125.gml.cs0._1.AidsToNavigationType;
 import jakarta.xml.bind.JAXBElement;
 import org.grad.eNav.atonService.models.domain.s125.AidsToNavigation;

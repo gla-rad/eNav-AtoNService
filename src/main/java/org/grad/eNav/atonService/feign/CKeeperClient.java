@@ -33,7 +33,7 @@ import java.math.BigInteger;
  * @author Nikolaos Vastardis (email: Nikolaos.Vastardis@gla-rad.org)
  */
 @Component
-@FeignClient(name = "ckeeper", configuration = FeignClientConfig.class)
+@FeignClient(value = "https://rnavlab.gla-rad.org/enav/ckeeper", configuration = FeignClientConfig.class)
 public interface CKeeperClient {
 
     @RequestMapping(method = RequestMethod.GET, value = "/api/signature/certificate", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
