@@ -65,6 +65,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 @PactBroker
 @Provider("SecomS125Service")
 public class S125SecomProviderContractTest implements
+        PingSecomControllerTestInterface,
         CapabilitySecomControllerTestInterface,
         GetSummarySecomControllerTestInterface,
         GetSecomControllerTestInterface,
