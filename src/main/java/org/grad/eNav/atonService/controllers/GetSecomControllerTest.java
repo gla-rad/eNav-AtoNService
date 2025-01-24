@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.grad.eNav.atonService.controllers.secom;
+package org.grad.eNav.atonService.controllers;
 
 
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -71,7 +71,7 @@ import java.util.*;
 @Slf4j
 public class GetSecomControllerTest
 {
-    String GET_INTERFACE_PATH = "/v1/objectTest";
+    String GET_INTERFACE_PATH = "/api/objectTest";
     /**
      * The Dataset Service.
      */
