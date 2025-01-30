@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 GLA Research and Development Directorate
+ * Copyright (c) 2025 GLA Research and Development Directorate
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +22,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 //import jakarta.validation.constraints.Pattern;
 import jakarta.xml.bind.JAXBException;
 import lombok.extern.slf4j.Slf4j;
+import org.grad.eNav.atonService.components.SecomCertificateProviderImpl;
+import org.grad.eNav.atonService.components.SecomSignatureProviderImpl;
 import org.grad.eNav.atonService.models.UnLoCodeMapEntry;
 import org.grad.eNav.atonService.models.domain.DatasetContent;
 import org.grad.eNav.atonService.models.domain.s125.S125Dataset;
@@ -30,12 +32,12 @@ import org.grad.eNav.atonService.services.S100ExchangeSetService;
 import org.grad.eNav.atonService.services.UnLoCodeService;
 import org.grad.eNav.atonService.utils.GeometryUtils;
 import org.grad.eNav.atonService.utils.WKTUtils;
-import org.grad.secom.core.models.DataResponseObject;
-import org.grad.secom.core.models.GetResponseObject;
-import org.grad.secom.core.models.PaginationObject;
-import org.grad.secom.core.models.SECOM_ExchangeMetadataObject;
+import org.grad.secom.core.base.DigitalSignatureCertificate;
+import org.grad.secom.core.base.SecomConstants;
+import org.grad.secom.core.models.*;
 import org.grad.secom.core.models.enums.ContainerTypeEnum;
 import org.grad.secom.core.models.enums.SECOM_DataProductType;
+import org.grad.secom.core.utils.SecomPemUtils;
 import org.hibernate.HibernateException;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
@@ -50,11 +52,13 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
 import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.CertificateEncodingException;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -68,6 +72,7 @@ import java.util.*;
  */
 @Component
 @RestController
+@Validated
 @Slf4j
 public class GetSecomControllerTest
 {
@@ -89,6 +94,12 @@ public class GetSecomControllerTest
      */
     @Autowired
     UnLoCodeService unLoCodeService;
+
+    @Autowired
+    SecomCertificateProviderImpl secomCertificateProvider;
+
+    @Autowired
+    SecomSignatureProviderImpl secomSignatureProvider;
 
     // Class Variables
     private final GeometryFactory geometryFactory = new GeometryFactory(new PrecisionModel(),4326);
@@ -195,6 +206,7 @@ public class GetSecomControllerTest
                                 // Create and populate the data response object
                                 final DataResponseObject dataResponseObject = new DataResponseObject();
                                 dataResponseObject.setData(Base64.getEncoder().encode(bytes));
+                                //dataResponseObject.setData(bytes);
 
                                 // And return the data response object
                                 return dataResponseObject;
@@ -234,6 +246,28 @@ public class GetSecomControllerTest
         getResponseObject.setPagination(new PaginationObject(
                 dataResponseObjectList.size(),
                 Optional.ofNullable(pageSize).orElse(Integer.MAX_VALUE)));
+
+        // Sign the Response object
+        getResponseObject.getDataResponseObject().forEach(data -> {
+
+            DigitalSignatureCertificate certificate = secomCertificateProvider.getDigitalSignatureCertificate();
+            byte[] signature = secomSignatureProvider.generateSignature(certificate, secomSignatureProvider.getSignatureAlgorithm(), data.getData());
+            data.getExchangeMetadata().setDataProtection(false);
+            data.getExchangeMetadata().setProtectionScheme("SECOM");
+            data.getExchangeMetadata().setDigitalSignatureReference(secomSignatureProvider.getSignatureAlgorithm());
+            DigitalSignatureValue digitalSignatureValue = new DigitalSignatureValue();
+
+            try {
+                digitalSignatureValue.setDigitalSignature(Base64.getEncoder().encodeToString(signature));
+                digitalSignatureValue.setPublicRootCertificateThumbprint(SecomPemUtils.getCertThumbprint(certificate.getCertificate(), SecomConstants.CERTIFICATE_THUMBPRINT_HASH));
+                digitalSignatureValue.setPublicCertificate(Base64.getEncoder().encodeToString(certificate.getCertificate().getEncoded()));
+            } catch (CertificateEncodingException | NoSuchAlgorithmException e){
+                throw new RuntimeException(e);
+            }
+
+            data.getExchangeMetadata().setDigitalSignatureValue(digitalSignatureValue);
+
+        });
 
         // And final return the Get Response Object
         return ResponseEntity.ok(getResponseObject);
