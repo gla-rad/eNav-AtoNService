@@ -133,7 +133,8 @@ public class GetSecomControllerTest
                                                  @RequestParam(required = false) Instant validFrom,
                                                  @RequestParam(required = false) Instant validTo,
                                                  @RequestParam(required = false) Integer page,
-                                                 @RequestParam(required = false) Integer pageSize) {
+                                                 @RequestParam(required = false) Integer pageSize,
+                                                 @RequestParam(required = false) Boolean sign) {
 
         log.debug("SECOM TEST request to get page of Dataset");
         Optional.ofNullable(dataReference).ifPresent(v -> log.debug("Data Reference specified as: {}", dataReference));
@@ -143,6 +144,7 @@ public class GetSecomControllerTest
         Optional.ofNullable(unlocode).ifPresent(v -> log.debug("UNLOCODE specified as: {}", unlocode));
         Optional.ofNullable(validFrom).ifPresent(v -> log.debug("Valid From time specified as: {}", validFrom));
         Optional.ofNullable(validTo).ifPresent(v -> log.debug("Valid To time specified as: {}", validTo));
+        Optional.ofNullable(sign).ifPresent(v -> log.debug("Sign specified as: {}", sign));
 
         // Init local variables
         Geometry jtsGeometry = null;
@@ -166,9 +168,7 @@ public class GetSecomControllerTest
             try {
                 jtsGeometry = GeometryUtils.joinGeometries(jtsGeometry, WKTUtils.convertWKTtoGeometry(geometry));
             } catch (ParseException ex) {
-                //throw new ValidationException(ex.getMessage());
                 log.error(ex.getMessage());
-                //throw new RuntimeException(ex);
                 return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
             }
         }
@@ -178,6 +178,8 @@ public class GetSecomControllerTest
                     .map(UnLoCodeMapEntry::getGeometry)
                     .orElseGet(() -> this.geometryFactory.createEmpty(0)));
         }
+
+        final Boolean signResponse = Optional.ofNullable(sign).orElse(true);
 
         // Initialise the data response object list
         final List<DataResponseObject> dataResponseObjectList = new ArrayList<>();
@@ -190,7 +192,6 @@ public class GetSecomControllerTest
                 result = this.datasetService.findAll(dataReference, jtsGeometry, validFromLdt, validToLdt, Boolean.FALSE, pageable);
             } catch (Exception ex) {
                 log.error("Error while retrieving the dataset query results: {} ", ex.getMessage());
-                //throw new RuntimeException(ex);
                 return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
             }
 
@@ -226,8 +227,6 @@ public class GetSecomControllerTest
                     dataResponseObject.setData(this.s100ExchangeSetService.packageToExchangeSet(result.getContent(), validFromLdt, validToLdt));
                 } catch (IOException | JAXBException ex) {
                     log.error("Error while packaging the exchange set response: {} ", ex.getMessage());
-                    //throw new ValidationException(ex.getMessage());
-                    //throw new RuntimeException(ex);
                     return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
                 }
 
@@ -247,28 +246,29 @@ public class GetSecomControllerTest
                 dataResponseObjectList.size(),
                 Optional.ofNullable(pageSize).orElse(Integer.MAX_VALUE)));
 
-        // Sign the Response object
-        getResponseObject.getDataResponseObject().forEach(data -> {
+        if(signResponse) {
+            // Sign the Response object
+            getResponseObject.getDataResponseObject().forEach(data -> {
 
-            DigitalSignatureCertificate certificate = secomCertificateProvider.getDigitalSignatureCertificate();
-            byte[] signature = secomSignatureProvider.generateSignature(certificate, secomSignatureProvider.getSignatureAlgorithm(), data.getData());
-            data.getExchangeMetadata().setDataProtection(false);
-            data.getExchangeMetadata().setProtectionScheme("SECOM");
-            data.getExchangeMetadata().setDigitalSignatureReference(secomSignatureProvider.getSignatureAlgorithm());
-            DigitalSignatureValue digitalSignatureValue = new DigitalSignatureValue();
+                DigitalSignatureCertificate certificate = secomCertificateProvider.getDigitalSignatureCertificate();
+                byte[] signature = secomSignatureProvider.generateSignature(certificate, secomSignatureProvider.getSignatureAlgorithm(), data.getData());
+                data.getExchangeMetadata().setDataProtection(false);
+                data.getExchangeMetadata().setProtectionScheme("SECOM");
+                data.getExchangeMetadata().setDigitalSignatureReference(secomSignatureProvider.getSignatureAlgorithm());
+                DigitalSignatureValue digitalSignatureValue = new DigitalSignatureValue();
 
-            try {
-                digitalSignatureValue.setDigitalSignature(Base64.getEncoder().encodeToString(signature));
-                digitalSignatureValue.setPublicRootCertificateThumbprint(SecomPemUtils.getCertThumbprint(certificate.getCertificate(), SecomConstants.CERTIFICATE_THUMBPRINT_HASH));
-                digitalSignatureValue.setPublicCertificate(Base64.getEncoder().encodeToString(certificate.getCertificate().getEncoded()));
-            } catch (CertificateEncodingException | NoSuchAlgorithmException e){
-                throw new RuntimeException(e);
-            }
+                try {
+                    digitalSignatureValue.setDigitalSignature(HexFormat.of().formatHex(signature).toUpperCase());
+                    digitalSignatureValue.setPublicRootCertificateThumbprint(SecomPemUtils.getCertThumbprint(certificate.getRootCertificate(), SecomConstants.CERTIFICATE_THUMBPRINT_HASH));
+                    digitalSignatureValue.setPublicCertificate(Base64.getEncoder().encodeToString(certificate.getCertificate().getEncoded()));
+                } catch (CertificateEncodingException | NoSuchAlgorithmException e) {
+                    throw new RuntimeException(e);
+                }
 
-            data.getExchangeMetadata().setDigitalSignatureValue(digitalSignatureValue);
+                data.getExchangeMetadata().setDigitalSignatureValue(digitalSignatureValue);
 
-        });
-
+            });
+        }
         // And final return the Get Response Object
         return ResponseEntity.ok(getResponseObject);
 
