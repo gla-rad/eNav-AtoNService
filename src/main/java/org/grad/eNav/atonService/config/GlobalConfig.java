@@ -34,7 +34,6 @@ import org.grad.eNav.atonService.utils.ReferenceTypeS125Converter;
 import org.grad.eNav.atonService.utils.S125DatasetBuilder;
 import org.grad.eNav.atonService.utils.WKTUtils;
 import org.grad.eNav.s125.utils.S125Utils;
-import org.grad.secom.core.models.SubscriptionRequestObject;
 import org.locationtech.jts.io.ParseException;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
@@ -267,8 +266,8 @@ public class GlobalConfig {
                     .includeBase(AidsToNavigation.class, AidsToNavigationDto.class);
         }
 
-        // Now map the SECOM Subscription Requests
-        modelMapper.createTypeMap(SubscriptionRequestObject.class, SubscriptionRequest.class)
+        // Now map the SECOM v1.0 Subscription Requests
+        modelMapper.createTypeMap(org.grad.secom.core.models.SubscriptionRequestObject.class, SubscriptionRequest.class)
                 .implicitMappings()
                 .addMappings(mapper -> {
                     mapper.using(ctx -> Optional.of(ctx)
@@ -282,7 +281,25 @@ public class GlobalConfig {
                                 }
                             })
                             .orElse(null))
-                            .map(SubscriptionRequestObject::getGeometry, SubscriptionRequest::setGeometry);
+                            .map(rqst -> rqst.getGeometry(), SubscriptionRequest::setGeometry);
+                });
+
+        // Now map the SECOM v2.0 Subscription Requests
+        modelMapper.createTypeMap(org.grad.secomv2.core.models.SubscriptionRequestObject.class, SubscriptionRequest.class)
+                .implicitMappings()
+                .addMappings(mapper -> {
+                    mapper.using(ctx -> Optional.of(ctx)
+                                    .map(MappingContext::getSource)
+                                    .map(String.class::cast)
+                                    .map(g -> {
+                                        try {
+                                            return WKTUtils.convertWKTtoGeometry(g);
+                                        } catch (ParseException ex) {
+                                            throw new ValidationException(Collections.singletonList(new ErrorMessage(ex.getMessage())));
+                                        }
+                                    })
+                                    .orElse(null))
+                            .map(rqst -> rqst.getEnvelope().getGeometry(), SubscriptionRequest::setGeometry);
                 });
         // ================================================================== //
 

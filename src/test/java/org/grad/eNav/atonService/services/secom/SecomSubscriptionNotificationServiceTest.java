@@ -16,10 +16,10 @@
 
 package org.grad.eNav.atonService.services.secom;
 
-import org.grad.secom.core.models.SubscriptionNotificationObject;
-import org.grad.secom.core.models.SubscriptionNotificationResponseObject;
-import org.grad.secom.core.models.enums.SubscriptionEventEnum;
-import org.grad.secom.springboot3.components.SecomClient;
+import org.grad.secomv2.core.models.SubscriptionNotificationObject;
+import org.grad.secomv2.core.models.SubscriptionNotificationResponseObject;
+import org.grad.secomv2.core.models.enums.SubscriptionEventEnum;
+import org.grad.secomv2.springboot3.components.SecomClient;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -67,7 +67,7 @@ class SecomSubscriptionNotificationServiceTest {
 
         // Create the SubscriptionNotificationResponseObject
         this.subscriptionNotificationResponseObject = new SubscriptionNotificationResponseObject();
-        this.subscriptionNotificationResponseObject.setResponseText("Subscription Notification Response");
+        this.subscriptionNotificationResponseObject.setMessage("Subscription Notification Response");
 
         // And mock a SECOM client
         this.secomClient = mock(SecomClient.class);
@@ -97,7 +97,7 @@ class SecomSubscriptionNotificationServiceTest {
 
             // Make sure the response seems OK
             assertNotNull(result);
-            assertEquals(this.subscriptionNotificationResponseObject.getResponseText(), result.getResponseText());
+            assertEquals(this.subscriptionNotificationResponseObject.getMessage(), result.getMessage());
         });
 
 
@@ -125,7 +125,7 @@ class SecomSubscriptionNotificationServiceTest {
 
             // Make sure the response seems OK
             assertNotNull(result);
-            assertEquals(this.subscriptionNotificationResponseObject.getResponseText(), result.getResponseText());
+            assertEquals(this.subscriptionNotificationResponseObject.getMessage(), result.getMessage());
         });
     }
 

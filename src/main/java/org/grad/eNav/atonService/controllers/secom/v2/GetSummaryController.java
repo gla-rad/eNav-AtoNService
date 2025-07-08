@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.grad.eNav.atonService.controllers.secom;
+package org.grad.eNav.atonService.controllers.secom.v2;
 
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -32,13 +32,13 @@ import org.grad.eNav.atonService.services.DatasetService;
 import org.grad.eNav.atonService.services.UnLoCodeService;
 import org.grad.eNav.atonService.utils.GeometryUtils;
 import org.grad.eNav.atonService.utils.WKTUtils;
-import org.grad.secom.core.interfaces.GetSummarySecomInterface;
-import org.grad.secom.core.models.GetSummaryResponseObject;
-import org.grad.secom.core.models.PaginationObject;
-import org.grad.secom.core.models.SummaryObject;
-import org.grad.secom.core.models.enums.ContainerTypeEnum;
-import org.grad.secom.core.models.enums.InfoStatusEnum;
-import org.grad.secom.core.models.enums.SECOM_DataProductType;
+import org.grad.secomv2.core.interfaces.GetSummaryServiceInterface;
+import org.grad.secomv2.core.models.GetSummaryResponseObject;
+import org.grad.secomv2.core.models.PaginationObject;
+import org.grad.secomv2.core.models.SummaryObject;
+import org.grad.secomv2.core.models.enums.ContainerTypeEnum;
+import org.grad.secomv2.core.models.enums.InfoStatusEnum;
+import org.grad.secomv2.core.models.enums.SECOM_DataProductType;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.PrecisionModel;
@@ -51,8 +51,14 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 
 import java.math.BigInteger;
-import java.time.*;
-import java.util.*;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
 /**
  * The SECOM Get Summary Interface Controller.
@@ -63,7 +69,7 @@ import java.util.*;
 @Path("/")
 @Validated
 @Slf4j
-public class GetSummarySecomController implements GetSummarySecomInterface {
+public class GetSummaryController implements GetSummaryServiceInterface {
 
     /**
      * The Dataset Service.
@@ -97,15 +103,15 @@ public class GetSummarySecomController implements GetSummarySecomInterface {
      */
     @Tag(name = "SECOM")
     @Transactional
-    public GetSummaryResponseObject getSummary(@QueryParam("containerType") ContainerTypeEnum containerType,
-                                               @QueryParam("dataProductType") SECOM_DataProductType dataProductType,
-                                               @QueryParam("productVersion") String productVersion,
-                                               @QueryParam("geometry") String geometry,
-                                               @QueryParam("unlocode") @Pattern(regexp = "[A-Z]{5}") String unlocode,
-                                               @QueryParam("validFrom") @Parameter(example = "20200101T123000", schema = @Schema(implementation = String.class, pattern = "(\\d{8})T(\\d{6})(Z|\\+\\d{4})?")) Instant validFrom,
-                                               @QueryParam("validTo") @Parameter(example = "20200101T123000", schema = @Schema(implementation = String.class, pattern = "(\\d{8})T(\\d{6})(Z|\\+\\d{4})?")) Instant validTo,
-                                               @QueryParam("page") @Min(0) Integer page,
-                                               @QueryParam("pageSize") @Min(0) Integer pageSize) {
+    public GetSummaryResponseObject getSummary(@QueryParam("containerType") @Parameter(schema = @Schema(description = "Data Type requested")) ContainerTypeEnum containerType,
+                                               @QueryParam("dataProductType") @Parameter(schema = @Schema(description = "Data product type name See: https://registry.iho.int/productspec/list.do (column 'Product ID')")) SECOM_DataProductType dataProductType,
+                                               @QueryParam("productVersion") @Parameter(schema = @Schema(description = "S-100 based Product specification version")) String productVersion,
+                                               @QueryParam("geometry") @Parameter(schema = @Schema(description = "Geometry condition for geo-located information objects as WKT LineString or Polygon")) String geometry,
+                                               @QueryParam("unlocode") @Parameter(schema = @Schema(description = "See UN web page")) @Pattern(regexp = "^[a-zA-Z]{2}[a-zA-Z2-9]{3}") String unlocode,
+                                               @QueryParam("validFrom") @Parameter(schema = @Schema(implementation = String.class, description = "Time related to validity period start for information object")) Instant validFrom,
+                                               @QueryParam("validTo") @Parameter(schema = @Schema(implementation = String.class, description = "Time related to validity period end for information object")) Instant validTo,
+                                               @QueryParam("page") @Min(0) @Parameter(schema = @Schema(implementation = Integer.class, description = "Requested pagination page. Must be a positive integer >= 0..", defaultValue = "1")) Integer page,
+                                               @QueryParam("pageSize") @Min(0) @Parameter(schema = @Schema(implementation = Integer.class, description = "Requested pagination page size. Must be a positive integer >= 0.", defaultValue = "100")) Integer pageSize) {
         log.debug("SECOM request to get page of Dataset Summary");
         Optional.ofNullable(containerType).ifPresent(v -> log.debug("Container Type specified as: {}", containerType));
         Optional.ofNullable(dataProductType).ifPresent(v -> log.debug("Data Product Type specified as: {}", dataProductType));
@@ -182,7 +188,7 @@ public class GetSummarySecomController implements GetSummarySecomInterface {
 
         // Start building the response
         final GetSummaryResponseObject getSummaryResponseObject = new GetSummaryResponseObject();
-        getSummaryResponseObject.setSummaryObject(summaryObjectList);
+        getSummaryResponseObject.setInformationSummaryObject(summaryObjectList);
         getSummaryResponseObject.setPagination(new PaginationObject(
                 summaryObjectList.size(),
                 Optional.ofNullable(pageSize).orElse(Integer.MAX_VALUE)));

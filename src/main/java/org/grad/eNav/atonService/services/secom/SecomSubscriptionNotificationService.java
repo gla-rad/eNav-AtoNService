@@ -17,10 +17,10 @@
 package org.grad.eNav.atonService.services.secom;
 
 import lombok.extern.slf4j.Slf4j;
-import org.grad.secom.core.models.SubscriptionNotificationObject;
-import org.grad.secom.core.models.SubscriptionNotificationResponseObject;
-import org.grad.secom.core.models.enums.SubscriptionEventEnum;
-import org.grad.secom.springboot3.components.SecomClient;
+import org.grad.secomv2.core.models.SubscriptionNotificationObject;
+import org.grad.secomv2.core.models.SubscriptionNotificationResponseObject;
+import org.grad.secomv2.core.models.enums.SubscriptionEventEnum;
+import org.grad.secomv2.springboot3.components.SecomClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;

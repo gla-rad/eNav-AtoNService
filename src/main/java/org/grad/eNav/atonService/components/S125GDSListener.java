@@ -16,7 +16,6 @@
 
 package org.grad.eNav.atonService.components;
 import _int.iho.s125.s100.gml.profiles._5_2.AbstractGMLType;
-import _int.iho.s125.s100.gml.profiles._5_2.AggregationType;
 import _int.iho.s125.s100.gml.profiles._5_2.ReferenceType;
 import _int.iho.s125.gml.cs0._1.AidsToNavigationType;
 import _int.iho.s125.gml.cs0._1.EquipmentType;
@@ -40,7 +39,7 @@ import org.grad.eNav.atonService.services.DatasetService;
 import org.grad.eNav.atonService.utils.GeometryJSONConverter;
 import org.grad.eNav.atonService.utils.GeometryUtils;
 import org.grad.eNav.s125.utils.S125Utils;
-import org.grad.secom.core.models.enums.SECOM_DataProductType;
+import org.grad.secomv2.core.models.enums.SECOM_DataProductType;
 import org.locationtech.geomesa.kafka.utils.KafkaFeatureEvent;
 import org.locationtech.jts.geom.Geometry;
 import org.modelmapper.ModelMapper;

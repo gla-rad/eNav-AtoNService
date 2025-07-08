@@ -16,10 +16,10 @@
 
 package org.grad.eNav.atonService.services.secom;
 
-import org.grad.secom.core.exceptions.SecomValidationException;
-import org.grad.secom.core.models.ResponseSearchObject;
-import org.grad.secom.core.models.SearchObjectResult;
-import org.grad.secom.springboot3.components.SecomClient;
+import org.grad.secomv2.core.exceptions.SecomValidationException;
+import org.grad.secomv2.core.models.ResponseSearchObject;
+import org.grad.secomv2.core.models.SearchObjectResult;
+import org.grad.secomv2.springboot3.components.SecomClient;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.grad.eNav.atonService.controllers.secom;
+package org.grad.eNav.atonService.controllers.secom.v1;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
@@ -23,6 +23,7 @@ import jakarta.ws.rs.Path;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.logging.log4j.util.Strings;
 import org.grad.eNav.atonService.components.DomainDtoMapper;
+import org.grad.eNav.atonService.controllers.secom.SecomRequestHeaders;
 import org.grad.eNav.atonService.models.domain.secom.SubscriptionRequest;
 import org.grad.eNav.atonService.services.secom.SecomSubscriptionService;
 import org.grad.secom.core.exceptions.SecomNotFoundException;
