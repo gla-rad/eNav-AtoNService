@@ -25,11 +25,9 @@ import org.springframework.context.annotation.Import;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-@ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@EnableAutoConfiguration(exclude = {SecurityAutoConfiguration.class})
 @TestPropertySource("classpath:application.properties")
-@Import({TestingConfiguration.class, TestFeignSecurityConfig.class})
+@Import(TestingConfiguration.class)
 class AtonServiceTest {
 
 	@Test
