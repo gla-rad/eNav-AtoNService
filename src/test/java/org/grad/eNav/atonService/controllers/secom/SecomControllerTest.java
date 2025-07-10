@@ -50,13 +50,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.web.reactive.function.BodyInserters;
@@ -107,37 +107,37 @@ class SecomControllerTest {
     /**
      * The Dataset Service mock.
      */
-    @MockBean
+    @MockitoBean
     DatasetService datasetService;
 
     /**
      * The SECOM Exchange Set Service.
      */
-    @MockBean
+    @MockitoBean
     S100ExchangeSetService s100ExchangeSetService;
 
     /**
      * The UN/LOCODE Service mock.
      */
-    @MockBean
+    @MockitoBean
     UnLoCodeService unLoCodeService;
 
     /**
      * The SECOM Subscription Service mock.
      */
-    @MockBean
+    @MockitoBean
     SecomSubscriptionService secomSubscriptionService;
 
     /**
      * The Secom Certificate Provider mock.
      */
-    @MockBean
+    @MockitoBean
     SecomCertificateProviderImpl secomCertificateProvider;
 
     /**
      * The Secom Signature Provider mock.
      */
-    @MockBean
+    @MockitoBean
     SecomSignatureProviderImpl secomSignatureProvider;
 
     /**
@@ -147,7 +147,7 @@ class SecomControllerTest {
      * allow out test messages to go through the signature filter without valid
      * signatures.
      */
-    @MockBean
+    @MockitoBean
     SecomSignatureFilter secomSignatureFilter;
 
     // Test Variables
@@ -164,7 +164,7 @@ class SecomControllerTest {
     private S125Dataset s125DataSet;
     private String s125DataSetAsXml;
     private DatasetContent datasetContent;
-    private SubscriptionRequest subscriptionRequest;
+    private SubscriptionRequestObject subscriptionRequestObject;
     private SubscriptionRequest savedSubscriptionRequest;
     private RemoveSubscriptionObject removeSubscriptionObject;
     private AcknowledgementObject acknowledgementObject;
@@ -217,9 +217,9 @@ class SecomControllerTest {
         this.s125DataSet.setDatasetContent(this.datasetContent);
 
         // Setup the subscription requests and responses
-        this.subscriptionRequest = new SubscriptionRequest();
-        this.subscriptionRequest.setContainerType(ContainerTypeEnum.S100_DataSet);
-        this.subscriptionRequest.setDataProductType(SECOM_DataProductType.S125);
+        this.subscriptionRequestObject = new SubscriptionRequestObject();
+        this.subscriptionRequestObject.setContainerType(ContainerTypeEnum.S100_DataSet);
+        this.subscriptionRequestObject.setDataProductType(SECOM_DataProductType.S125);
         this.savedSubscriptionRequest = new SubscriptionRequest();
         this.savedSubscriptionRequest.setUuid(UUID.randomUUID());
         this.savedSubscriptionRequest.setContainerType(ContainerTypeEnum.S100_DataSet);
@@ -600,7 +600,7 @@ class SecomControllerTest {
                 .uri("/api/secom" + SUBSCRIPTION_INTERFACE_PATH)
                 .header(SecomRequestHeaders.MRN_HEADER, "mrn")
                 .contentType(MediaType.APPLICATION_JSON)
-                .body(BodyInserters.fromPublisher(Mono.just(subscriptionRequest), SubscriptionRequest.class))
+                .body(BodyInserters.fromPublisher(Mono.just(subscriptionRequestObject), SubscriptionRequestObject.class))
                 .exchange()
                 .expectStatus().isOk()
                 .expectBody(SubscriptionResponseObject.class)
@@ -624,7 +624,7 @@ class SecomControllerTest {
                 .uri("/api/secom" + SUBSCRIPTION_INTERFACE_PATH)
                 .header(SecomRequestHeaders.MRN_HEADER, "mrn")
                 .contentType(MediaType.APPLICATION_JSON)
-                .body(BodyInserters.fromPublisher(Mono.just(subscriptionRequest), SubscriptionRequest.class))
+                .body(BodyInserters.fromPublisher(Mono.just(subscriptionRequestObject), SubscriptionRequestObject.class))
                 .exchange()
                 .expectStatus().isBadRequest();
     }
