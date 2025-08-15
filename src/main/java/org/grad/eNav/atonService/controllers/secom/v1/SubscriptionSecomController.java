@@ -77,7 +77,7 @@ public class SubscriptionSecomController implements SubscriptionSecomInterface {
      * @param subscriptionRequestObject the subscription request object
      * @return the subscription response object
      */
-    // Left here for testing locally
+    // Kept or testing
     //@CrossOrigin(originPatterns = "http://localhost:8768/*")
     @Tag(name = "SECOM")
     public SubscriptionResponseObject subscription(@Valid SubscriptionRequestObject subscriptionRequestObject) {
