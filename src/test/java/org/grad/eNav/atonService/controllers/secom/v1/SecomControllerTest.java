@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.grad.eNav.atonService.controllers.secom;
+package org.grad.eNav.atonService.controllers.secom.v1;
 
 import _int.iho.s125.gml.cs0._1.Dataset;
 import jakarta.xml.bind.DatatypeConverter;
@@ -23,6 +23,7 @@ import org.grad.eNav.atonService.TestFeignSecurityConfig;
 import org.grad.eNav.atonService.TestingConfiguration;
 import org.grad.eNav.atonService.components.SecomCertificateProviderImpl;
 import org.grad.eNav.atonService.components.SecomSignatureProviderImpl;
+import org.grad.eNav.atonService.controllers.secom.SecomRequestHeaders;
 import org.grad.eNav.atonService.models.domain.DatasetContent;
 import org.grad.eNav.atonService.models.domain.s125.S125Dataset;
 import org.grad.eNav.atonService.models.domain.secom.SubscriptionRequest;
@@ -222,8 +223,8 @@ class SecomControllerTest {
         this.subscriptionRequestObject.setDataProductType(SECOM_DataProductType.S125);
         this.savedSubscriptionRequest = new SubscriptionRequest();
         this.savedSubscriptionRequest.setUuid(UUID.randomUUID());
-        this.savedSubscriptionRequest.setContainerType(ContainerTypeEnum.S100_DataSet);
-        this.savedSubscriptionRequest.setDataProductType(SECOM_DataProductType.S125);
+        this.savedSubscriptionRequest.setContainerTypeV1(ContainerTypeEnum.S100_DataSet);
+        this.savedSubscriptionRequest.setDataProductTypeV1(SECOM_DataProductType.S125);
         this.removeSubscriptionObject = new RemoveSubscriptionObject();
         this.removeSubscriptionObject.setSubscriptionIdentifier(UUID.randomUUID());
 

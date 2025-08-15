@@ -22,6 +22,7 @@ import org.grad.eNav.atonService.services.UnLoCodeService;
 import org.grad.eNav.atonService.utils.GeometryBinder;
 import org.grad.eNav.atonService.utils.GeometryUtils;
 import org.grad.eNav.atonService.utils.NullValueIndexerBridge;
+import org.grad.eNav.atonService.utils.SecomUtils;
 import org.grad.secomv2.core.models.enums.ContainerTypeEnum;
 import org.grad.secomv2.core.models.enums.SECOM_DataProductType;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
@@ -157,6 +158,15 @@ public class SubscriptionRequest {
     }
 
     /**
+     * Sets container type using the SECOM v1 enum.
+     *
+     * @param containerType the container type as per SECOM v1
+     */
+    public void setContainerTypeV1(org.grad.secom.core.models.enums.ContainerTypeEnum containerType) {
+        this.containerType = SecomUtils.translateSecomContainerTypeEnum(containerType);
+    }
+
+    /**
      * Gets data product type.
      *
      * @return the data product type
@@ -172,6 +182,15 @@ public class SubscriptionRequest {
      */
     public void setDataProductType(SECOM_DataProductType dataProductType) {
         this.dataProductType = dataProductType;
+    }
+
+    /**
+     * Sets data product type using the SECOM v1 enum.
+     *
+     * @param dataProductType the data product type as per SECOM v1
+     */
+    public void setDataProductTypeV1(org.grad.secom.core.models.enums.SECOM_DataProductType dataProductType) {
+        this.dataProductType = SecomUtils.translateSecomDataProductTypeEnum(dataProductType);
     }
 
     /**
