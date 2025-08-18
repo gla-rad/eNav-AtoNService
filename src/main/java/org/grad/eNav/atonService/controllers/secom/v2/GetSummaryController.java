@@ -61,7 +61,7 @@ import java.util.Objects;
 import java.util.Optional;
 
 /**
- * The SECOM Get Summary Interface Controller.
+ * The SECOM Get Summary Service Interface Controller.
  *
  * @author Nikolaos Vastardis (email: Nikolaos.Vastardis@gla-rad.org)
  */
@@ -87,7 +87,7 @@ public class GetSummaryController implements GetSummaryServiceInterface {
     private final GeometryFactory geometryFactory = new GeometryFactory(new PrecisionModel(),4326);
 
     /**
-     * GET /api/secom/v1/dataset/summary : Returns the S-125 dataset summary
+     * GET /api/secom/v2/dataset/summary : Returns the S-125 dataset summary
      * information, as specified by the SECOM standard.
      *
      * @param containerType the object data container type

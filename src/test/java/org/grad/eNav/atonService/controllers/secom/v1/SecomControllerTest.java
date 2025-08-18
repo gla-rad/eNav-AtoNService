@@ -223,8 +223,8 @@ class SecomControllerTest {
         this.subscriptionRequestObject.setDataProductType(SECOM_DataProductType.S125);
         this.savedSubscriptionRequest = new SubscriptionRequest();
         this.savedSubscriptionRequest.setUuid(UUID.randomUUID());
-        this.savedSubscriptionRequest.setContainerTypeV1(ContainerTypeEnum.S100_DataSet);
-        this.savedSubscriptionRequest.setDataProductTypeV1(SECOM_DataProductType.S125);
+        this.savedSubscriptionRequest.setContainerType(ContainerTypeEnum.S100_DataSet);
+        this.savedSubscriptionRequest.setDataProductType(SECOM_DataProductType.S125);
         this.removeSubscriptionObject = new RemoveSubscriptionObject();
         this.removeSubscriptionObject.setSubscriptionIdentifier(UUID.randomUUID());
 

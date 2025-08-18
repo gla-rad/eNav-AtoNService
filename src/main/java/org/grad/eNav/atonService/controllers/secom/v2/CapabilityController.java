@@ -38,7 +38,7 @@ import java.util.Collections;
 import java.util.Optional;
 
 /**
- * The SECOM Capability Interface Controller.
+ * The SECOM Capability Service Interface Controller.
  *
  * @author Nikolaos Vastardis (email: Nikolaos.Vastardis@gla-rad.org)
  */
@@ -61,7 +61,7 @@ public class CapabilityController implements CapabilityServiceInterface {
     ServiceInformationConfig serviceInformationConfig;
 
     /**
-     * GET /api/secom/v1/capability : Returns the service instance capabilities.
+     * GET /api/secom/v2/capability : Returns the service instance capabilities.
      *
      * @return the SECOM-compliant service capabilities
      */

@@ -60,7 +60,7 @@ import java.time.ZoneId;
 import java.util.*;
 
 /**
- * The SECOM Get Interface Controller.
+ * The SECOM Get Service Interface Controller.
  *
  * @author Nikolaos Vastardis (email: Nikolaos.Vastardis@gla-rad.org)
  */
@@ -92,7 +92,7 @@ public class GetController implements GetServiceInterface {
     private final GeometryFactory geometryFactory = new GeometryFactory(new PrecisionModel(),4326);
 
     /**
-     * GET /api/secom/v1/dataset : Returns the S-125 dataset entries as,
+     * GET /api/secom/v2/dataset : Returns the S-125 dataset entries as,
      * specified by the SECOM standard.
      *
      * @param dataReference the object data reference

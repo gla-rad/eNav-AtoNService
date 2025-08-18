@@ -26,7 +26,7 @@ import org.springframework.validation.annotation.Validated;
 import java.time.Instant;
 
 /**
- * The SECOM Ping Interface Controller.
+ * The SECOM Ping Service Interface Controller.
  *
  * @author Lawrence Hughes (email: Lawrence.Hughes@gla-rad.org)
  */
@@ -37,7 +37,7 @@ import java.time.Instant;
 public class PingController implements PingServiceInterface {
 
     /**
-     * GET /v1/ping : returns a PingResponseObject which
+     * GET /api/secom/v2/ping : returns a PingResponseObject which
      * holds the last private interaction time
      */
     @Tag(name = "SECOM")

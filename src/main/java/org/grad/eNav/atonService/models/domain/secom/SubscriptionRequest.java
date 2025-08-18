@@ -162,7 +162,7 @@ public class SubscriptionRequest {
      *
      * @param containerType the container type as per SECOM v1
      */
-    public void setContainerTypeV1(org.grad.secom.core.models.enums.ContainerTypeEnum containerType) {
+    public void setContainerType(org.grad.secom.core.models.enums.ContainerTypeEnum containerType) {
         this.containerType = SecomUtils.translateSecomContainerTypeEnum(containerType);
     }
 
@@ -189,7 +189,7 @@ public class SubscriptionRequest {
      *
      * @param dataProductType the data product type as per SECOM v1
      */
-    public void setDataProductTypeV1(org.grad.secom.core.models.enums.SECOM_DataProductType dataProductType) {
+    public void setDataProductType(org.grad.secom.core.models.enums.SECOM_DataProductType dataProductType) {
         this.dataProductType = SecomUtils.translateSecomDataProductTypeEnum(dataProductType);
     }
 
