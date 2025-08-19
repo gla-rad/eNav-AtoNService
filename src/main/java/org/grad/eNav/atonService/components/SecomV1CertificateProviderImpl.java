@@ -31,7 +31,7 @@ import org.springframework.stereotype.Component;
 import java.security.cert.CertificateException;
 
 /**
- * The SECOM Certificate Provider Implementation.
+ * The SECOM v1.0 Certificate Provider Implementation.
  *
  * In the current e-Navigation Service Architecture, it's the cKeeper
  * microservice that is responsible for storing and providing the certificates
@@ -41,7 +41,7 @@ import java.security.cert.CertificateException;
  */
 @Component
 @Slf4j
-public class SecomCertificateProviderImpl implements SecomCertificateProvider {
+public class SecomV1CertificateProviderImpl implements SecomCertificateProvider {
 
     /**
      * The Service Information Config.

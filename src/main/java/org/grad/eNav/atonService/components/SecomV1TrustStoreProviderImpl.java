@@ -31,7 +31,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
 
 /**
- * The SECOM Trust Store Provider Implementation.
+ * The SECOM v1.0 Trust Store Provider Implementation.
  *
  * This class contains the implementation of the SECOM trust store provider.
  * This is required for the SECOM library to be able to automatically pick up
@@ -41,7 +41,7 @@ import java.security.cert.CertificateException;
  */
 @Component
 @Slf4j
-public class SecomTrustStoreProviderImpl implements SecomTrustStoreProvider {
+public class SecomV1TrustStoreProviderImpl implements SecomTrustStoreProvider {
 
     /**
      * The X.509 Root Certificate Alias.

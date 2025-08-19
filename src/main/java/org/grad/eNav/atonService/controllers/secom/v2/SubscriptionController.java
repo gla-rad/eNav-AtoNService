@@ -28,6 +28,7 @@ import org.grad.eNav.atonService.models.domain.secom.SubscriptionRequest;
 import org.grad.eNav.atonService.services.secom.SecomSubscriptionService;
 import org.grad.secomv2.core.exceptions.SecomNotFoundException;
 import org.grad.secomv2.core.interfaces.SubscriptionServiceInterface;
+import org.grad.secomv2.core.models.EnvelopeSubscriptionObject;
 import org.grad.secomv2.core.models.SubscriptionRequestObject;
 import org.grad.secomv2.core.models.SubscriptionResponseObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,7 +54,7 @@ public class SubscriptionController implements SubscriptionServiceInterface {
      * Object Mapper from SECOM Subscription Request DTO to Domain.
      */
     @Autowired
-    DomainDtoMapper<SubscriptionRequestObject, SubscriptionRequest> subscriptionRequestDomainMapper;
+    DomainDtoMapper<EnvelopeSubscriptionObject, SubscriptionRequest> subscriptionRequestDomainMapper;
 
     /**
      * The SECOM Service.
@@ -88,6 +89,7 @@ public class SubscriptionController implements SubscriptionServiceInterface {
                 .map(Strings::trimToNull)
                 .orElse(null);
         final SubscriptionRequest subscriptionRequest = Optional.ofNullable(subscriptionRequestObject)
+                .map(SubscriptionRequestObject::getEnvelope)
                 .map(dto -> this.subscriptionRequestDomainMapper.convertTo(dto, SubscriptionRequest.class))
                 .map(subReq -> this.secomSubscriptionService.save(mrn, subReq))
                 .filter(req -> Objects.nonNull(req.getUuid()))

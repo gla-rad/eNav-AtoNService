@@ -29,6 +29,7 @@ import org.grad.secomv2.core.models.RemoveSubscriptionObject;
 import org.grad.secomv2.core.models.RemoveSubscriptionResponseObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 
 import java.util.Optional;
@@ -67,6 +68,7 @@ public class RemoveSubscriptionController implements RemoveSubscriptionServiceIn
      * @return the remove subscription response object
      */
     @Tag(name = "SECOM")
+    @Transactional
     public RemoveSubscriptionResponseObject removeSubscription(@QueryParam(value="subscriptionIdentifier") UUID subscriptionIdentifier) {
         final UUID deletedSubscriptionIdentifier = Optional.ofNullable(subscriptionIdentifier)
                 .map(this.secomSubscriptionService::delete)

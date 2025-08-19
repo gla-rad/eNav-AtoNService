@@ -43,7 +43,7 @@ import java.util.Base64;
 import java.util.Optional;
 
 /**
- * The SECOM Signature Provider Implementation.
+ * The SECOM v1.0 Signature Provider Implementation.
  *
  * In the current e-Navigation Service Architecture, it's the cKeeper
  * microservice that is responsible for generating the validating the
@@ -53,7 +53,7 @@ import java.util.Optional;
  */
 @Component
 @Slf4j
-public class SecomSignatureProviderImpl implements SecomSignatureProvider {
+public class SecomV1SignatureProviderImpl implements SecomSignatureProvider {
 
     /**
      * The cKeeper Feign Client.

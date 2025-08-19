@@ -34,6 +34,9 @@ public class SecomUtils {
      * @return the SECOM v2 container type enumerations
      */
     public static org.grad.secomv2.core.models.enums.ContainerTypeEnum translateSecomContainerTypeEnum(org.grad.secom.core.models.enums.ContainerTypeEnum containerType) {
+        if(containerType == null) {
+            return null;
+        }
         return org.grad.secomv2.core.models.enums.ContainerTypeEnum.fromValue(containerType.getValue());
     }
 
@@ -45,6 +48,9 @@ public class SecomUtils {
      * @return the SECOM v2 data product type enumerations
      */
     public static org.grad.secomv2.core.models.enums.SECOM_DataProductType translateSecomDataProductTypeEnum(org.grad.secom.core.models.enums.SECOM_DataProductType dataProductType) {
+        if(dataProductType == null) {
+            return null;
+        }
         return org.grad.secomv2.core.models.enums.SECOM_DataProductType.fromDescription(dataProductType.getDescription());
     }
 

@@ -41,7 +41,6 @@ public class PingController implements PingServiceInterface {
      * holds the last private interaction time
      */
     @Tag(name = "SECOM")
-    @Override
     public PingResponseObject ping() {
 
         PingResponseObject pingResponseObject = new PingResponseObject();
