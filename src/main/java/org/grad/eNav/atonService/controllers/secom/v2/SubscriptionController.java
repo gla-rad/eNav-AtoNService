@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.grad.eNav.atonService.controllers.secom;
+package org.grad.eNav.atonService.controllers.secom.v2;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
@@ -23,23 +23,24 @@ import jakarta.ws.rs.Path;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.logging.log4j.util.Strings;
 import org.grad.eNav.atonService.components.DomainDtoMapper;
+import org.grad.eNav.atonService.controllers.secom.SecomRequestHeaders;
 import org.grad.eNav.atonService.models.domain.secom.SubscriptionRequest;
 import org.grad.eNav.atonService.services.secom.SecomSubscriptionService;
-import org.grad.secom.core.exceptions.SecomNotFoundException;
-import org.grad.secom.core.interfaces.SubscriptionSecomInterface;
-import org.grad.secom.core.models.SubscriptionRequestObject;
-import org.grad.secom.core.models.SubscriptionResponseObject;
+import org.grad.secomv2.core.exceptions.SecomNotFoundException;
+import org.grad.secomv2.core.interfaces.SubscriptionServiceInterface;
+import org.grad.secomv2.core.models.EnvelopeSubscriptionObject;
+import org.grad.secomv2.core.models.SubscriptionRequestObject;
+import org.grad.secomv2.core.models.SubscriptionResponseObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.CrossOrigin;
 
 import java.util.Objects;
 import java.util.Optional;
 
 /**
- * The SECOM Subscription Interface Controller.
+ * The SECOM Subscription Service Interface Controller.
  *
  * @author Nikolaos Vastardis (email: Nikolaos.Vastardis@gla-rad.org)
  */
@@ -47,13 +48,13 @@ import java.util.Optional;
 @Path("")
 @Validated
 @Slf4j
-public class SubscriptionSecomController implements SubscriptionSecomInterface {
+public class SubscriptionController implements SubscriptionServiceInterface {
 
     /**
      * Object Mapper from SECOM Subscription Request DTO to Domain.
      */
     @Autowired
-    DomainDtoMapper<SubscriptionRequestObject, SubscriptionRequest> subscriptionRequestDomainMapper;
+    DomainDtoMapper<EnvelopeSubscriptionObject, SubscriptionRequest> subscriptionRequestDomainMapper;
 
     /**
      * The SECOM Service.
@@ -69,7 +70,7 @@ public class SubscriptionSecomController implements SubscriptionSecomInterface {
     Optional<HttpServletRequest> httpServletRequest;
 
     /**
-     * POST /api/secom/v1/subscription : Request subscription on information,
+     * POST /api/secom/v2/subscription : Request subscription on information,
      * either specific information according to parameters, or the information
      * accessible upon decision by the information provider.
      *
@@ -88,6 +89,7 @@ public class SubscriptionSecomController implements SubscriptionSecomInterface {
                 .map(Strings::trimToNull)
                 .orElse(null);
         final SubscriptionRequest subscriptionRequest = Optional.ofNullable(subscriptionRequestObject)
+                .map(SubscriptionRequestObject::getEnvelope)
                 .map(dto -> this.subscriptionRequestDomainMapper.convertTo(dto, SubscriptionRequest.class))
                 .map(subReq -> this.secomSubscriptionService.save(mrn, subReq))
                 .filter(req -> Objects.nonNull(req.getUuid()))

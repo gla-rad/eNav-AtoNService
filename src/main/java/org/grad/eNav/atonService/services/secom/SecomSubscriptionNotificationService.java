@@ -17,14 +17,23 @@
 package org.grad.eNav.atonService.services.secom;
 
 import lombok.extern.slf4j.Slf4j;
-import org.grad.secom.core.models.SubscriptionNotificationObject;
-import org.grad.secom.core.models.SubscriptionNotificationResponseObject;
-import org.grad.secom.core.models.enums.SubscriptionEventEnum;
-import org.grad.secom.springboot3.components.SecomClient;
+import org.grad.secomv2.core.exceptions.SecomValidationException;
+import org.grad.secomv2.core.models.SubscriptionNotificationObject;
+import org.grad.secomv2.core.models.SubscriptionNotificationResponseObject;
+import org.grad.secomv2.core.models.enums.SubscriptionEventEnum;
+import org.grad.secomv2.springboot3.components.SecomClient;
+import org.grad.secomv2.springboot3.components.SecomConfigProperties;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
+import java.net.URL;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.UnrecoverableKeyException;
+import java.security.cert.CertificateException;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
@@ -49,8 +58,8 @@ public class SecomSubscriptionNotificationService {
 
     /**
      * Sends a SECOM subscription notification response object to the SECOM
-     * client specified by the provided MRN. The response is generted for the
-     * UUID and subscription event type provided in the input parameterr.
+     * client specified by the provided MRN. The response is generated for the
+     * subscription UUID and event type provided in the input parameter.
      *
      * @param mrn                       the client MRN to be informed
      * @param subscriptionIdentifier    the subscription identifier UUID
@@ -63,6 +72,34 @@ public class SecomSubscriptionNotificationService {
 
         // Get the SECOM client matching the provided MRN
         final SecomClient secomClient = this.secomService.getClient(mrn);
+
+        // Create the subscription notification response object
+        SubscriptionNotificationObject subscriptionNotificationObject = new SubscriptionNotificationObject();
+        subscriptionNotificationObject.setSubscriptionIdentifier(subscriptionIdentifier);
+        subscriptionNotificationObject.setEventEnum(subscriptionEventEnum);
+
+        // Send the object the return the response
+        return CompletableFuture.completedFuture(secomClient.subscriptionNotification(subscriptionNotificationObject)
+                .orElse(null));
+    }
+
+    /**
+     * Sends a SECOM subscription notification response object to the SECOM
+     * client specified by the specified callback endpoint URL. The response
+     * is generated for the subscription UUID and event type provided in the
+     * input parameter.
+     *
+     * @param callbackEndpoint          the client callback endpoint (URL) to be informed
+     * @param subscriptionIdentifier    the subscription identifier UUID
+     * @param subscriptionEventEnum     the subscription event that took place
+     * @return the received subscription notification response object
+     */
+    @Async("taskExecutor")
+    public CompletableFuture<SubscriptionNotificationResponseObject> sendNotification(URL callbackEndpoint, UUID subscriptionIdentifier, SubscriptionEventEnum subscriptionEventEnum) {
+        log.debug("Sending notification to client URL {} for subscription {} to mark {} event", callbackEndpoint, subscriptionIdentifier, subscriptionEventEnum);
+
+        // Get the SECOM client matching the provided MRN
+        final SecomClient secomClient = this.secomService.getClient(callbackEndpoint);
 
         // Create the subscription notification response object
         SubscriptionNotificationObject subscriptionNotificationObject = new SubscriptionNotificationObject();

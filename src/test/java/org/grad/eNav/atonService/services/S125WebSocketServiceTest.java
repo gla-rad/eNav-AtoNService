@@ -22,7 +22,7 @@ import org.grad.eNav.atonService.models.domain.s125.BeaconCardinal;
 import org.grad.eNav.atonService.models.domain.s125.FeatureName;
 import org.grad.eNav.atonService.models.domain.s125.Information;
 import org.grad.eNav.atonService.models.enums.DatasetOperation;
-import org.grad.secom.core.models.enums.SECOM_DataProductType;
+import org.grad.secomv2.core.models.enums.SECOM_DataProductType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

@@ -21,9 +21,9 @@ import org.grad.eNav.atonService.feign.CKeeperClient;
 import org.grad.eNav.atonService.models.domain.s100.ServiceInformationConfig;
 import org.grad.eNav.atonService.models.dtos.McpEntityType;
 import org.grad.eNav.atonService.models.dtos.SignatureCertificateDto;
-import org.grad.secom.core.base.DigitalSignatureCertificate;
-import org.grad.secom.core.base.SecomCertificateProvider;
-import org.grad.secom.core.utils.SecomPemUtils;
+import org.grad.secomv2.core.base.DigitalSignatureCertificate;
+import org.grad.secomv2.core.base.SecomCertificateProvider;
+import org.grad.secomv2.core.utils.SecomPemUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
@@ -31,7 +31,7 @@ import org.springframework.stereotype.Component;
 import java.security.cert.CertificateException;
 
 /**
- * The SECOM Certificate Provider Implementation.
+ * The SECOM v2.0 Certificate Provider Implementation.
  *
  * In the current e-Navigation Service Architecture, it's the cKeeper
  * microservice that is responsible for storing and providing the certificates
@@ -41,7 +41,7 @@ import java.security.cert.CertificateException;
  */
 @Component
 @Slf4j
-public class SecomCertificateProviderImpl implements SecomCertificateProvider {
+public class SecomV2CertificateProviderImpl implements SecomCertificateProvider {
 
     /**
      * The Service Information Config.
@@ -78,9 +78,9 @@ public class SecomCertificateProviderImpl implements SecomCertificateProvider {
 
         // Build the SECOM digital certificate object
         try {
-            digitalSignatureCertificate.setCertificateAlias(String.format("%d", response.getCertificateId()));
-            digitalSignatureCertificate.setCertificate(SecomPemUtils.getCertFromPem(response.getCertificate()));
-            digitalSignatureCertificate.setPublicKey(digitalSignatureCertificate.getCertificate().getPublicKey());
+            digitalSignatureCertificate.setCertificateAlias(new String[]{String.format("%d", response.getCertificateId())});
+            digitalSignatureCertificate.setCertificate(SecomPemUtils.getCertsFromPem(new String[]{response.getCertificate()}));
+            digitalSignatureCertificate.setPublicKey(digitalSignatureCertificate.getCertificate()[0].getPublicKey());
             digitalSignatureCertificate.setRootCertificate(SecomPemUtils.getCertFromPem(response.getRootCertificate()));
         } catch (CertificateException ex) {
             log.error(ex.getMessage());

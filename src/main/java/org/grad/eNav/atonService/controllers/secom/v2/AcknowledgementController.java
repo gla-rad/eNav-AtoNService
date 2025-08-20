@@ -13,18 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.grad.eNav.atonService.controllers.secom;
+package org.grad.eNav.atonService.controllers.secom.v2;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.ws.rs.Path;
 import lombok.extern.slf4j.Slf4j;
-import org.grad.secom.core.exceptions.SecomInvalidCertificateException;
-import org.grad.secom.core.exceptions.SecomSignatureVerificationException;
-import org.grad.secom.core.exceptions.SecomValidationException;
-import org.grad.secom.core.interfaces.AcknowledgementSecomInterface;
-import org.grad.secom.core.models.AcknowledgementObject;
-import org.grad.secom.core.models.AcknowledgementResponseObject;
+import org.grad.secomv2.core.exceptions.SecomInvalidCertificateException;
+import org.grad.secomv2.core.exceptions.SecomSignatureVerificationException;
+import org.grad.secomv2.core.exceptions.SecomValidationException;
+import org.grad.secomv2.core.interfaces.AcknowledgementServiceInterface;
+import org.grad.secomv2.core.models.AcknowledgementObject;
+import org.grad.secomv2.core.models.AcknowledgementResponseObject;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.annotation.Validated;
 
@@ -32,7 +32,7 @@ import java.util.Objects;
 import java.util.Optional;
 
 /**
- * The SECOM Acknowledgement Interface Controller.
+ * The SECOM Acknowledgement Service Interface Controller.
  *
  * @author Nikolaos Vastardis (email: Nikolaos.Vastardis@gla-rad.org)
  */
@@ -40,10 +40,10 @@ import java.util.Optional;
 @Path("/")
 @Validated
 @Slf4j
-public class AcknowledgementSecomController implements AcknowledgementSecomInterface {
+public class AcknowledgementController implements AcknowledgementServiceInterface {
 
     /**
-     * POST /v1/acknowledgement : During upload of information, an
+     * POST /api/secom/v2/acknowledgement : During upload of information, an
      * acknowledgement can be requested which is expected to be received when
      * the uploaded message has been delivered to the end system (technical
      * acknowledgement), and an acknowledgement when the message has been opened

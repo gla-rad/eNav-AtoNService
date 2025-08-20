@@ -25,10 +25,10 @@ import org.bouncycastle.asn1.x500.X500Name;
 import org.bouncycastle.asn1.x500.style.IETFUtils;
 import org.grad.eNav.atonService.feign.CKeeperClient;
 import org.grad.eNav.atonService.models.dtos.SignatureVerificationRequestDto;
-import org.grad.secom.core.base.DigitalSignatureCertificate;
-import org.grad.secom.core.base.SecomSignatureProvider;
-import org.grad.secom.core.models.enums.DigitalSignatureAlgorithmEnum;
-import org.grad.secom.core.utils.SecomPemUtils;
+import org.grad.secomv2.core.base.DigitalSignatureCertificate;
+import org.grad.secomv2.core.base.SecomSignatureProvider;
+import org.grad.secomv2.core.models.enums.DigitalSignatureAlgorithmEnum;
+import org.grad.secomv2.core.utils.SecomPemUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
@@ -41,19 +41,20 @@ import java.security.cert.X509Certificate;
 import java.util.Arrays;
 import java.util.Base64;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 /**
- * The SECOM Signature Provider Implementation.
+ * The SECOM v2.0 Signature Provider Implementation.
  *
  * In the current e-Navigation Service Architecture, it's the cKeeper
  * microservice that is responsible for generating the validating the
- * SECOM message signatures.
+ * SECOM v2.0 message signatures.
  *
  * @author Nikolaos Vastardis (email: Nikolaos.Vastardis@gla-rad.org)
  */
 @Component
 @Slf4j
-public class SecomSignatureProviderImpl implements SecomSignatureProvider {
+public class SecomV2SignatureProviderImpl implements SecomSignatureProvider {
 
     /**
      * The cKeeper Feign Client.
@@ -92,7 +93,7 @@ public class SecomSignatureProviderImpl implements SecomSignatureProvider {
     public byte[] generateSignature(DigitalSignatureCertificate signatureCertificate, DigitalSignatureAlgorithmEnum algorithm, byte[] payload) {
         // Get the signature generated from cKeeper
         final Response response = this.cKeeperClient.generateCertificateSignature(
-                new BigInteger(signatureCertificate.getCertificateAlias()),
+                new BigInteger(signatureCertificate.getCertificateAlias()[0]),
                 algorithm.getValue(),
                 Optional.ofNullable(payload).orElse(new byte[]{}));
 
@@ -115,28 +116,27 @@ public class SecomSignatureProviderImpl implements SecomSignatureProvider {
      * of the message content (expected in a Base64 format) and the signature
      * to validate the content against.
      *
-     * @param signatureCertificate  The digital signature certificate to be used for the signature generation
+     * @param signatureCertificates The digital signature certificates to be used for the signature generation
      * @param algorithm             The algorithm used for the signature generation
      * @param content               The context (in Base64 format) to be validated
      * @param signature             The signature to validate the context against
      * @return whether the signature validation was successful or not
      */
     @Override
-    public boolean validateSignature(String signatureCertificate, DigitalSignatureAlgorithmEnum algorithm, byte[] signature, byte[] content) {
+    public boolean validateSignature(String[] signatureCertificates, DigitalSignatureAlgorithmEnum algorithm, byte[] signature, byte[] content) {
         // Get the X.509 certificate from the request
-        X509Certificate certificate = null;
+        X509Certificate[] certificate = null;
         try {
-            certificate = SecomPemUtils.getCertFromPem(signatureCertificate);
+            certificate = SecomPemUtils.getCertsFromPem(signatureCertificates);
         } catch (CertificateException ex) {
             log.error(ex.getMessage());
         }
         // Now try to get the MRN out of the certificate principals
-        final String mrn = Optional.ofNullable(certificate)
+        final String mrn = Stream.of(certificate)
                 .map(X509Certificate::getSubjectX500Principal)
                 .map(p -> p.getName(X500Principal.RFC2253))
                 .map(X500Name::new)
                 .map(n -> n.getRDNs(new ASN1ObjectIdentifier(ANS10_MRN_OBJECT_IDENTIFIER)))
-                .stream()
                 .flatMap(Arrays::stream)
                 .map(RDN::getFirst)
                 .map(AttributeTypeAndValue::getValue)

@@ -14,15 +14,16 @@
  * limitations under the License.
  */
 
-package org.grad.eNav.atonService.controllers.secom;
+package org.grad.eNav.atonService.controllers.secom.v1;
 
 import _int.iho.s125.gml.cs0._1.Dataset;
 import jakarta.xml.bind.DatatypeConverter;
 import jakarta.xml.bind.JAXBException;
 import org.grad.eNav.atonService.TestFeignSecurityConfig;
 import org.grad.eNav.atonService.TestingConfiguration;
-import org.grad.eNav.atonService.components.SecomCertificateProviderImpl;
-import org.grad.eNav.atonService.components.SecomSignatureProviderImpl;
+import org.grad.eNav.atonService.components.SecomV1CertificateProviderImpl;
+import org.grad.eNav.atonService.components.SecomV1SignatureProviderImpl;
+import org.grad.eNav.atonService.controllers.secom.SecomRequestHeaders;
 import org.grad.eNav.atonService.models.domain.DatasetContent;
 import org.grad.eNav.atonService.models.domain.s125.S125Dataset;
 import org.grad.eNav.atonService.models.domain.secom.SubscriptionRequest;
@@ -31,6 +32,7 @@ import org.grad.eNav.atonService.services.S100ExchangeSetService;
 import org.grad.eNav.atonService.services.UnLoCodeService;
 import org.grad.eNav.atonService.services.secom.SecomSubscriptionService;
 import org.grad.eNav.atonService.utils.S125DatasetBuilder;
+import org.grad.eNav.atonService.utils.SecomUtils;
 import org.grad.eNav.s125.utils.S125Utils;
 import org.grad.secom.core.base.DigitalSignatureCertificate;
 import org.grad.secom.core.base.SecomConstants;
@@ -90,7 +92,7 @@ import static org.mockito.Mockito.*;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @EnableAutoConfiguration(exclude = {SecurityAutoConfiguration.class})
 @Import({TestingConfiguration.class, TestFeignSecurityConfig.class})
-class SecomControllerTest {
+class SecomV1ControllerTest {
 
     /**
      * The Reactive Web Test Client.
@@ -132,13 +134,13 @@ class SecomControllerTest {
      * The Secom Certificate Provider mock.
      */
     @MockitoBean
-    SecomCertificateProviderImpl secomCertificateProvider;
+    SecomV1CertificateProviderImpl secomCertificateProvider;
 
     /**
      * The Secom Signature Provider mock.
      */
     @MockitoBean
-    SecomSignatureProviderImpl secomSignatureProvider;
+    SecomV1SignatureProviderImpl secomSignatureProvider;
 
     /**
      * The Secom Signature Filter mock.
@@ -222,8 +224,8 @@ class SecomControllerTest {
         this.subscriptionRequestObject.setDataProductType(SECOM_DataProductType.S125);
         this.savedSubscriptionRequest = new SubscriptionRequest();
         this.savedSubscriptionRequest.setUuid(UUID.randomUUID());
-        this.savedSubscriptionRequest.setContainerType(ContainerTypeEnum.S100_DataSet);
-        this.savedSubscriptionRequest.setDataProductType(SECOM_DataProductType.S125);
+        this.savedSubscriptionRequest.setContainerType(SecomUtils.translateSecomContainerTypeEnum(ContainerTypeEnum.S100_DataSet));
+        this.savedSubscriptionRequest.setDataProductType(SecomUtils.translateSecomDataProductTypeEnum(SECOM_DataProductType.S125));
         this.removeSubscriptionObject = new RemoveSubscriptionObject();
         this.removeSubscriptionObject.setSubscriptionIdentifier(UUID.randomUUID());
 
@@ -673,7 +675,7 @@ class SecomControllerTest {
      */
     @Test
     void testRemoveSubscriptionBadRequest() {
-        doThrow(SecomValidationException.class).when(this.secomSubscriptionService).save(any(), any());
+        doThrow(SecomValidationException.class).when(this.secomSubscriptionService).delete(any());
 
         webTestClient.post()
                 .uri("/api/secom" + SUBSCRIPTION_INTERFACE_PATH)
@@ -690,7 +692,7 @@ class SecomControllerTest {
      */
     @Test
     void testRemoveSubscriptionMethodNotAllowed() {
-        doThrow(SecomValidationException.class).when(this.secomSubscriptionService).save(any(), any());
+        doThrow(SecomValidationException.class).when(this.secomSubscriptionService).delete(any());
 
         webTestClient.get()
                 .uri("/api/secom" + SUBSCRIPTION_INTERFACE_PATH)

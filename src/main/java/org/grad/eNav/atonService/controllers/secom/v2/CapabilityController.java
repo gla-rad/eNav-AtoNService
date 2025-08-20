@@ -14,31 +14,31 @@
  * limitations under the License.
  */
 
-package org.grad.eNav.atonService.controllers.secom;
+package org.grad.eNav.atonService.controllers.secom.v2;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.ws.rs.Path;
 import lombok.extern.slf4j.Slf4j;
 import org.grad.eNav.atonService.models.domain.s100.ServiceInformationConfig;
-import org.grad.secom.core.interfaces.CapabilitySecomInterface;
-import org.grad.secom.core.models.CapabilityObject;
-import org.grad.secom.core.models.CapabilityResponseObject;
-import org.grad.secom.core.models.ImplementedInterfaces;
-import org.grad.secom.core.models.enums.ContainerTypeEnum;
-import org.grad.secom.core.models.enums.SECOM_DataProductType;
+import org.grad.secomv2.core.interfaces.CapabilityServiceInterface;
+import org.grad.secomv2.core.models.CapabilityObject;
+import org.grad.secomv2.core.models.CapabilityResponseObject;
+import org.grad.secomv2.core.models.ImplementedInterfaces;
+import org.grad.secomv2.core.models.enums.ContainerTypeEnum;
+import org.grad.secomv2.core.models.enums.SECOM_DataProductType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import jakarta.ws.rs.Path;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Collections;
 import java.util.Optional;
 
 /**
- * The SECOM Capability Interface Controller.
+ * The SECOM Capability Service Interface Controller.
  *
  * @author Nikolaos Vastardis (email: Nikolaos.Vastardis@gla-rad.org)
  */
@@ -46,7 +46,7 @@ import java.util.Optional;
 @Path("/")
 @Validated
 @Slf4j
-public class CapabilitySecomController implements CapabilitySecomInterface {
+public class CapabilityController implements CapabilityServiceInterface {
 
     /**
      * The AtoN Service Data Product Location.
@@ -61,7 +61,7 @@ public class CapabilitySecomController implements CapabilitySecomInterface {
     ServiceInformationConfig serviceInformationConfig;
 
     /**
-     * GET /api/secom/v1/capability : Returns the service instance capabilities.
+     * GET /api/secom/v2/capability : Returns the service instance capabilities.
      *
      * @return the SECOM-compliant service capabilities
      */
