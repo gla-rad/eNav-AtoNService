@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.grad.eNav.atonService.controllers.secom;
+package org.grad.eNav.atonService.controllers.secom.v1;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.ws.rs.Path;
@@ -41,7 +41,6 @@ public class PingSecomController implements PingSecomInterface  {
      * holds the last private interaction time
      */
     @Tag(name = "SECOM")
-    @Override
     public PingResponseObject ping() {
 
         PingResponseObject pingResponseObject = new PingResponseObject();

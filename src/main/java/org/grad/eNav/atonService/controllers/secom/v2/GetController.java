@@ -1,11 +1,11 @@
 /*
- * Copyright (c) 2025 GLA Research and Development Directorate
+ * Copyright (c) 2024 GLA Research and Development Directorate
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *        http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -13,17 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.grad.eNav.atonService.controllers;
 
+package org.grad.eNav.atonService.controllers.secom.v2;
 
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
-//import jakarta.validation.ValidationException;
-//import jakarta.validation.constraints.Min;
-//import jakarta.validation.constraints.Pattern;
+import jakarta.validation.ValidationException;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.Pattern;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.QueryParam;
 import jakarta.xml.bind.JAXBException;
 import lombok.extern.slf4j.Slf4j;
-import org.grad.eNav.atonService.components.SecomCertificateProviderImpl;
-import org.grad.eNav.atonService.components.SecomSignatureProviderImpl;
 import org.grad.eNav.atonService.models.UnLoCodeMapEntry;
 import org.grad.eNav.atonService.models.domain.DatasetContent;
 import org.grad.eNav.atonService.models.domain.s125.S125Dataset;
@@ -32,13 +34,13 @@ import org.grad.eNav.atonService.services.S100ExchangeSetService;
 import org.grad.eNav.atonService.services.UnLoCodeService;
 import org.grad.eNav.atonService.utils.GeometryUtils;
 import org.grad.eNav.atonService.utils.WKTUtils;
-import org.grad.secom.core.base.DigitalSignatureCertificate;
-import org.grad.secom.core.base.SecomConstants;
-import org.grad.secom.core.models.*;
-import org.grad.secom.core.models.enums.ContainerTypeEnum;
-import org.grad.secom.core.models.enums.SECOM_DataProductType;
-import org.grad.secom.core.utils.SecomPemUtils;
-import org.hibernate.HibernateException;
+import org.grad.secomv2.core.interfaces.GetServiceInterface;
+import org.grad.secomv2.core.models.DataResponseObject;
+import org.grad.secomv2.core.models.GetResponseObject;
+import org.grad.secomv2.core.models.PaginationObject;
+import org.grad.secomv2.core.models.ExchangeMetadata;
+import org.grad.secomv2.core.models.enums.ContainerTypeEnum;
+import org.grad.secomv2.core.models.enums.SECOM_DataProductType;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.PrecisionModel;
@@ -47,36 +49,27 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+
 import java.io.IOException;
-import java.security.NoSuchAlgorithmException;
-import java.security.cert.CertificateEncodingException;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.*;
 
 /**
- * Alternative implementation of the GetSecomController interface
- * using Springboot to test the performance
+ * The SECOM Get Service Interface Controller.
  *
- * @author Lawrence Hughes (email: Lawrence.Hughes@gla-rad.org)
+ * @author Nikolaos Vastardis (email: Nikolaos.Vastardis@gla-rad.org)
  */
 @Component
-@RestController
+@Path("/")
 @Validated
 @Slf4j
-public class GetSecomControllerTest
-{
-    String GET_INTERFACE_PATH = "/api/objectTest";
+public class GetController implements GetServiceInterface {
+
     /**
      * The Dataset Service.
      */
@@ -95,17 +88,11 @@ public class GetSecomControllerTest
     @Autowired
     UnLoCodeService unLoCodeService;
 
-    @Autowired
-    SecomCertificateProviderImpl secomCertificateProvider;
-
-    @Autowired
-    SecomSignatureProviderImpl secomSignatureProvider;
-
     // Class Variables
     private final GeometryFactory geometryFactory = new GeometryFactory(new PrecisionModel(),4326);
 
     /**
-     * GET /api/secom/v1/dataset : Returns the S-125 dataset entries as,
+     * GET /api/secom/v2/dataset : Returns the S-125 dataset entries as,
      * specified by the SECOM standard.
      *
      * @param dataReference the object data reference
@@ -120,23 +107,19 @@ public class GetSecomControllerTest
      * @param pageSize the maximum page size
      * @return the S-125 dataset information
      */
-
-    @GetMapping(value = "/api/objectTest", produces = MediaType.APPLICATION_JSON_VALUE)
     @Tag(name = "SECOM")
     @Transactional
-    public ResponseEntity<GetResponseObject> get(@RequestParam(required = false) UUID dataReference,
-                                                 @RequestParam(required = false) ContainerTypeEnum containerType,
-                                                 @RequestParam(required = false) SECOM_DataProductType dataProductType,
-                                                 @RequestParam(required = false) String productVersion,
-                                                 @RequestParam(required = false) String geometry,
-                                                 @RequestParam(required = false) String unlocode,
-                                                 @RequestParam(required = false) Instant validFrom,
-                                                 @RequestParam(required = false) Instant validTo,
-                                                 @RequestParam(required = false) Integer page,
-                                                 @RequestParam(required = false) Integer pageSize,
-                                                 @RequestParam(required = false) Boolean sign) {
-
-        log.debug("SECOM TEST request to get page of Dataset");
+    public GetResponseObject get(@QueryParam("dataReference") @Parameter(schema = @Schema(implementation = String.class, pattern = "^[{(]?[0-9a-fA-F]{8}[-]?[0-9a-fA-F]{4}[-]?[0-9a-fA-F]{4}[-]?[0-9a-fA-F]{4}[-]?[0-9a-fA-F]{12}[)}]?$")) UUID dataReference,
+                                 @QueryParam("containerType") @Parameter(schema = @Schema(description = "Data Type requested")) ContainerTypeEnum containerType,
+                                 @QueryParam("dataProductType") @Parameter(schema = @Schema(description = "Data product type name See: https://registry.iho.int/productspec/list.do (column 'Product ID')")) SECOM_DataProductType dataProductType,
+                                 @QueryParam("productVersion") @Parameter(schema = @Schema(description = "S-100 based Product specification version")) String productVersion,
+                                 @QueryParam("geometry") @Parameter(schema = @Schema(description = "Geometry condition for geo-located information objects as WKT LineString or Polygon")) String geometry,
+                                 @QueryParam("unlocode") @Parameter(schema = @Schema(description = "See UN web page")) @Pattern(regexp = "^[a-zA-Z]{2}[a-zA-Z2-9]{3}") String unlocode,
+                                 @QueryParam("validFrom") @Parameter(schema = @Schema(implementation = String.class, description = "Time related to validity period start for information object")) Instant validFrom,
+                                 @QueryParam("validTo") @Parameter(schema = @Schema(implementation = String.class, description = "Time related to validity period end for information object")) Instant validTo,
+                                 @QueryParam("page") @Min(0) @Parameter(schema = @Schema(implementation = Integer.class, description = "Requested pagination page. Must be a positive integer >= 0..", defaultValue = "0")) Integer page,
+                                 @QueryParam("pageSize") @Min(0) @Parameter(schema = @Schema(implementation = Integer.class, description = "Requested pagination page size. Must be a positive integer >= 0.", defaultValue = "100")) Integer pageSize) {
+        log.debug("SECOM request to get page of Dataset");
         Optional.ofNullable(dataReference).ifPresent(v -> log.debug("Data Reference specified as: {}", dataReference));
         Optional.ofNullable(containerType).ifPresent(v -> log.debug("Container Type specified as: {}", containerType));
         Optional.ofNullable(dataProductType).ifPresent(v -> log.debug("Data Product Type specified as: {}", dataProductType));
@@ -144,7 +127,6 @@ public class GetSecomControllerTest
         Optional.ofNullable(unlocode).ifPresent(v -> log.debug("UNLOCODE specified as: {}", unlocode));
         Optional.ofNullable(validFrom).ifPresent(v -> log.debug("Valid From time specified as: {}", validFrom));
         Optional.ofNullable(validTo).ifPresent(v -> log.debug("Valid To time specified as: {}", validTo));
-        Optional.ofNullable(sign).ifPresent(v -> log.debug("Sign specified as: {}", sign));
 
         // Init local variables
         Geometry jtsGeometry = null;
@@ -168,8 +150,7 @@ public class GetSecomControllerTest
             try {
                 jtsGeometry = GeometryUtils.joinGeometries(jtsGeometry, WKTUtils.convertWKTtoGeometry(geometry));
             } catch (ParseException ex) {
-                log.error(ex.getMessage());
-                return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+                throw new ValidationException(ex.getMessage());
             }
         }
         if(Objects.nonNull(unlocode)) {
@@ -178,8 +159,6 @@ public class GetSecomControllerTest
                     .map(UnLoCodeMapEntry::getGeometry)
                     .orElseGet(() -> this.geometryFactory.createEmpty(0)));
         }
-
-        final Boolean signResponse = Optional.ofNullable(sign).orElse(true);
 
         // Initialise the data response object list
         final List<DataResponseObject> dataResponseObjectList = new ArrayList<>();
@@ -192,31 +171,25 @@ public class GetSecomControllerTest
                 result = this.datasetService.findAll(dataReference, jtsGeometry, validFromLdt, validToLdt, Boolean.FALSE, pageable);
             } catch (Exception ex) {
                 log.error("Error while retrieving the dataset query results: {} ", ex.getMessage());
-                return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+                throw new ValidationException(ex.getMessage());
             }
 
             // Package as S100 Datasets
             if(reqContainerType == ContainerTypeEnum.S100_DataSet) {
-                try {
-                    result.stream()
-                            .map(S125Dataset::getDatasetContent)
-                            .filter(Objects::nonNull)
-                            .map(DatasetContent::getContent)
-                            .map(String::getBytes)
-                            .map(bytes -> {
-                                // Create and populate the data response object
-                                final DataResponseObject dataResponseObject = new DataResponseObject();
-                                dataResponseObject.setData(Base64.getEncoder().encode(bytes));
-                                //dataResponseObject.setData(bytes);
+                result.stream()
+                        .map(S125Dataset::getDatasetContent)
+                        .filter(Objects::nonNull)
+                        .map(DatasetContent::getContent)
+                        .map(String::getBytes)
+                        .map(bytes -> {
+                            // Create and populate the data response object
+                            final DataResponseObject dataResponseObject = new DataResponseObject();
+                            dataResponseObject.setData(bytes);
 
-                                // And return the data response object
-                                return dataResponseObject;
-                            })
-                            .forEach(dataResponseObjectList::add);
-                } catch (HibernateException ex) {
-                    log.error("Error while retrieving the dataset query results: {} ", ex.getMessage());
-                    return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-                }
+                            // And return the data response object
+                            return dataResponseObject;
+                        })
+                        .forEach(dataResponseObjectList::add);
 
             }
             // Package as S100 Exchange Sets
@@ -227,11 +200,11 @@ public class GetSecomControllerTest
                     dataResponseObject.setData(this.s100ExchangeSetService.packageToExchangeSet(result.getContent(), validFromLdt, validToLdt));
                 } catch (IOException | JAXBException ex) {
                     log.error("Error while packaging the exchange set response: {} ", ex.getMessage());
-                    return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+                    throw new ValidationException(ex.getMessage());
                 }
 
                 // Flag that this is compressed in the exchange metadata
-                dataResponseObject.setExchangeMetadata(new SECOM_ExchangeMetadataObject());
+                dataResponseObject.setExchangeMetadata(new ExchangeMetadata());
                 dataResponseObject.getExchangeMetadata().setCompressionFlag(Boolean.TRUE);
 
                 // And add it to the data response list
@@ -246,31 +219,9 @@ public class GetSecomControllerTest
                 dataResponseObjectList.size(),
                 Optional.ofNullable(pageSize).orElse(Integer.MAX_VALUE)));
 
-        if(signResponse) {
-            // Sign the Response object
-            getResponseObject.getDataResponseObject().forEach(data -> {
-
-                DigitalSignatureCertificate certificate = secomCertificateProvider.getDigitalSignatureCertificate();
-                byte[] signature = secomSignatureProvider.generateSignature(certificate, secomSignatureProvider.getSignatureAlgorithm(), data.getData());
-                data.getExchangeMetadata().setDataProtection(false);
-                data.getExchangeMetadata().setProtectionScheme("SECOM");
-                data.getExchangeMetadata().setDigitalSignatureReference(secomSignatureProvider.getSignatureAlgorithm());
-                DigitalSignatureValue digitalSignatureValue = new DigitalSignatureValue();
-
-                try {
-                    digitalSignatureValue.setDigitalSignature(HexFormat.of().formatHex(signature).toUpperCase());
-                    digitalSignatureValue.setPublicRootCertificateThumbprint(SecomPemUtils.getCertThumbprint(certificate.getRootCertificate(), SecomConstants.CERTIFICATE_THUMBPRINT_HASH));
-                    digitalSignatureValue.setPublicCertificate(Base64.getEncoder().encodeToString(certificate.getCertificate().getEncoded()));
-                } catch (CertificateEncodingException | NoSuchAlgorithmException e) {
-                    throw new RuntimeException(e);
-                }
-
-                data.getExchangeMetadata().setDigitalSignatureValue(digitalSignatureValue);
-
-            });
-        }
         // And final return the Get Response Object
-        return ResponseEntity.ok(getResponseObject);
+        return getResponseObject;
 
     }
+
 }
