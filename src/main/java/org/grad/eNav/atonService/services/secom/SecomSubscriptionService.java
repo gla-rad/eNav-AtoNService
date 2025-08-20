@@ -345,16 +345,29 @@ public class SecomSubscriptionService implements MessageHandler {
         final SubscriptionRequest result = this.secomSubscriptionRepo.save(subscriptionRequest);
 
         // Inform to the subscription client (identify through MRN) - asynchronous
-        this.secomSubscriptionNotificationService.sendNotification(subscriptionRequest.getClientMrn(),
-                result.getUuid(),
-                SubscriptionEventEnum.SUBSCRIPTION_CREATED)
-                .whenCompleteAsync((snr, ex) -> {
-                    if(ex != null) {
-                        log.error("Notification to client {} failed with message {}", mrn, ex.getMessage());
-                    } else {
-                        log.debug("Sent notification to client {} for subscription {}", mrn, result.getUuid());
-                    }
-                });
+        if(Objects.isNull(subscriptionRequest.getCallbackEndpoint())) {
+            this.secomSubscriptionNotificationService.sendNotification(subscriptionRequest.getClientMrn(),
+                            result.getUuid(),
+                            SubscriptionEventEnum.SUBSCRIPTION_CREATED)
+                    .whenCompleteAsync((snr, ex) -> {
+                        if (ex != null) {
+                            log.error("Notification to client {} failed with message {}", mrn, ex.getMessage());
+                        } else {
+                            log.debug("Sent notification to client {} for subscription {}", mrn, result.getUuid());
+                        }
+                    });
+        } else {
+            this.secomSubscriptionNotificationService.sendNotification(subscriptionRequest.getCallbackEndpoint(),
+                            result.getUuid(),
+                            SubscriptionEventEnum.SUBSCRIPTION_CREATED)
+                    .whenCompleteAsync((snr, ex) -> {
+                        if (ex != null) {
+                            log.error("Notification to client {} with URL {} failed with message {}", mrn, subscriptionRequest.getCallbackEndpoint(), ex.getMessage());
+                        } else {
+                            log.debug("Sent notification to client {} with URL {} for subscription {}", mrn, subscriptionRequest.getCallbackEndpoint(), result.getUuid());
+                        }
+                    });
+        }
 
         // Now save for each type
         return result;
@@ -379,16 +392,29 @@ public class SecomSubscriptionService implements MessageHandler {
         this.secomSubscriptionRepo.delete(subscriptionRequest);
 
         // Inform to the subscription client (identify through MRN) - asynchronous
-        this.secomSubscriptionNotificationService.sendNotification(subscriptionRequest.getClientMrn(),
-                subscriptionRequest.getUuid(),
-                SubscriptionEventEnum.SUBSCRIPTION_REMOVED)
-                .whenCompleteAsync((snr, ex) -> {
-                    if(ex != null) {
-                        log.error("Notification to client {} failed with message {}", subscriptionRequest.getClientMrn(), ex.getMessage());
-                    } else {
-                        log.debug("Sent notification to client {} for subscription {}", subscriptionRequest.getClientMrn(), subscriptionRequest.getUuid());
-                    }
-                });;
+        if(Objects.isNull(subscriptionRequest.getCallbackEndpoint())) {
+            this.secomSubscriptionNotificationService.sendNotification(subscriptionRequest.getClientMrn(),
+                            subscriptionRequest.getUuid(),
+                            SubscriptionEventEnum.SUBSCRIPTION_REMOVED)
+                    .whenCompleteAsync((snr, ex) -> {
+                        if (ex != null) {
+                            log.error("Notification to client {} failed with message {}", subscriptionRequest.getClientMrn(), ex.getMessage());
+                        } else {
+                            log.debug("Sent notification to client {} for subscription {}", subscriptionRequest.getClientMrn(), subscriptionRequest.getUuid());
+                        }
+                    });
+        } else {
+            this.secomSubscriptionNotificationService.sendNotification(subscriptionRequest.getCallbackEndpoint(),
+                            subscriptionRequest.getUuid(),
+                            SubscriptionEventEnum.SUBSCRIPTION_REMOVED)
+                    .whenCompleteAsync((snr, ex) -> {
+                        if (ex != null) {
+                            log.error("Notification to client {} with URL {} failed with message {}", subscriptionRequest.getClientMrn(), subscriptionRequest.getCallbackEndpoint(), ex.getMessage());
+                        } else {
+                            log.debug("Sent notification to client {} with URL for subscription {}", subscriptionRequest.getClientMrn(), subscriptionRequest.getCallbackEndpoint(), subscriptionRequest.getUuid());
+                        }
+                    });
+        }
 
         // If all OK, then return the subscription UUID
         return subscriptionRequest.getUuid();
@@ -413,7 +439,9 @@ public class SecomSubscriptionService implements MessageHandler {
         }
 
         // Identify the subscription client if possible through the client MRN
-        final SecomClient secomClient = this.secomService.getClient(subscriptionRequest.getClientMrn());
+        final SecomClient secomClient = Objects.isNull(subscriptionRequest.getCallbackEndpoint()) ?
+                this.secomService.getClient(subscriptionRequest.getClientMrn()) :
+                this.secomService.getClient(subscriptionRequest.getCallbackEndpoint());
 
         // Build the data envelope
         EnvelopeUploadObject envelopeUploadObject = new EnvelopeUploadObject();

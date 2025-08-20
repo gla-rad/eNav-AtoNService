@@ -16,6 +16,7 @@
 
 package org.grad.eNav.atonService.services.secom;
 
+import jakarta.validation.constraints.NotNull;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.grad.secomv2.core.exceptions.SecomNotFoundException;
@@ -147,6 +148,29 @@ public class SecomService {
         // Now construct and return a SECOM client for the discovered URI
         try {
             return new SecomClient(new URL(instance.getEndpointUri()), this.secomConfigProperties);
+        } catch (IOException | KeyStoreException | NoSuchAlgorithmException | CertificateException | UnrecoverableKeyException ex) {
+            log.error(ex.getMessage(), ex);
+            throw new SecomValidationException(ex.getMessage());
+        }
+    }
+
+    /**
+     * This function allows the definition of SECOM clients without accessing
+     * the SECOM Service Registry. By simply providing the callback URL of the
+     * client, along with the standard SECOM configuration properties, we can
+     * construct a valid SECOM client.
+     *
+     * @param url the URL of the SECOM client
+     * @return the constucted SECOM client for the provided URL
+     */
+    public SecomClient getClient(@NotNull URL url) {
+        // Validate the MRN
+        Optional.ofNullable(url)
+                .orElseThrow(() -> new SecomValidationException("Cannot request SECOM client for an empty/invalid URL"));
+
+        // Now construct and return a SECOM client for the discovered URI
+        try {
+            return new SecomClient(url, this.secomConfigProperties);
         } catch (IOException | KeyStoreException | NoSuchAlgorithmException | CertificateException | UnrecoverableKeyException ex) {
             log.error(ex.getMessage(), ex);
             throw new SecomValidationException(ex.getMessage());

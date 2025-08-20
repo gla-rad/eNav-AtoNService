@@ -65,6 +65,8 @@ import reactor.core.publisher.Mono;
 
 import java.io.IOException;
 import java.math.BigInteger;
+import java.net.MalformedURLException;
+import java.net.URI;
 import java.security.PublicKey;
 import java.security.cert.CertificateEncodingException;
 import java.security.cert.X509Certificate;
@@ -599,6 +601,35 @@ class SecomV2ControllerTest {
     @Test
     void testSubscription() {
         doReturn(savedSubscriptionRequest).when(this.secomSubscriptionService).save(any(), any());
+
+        webTestClient.post()
+                .uri("/api/secom" + SUBSCRIPTION_INTERFACE_PATH)
+                .header(SecomRequestHeaders.MRN_HEADER, "mrn")
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(BodyInserters.fromPublisher(Mono.just(subscriptionRequestObject), SubscriptionRequestObject.class))
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(SubscriptionResponseObject.class)
+                .consumeWith(response -> {
+                    SubscriptionResponseObject subscriptionResponseObject = response.getResponseBody();
+                    assertNotNull(subscriptionResponseObject);
+                    assertEquals(savedSubscriptionRequest.getUuid(), subscriptionResponseObject.getSubscriptionIdentifier());
+                    assertEquals("Subscription successfully created", subscriptionResponseObject.getMessage());
+                });
+    }
+
+    /**
+     * Test that the SECOM Subscription interface is configured properly even
+     * when a callback URL is provided, and returns the expected Subscription
+     * Response Object output.
+     */
+    @Test
+    void testSubscriptionWithCallback() throws MalformedURLException {
+        doReturn(savedSubscriptionRequest).when(this.secomSubscriptionService).save(any(), any());
+
+        // Set a callback URL
+        this.subscriptionRequestObject.getEnvelope().setCallbackEndpoint(URI.create("http://localhost").toURL());
+        this.subscriptionRequestObject.getEnvelope().setPushAll(Boolean.TRUE);
 
         webTestClient.post()
                 .uri("/api/secom" + SUBSCRIPTION_INTERFACE_PATH)

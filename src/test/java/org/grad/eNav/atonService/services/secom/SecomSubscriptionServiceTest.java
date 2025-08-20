@@ -56,6 +56,9 @@ import org.springframework.messaging.MessageHeaders;
 
 import java.io.IOException;
 import java.math.BigInteger;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -477,7 +480,7 @@ class SecomSubscriptionServiceTest {
         // Mock the HTTP servlet request
         final HttpServletRequest httpServletRequestMock = mock(HttpServletRequest.class);
         doReturn(this.existingSubscriptionRequest).when(this.secomSubscriptionRepo).save(any());
-        doReturn(mock(CompletableFuture.class)).when(this.secomSubscriptionNotificationService).sendNotification(any(), any(), any());
+        doReturn(mock(CompletableFuture.class)).when(this.secomSubscriptionNotificationService).sendNotification(any(String.class), any(), any());
 
         // Perform the service call
         SubscriptionRequest result = this.secomSubscriptionService.save("urn:mrn:org:test", this.newSubscriptionRequest);
@@ -500,6 +503,42 @@ class SecomSubscriptionServiceTest {
     }
 
     /**
+     * Test that we can successfully create a new subscription request, which
+     * also has the callback endpoint specified.
+     */
+    @Test
+    void testSaveWithCallbackEndpoint() throws MalformedURLException {
+        // Mock the HTTP servlet request
+        final HttpServletRequest httpServletRequestMock = mock(HttpServletRequest.class);
+        doReturn(this.existingSubscriptionRequest).when(this.secomSubscriptionRepo).save(any());
+        doReturn(mock(CompletableFuture.class)).when(this.secomSubscriptionNotificationService).sendNotification(any(URL.class), any(), any());
+
+        // Specify the subscription request callback endpoint
+        this.newSubscriptionRequest.setCallbackEndpoint(URI.create("http://localhost").toURL());
+        this.existingSubscriptionRequest.setCallbackEndpoint(this.newSubscriptionRequest.getCallbackEndpoint());
+
+        // Perform the service call
+        SubscriptionRequest result = this.secomSubscriptionService.save("urn:mrn:org:test", this.newSubscriptionRequest);
+
+        // Make sure everything seems OK
+        assertNotNull(result);
+        assertEquals(this.existingSubscriptionRequest.getUuid(), result.getUuid());
+        assertEquals(this.existingSubscriptionRequest.getContainerType(), result.getContainerType());
+        assertEquals(this.existingSubscriptionRequest.getDataProductType(), result.getDataProductType());
+        assertEquals(this.existingSubscriptionRequest.getSubscriptionPeriodStart(), result.getSubscriptionPeriodStart());
+        assertEquals(this.existingSubscriptionRequest.getSubscriptionPeriodEnd(), result.getSubscriptionPeriodEnd());
+        assertEquals(this.existingSubscriptionRequest.getGeometry(), result.getGeometry());
+        assertEquals(this.existingSubscriptionRequest.getClientMrn(), result.getClientMrn());
+        assertEquals(this.existingSubscriptionRequest.getCallbackEndpoint(), result.getCallbackEndpoint());
+
+        // Make sure the subscription notification was also sent
+        verify(this.secomSubscriptionNotificationService, times(1)).sendNotification(
+                eq(this.existingSubscriptionRequest.getCallbackEndpoint()),
+                eq(this.existingSubscriptionRequest.getUuid()),
+                eq(SubscriptionEventEnum.SUBSCRIPTION_CREATED));
+    }
+
+    /**
      * Test that if no MRN is provided in the HTTP request header, then the
      * subscription request will be declined with a SECOMValidationException.
      */
@@ -509,7 +548,7 @@ class SecomSubscriptionServiceTest {
         assertThrows(SecomValidationException.class, () -> this.secomSubscriptionService.save(null, this.newSubscriptionRequest));
 
         // Make sure no subscription notifications were sent
-        verify(this.secomSubscriptionNotificationService, never()).sendNotification(any(), any(), any());
+        verify(this.secomSubscriptionNotificationService, never()).sendNotification(any(String.class), any(), any());
     }
 
     /**
@@ -518,7 +557,7 @@ class SecomSubscriptionServiceTest {
     @Test
     void testDelete() {
         doReturn(Optional.of(this.existingSubscriptionRequest)).when(this.secomSubscriptionRepo).findById(this.existingSubscriptionRequest.getUuid());
-        doReturn(mock(CompletableFuture.class)).when(this.secomSubscriptionNotificationService).sendNotification(any(), any(), any());
+        doReturn(mock(CompletableFuture.class)).when(this.secomSubscriptionNotificationService).sendNotification(any(String.class), any(), any());
 
         // Perform the service call
         UUID result = this.secomSubscriptionService.delete(this.existingSubscriptionRequest.getUuid());
@@ -539,6 +578,36 @@ class SecomSubscriptionServiceTest {
     }
 
     /**
+     * Test that we can successfully delete an existing subscription request,
+     *  which also has the callback endpoint specified.
+     */
+    @Test
+    void testDeleteWithCallbackEndpoint() throws MalformedURLException {
+        doReturn(Optional.of(this.existingSubscriptionRequest)).when(this.secomSubscriptionRepo).findById(this.existingSubscriptionRequest.getUuid());
+        doReturn(mock(CompletableFuture.class)).when(this.secomSubscriptionNotificationService).sendNotification(any(URL.class), any(), any());
+
+        // Specify the subscription request callback endpoint
+        this.existingSubscriptionRequest.setCallbackEndpoint(URI.create("http://localhost").toURL());
+
+        // Perform the service call
+        UUID result = this.secomSubscriptionService.delete(this.existingSubscriptionRequest.getUuid());
+
+        // Make sure everything seems OK
+        assertNotNull(result);
+        assertEquals(this.existingSubscriptionRequest.getUuid(), result);
+        verify(this.secomSubscriptionNotificationService, times(1)).sendNotification(
+                eq(this.existingSubscriptionRequest.getCallbackEndpoint()),
+                eq(this.existingSubscriptionRequest.getUuid()),
+                eq(SubscriptionEventEnum.SUBSCRIPTION_REMOVED));
+
+        // Make sure the subscription notification was also sent
+        verify(this.secomSubscriptionNotificationService, times(1)).sendNotification(
+                eq(this.existingSubscriptionRequest.getCallbackEndpoint()),
+                eq(this.existingSubscriptionRequest.getUuid()),
+                eq(SubscriptionEventEnum.SUBSCRIPTION_REMOVED));
+    }
+
+    /**
      * Test that if we try to delete a subscription that does not exist in the
      * database, a SecomNotFoundException will be thrown, which should then
      * be handled by the SECOM controller interface.
@@ -551,7 +620,7 @@ class SecomSubscriptionServiceTest {
         assertThrows(SecomNotFoundException.class, () -> this.secomSubscriptionService.delete(this.existingSubscriptionRequest.getUuid()));
 
         // Make sure no subscription notifications were sent
-        verify(this.secomSubscriptionNotificationService, never()).sendNotification(any(), any(), any());
+        verify(this.secomSubscriptionNotificationService, never()).sendNotification(any(String.class), any(), any());
     }
 
     /**
@@ -593,6 +662,42 @@ class SecomSubscriptionServiceTest {
     /**
      * Test that for a given subscription and a list of received Aids to
      * Navigation messages, this function will send the appropriate message to
+     * the SECOM client, for which the callback endpoint is already provided.
+     */
+    @Test
+    void testSendToSubscriptionWithCallbackEndpointDataset() throws MalformedURLException {
+        // Specify that this is for an S-100 dataset
+        this.existingSubscriptionRequest.setContainerType(ContainerTypeEnum.S100_DataSet);
+        this.existingSubscriptionRequest.setCallbackEndpoint(URI.create("http://localhost").toURL());
+
+        // Mock a SECOM client
+        final SecomClient secomClient = mock(SecomClient.class);
+        doReturn(secomClient).when(this.secomService).getClient(this.existingSubscriptionRequest.getCallbackEndpoint());
+
+        // Perform the service call
+        this.secomSubscriptionService.sendToSubscription(this.existingSubscriptionRequest, this.s125Dataset);
+
+        // Verify that we upload the constructed SECOM upload object
+        ArgumentCaptor<UploadObject> uploadArgument = ArgumentCaptor.forClass(UploadObject.class);
+        verify(secomClient).upload(uploadArgument.capture());
+
+        // Verify that the constructed object seems valid
+        assertNotNull(uploadArgument.getValue());
+        assertNotNull(uploadArgument.getValue().getEnvelope());
+        assertTrue(uploadArgument.getValue().getEnvelope().getData().length > 0);
+        assertEquals(SECOM_DataProductType.S125, uploadArgument.getValue().getEnvelope().getDataProductType());
+        assertEquals(Boolean.TRUE, uploadArgument.getValue().getEnvelope().getFromSubscription());
+        assertEquals(AckRequestEnum.DELIVERED_ACK_REQUESTED, uploadArgument.getValue().getEnvelope().getAckRequest());
+        assertNotNull(uploadArgument.getValue().getEnvelope().getTransactionIdentifier());
+
+        // Verify that we updated the timestamp of the subscription
+        verify(this.secomSubscriptionRepo, times(1)).save(any());
+        assertNotNull(this.existingSubscriptionRequest.getUpdatedAt());
+    }
+
+    /**
+     * Test that for a given subscription and a list of received Aids to
+     * Navigation messages, this function will send the appropriate message to
      * the SECOM client discovered through the SECOM service, packaged as an
      * S-100 exchange set.
      */
@@ -605,6 +710,44 @@ class SecomSubscriptionServiceTest {
         // Mock a SECOM client
         final SecomClient secomClient = mock(SecomClient.class);
         doReturn(secomClient).when(this.secomService).getClient(this.existingSubscriptionRequest.getClientMrn());
+
+        // Perform the service call
+        this.secomSubscriptionService.sendToSubscription(this.existingSubscriptionRequest, this.s125Dataset);
+
+        // Verify that we upload the constructed SECOM upload object
+        ArgumentCaptor<UploadObject> uploadArgument = ArgumentCaptor.forClass(UploadObject.class);
+        verify(secomClient).upload(uploadArgument.capture());
+
+        // Verify that the constructed object seems valid
+        assertNotNull(uploadArgument.getValue());
+        assertNotNull(uploadArgument.getValue().getEnvelope());
+        assertTrue(uploadArgument.getValue().getEnvelope().getData().length > 0);
+        assertEquals("exchangeSet", new String(uploadArgument.getValue().getEnvelope().getData(), StandardCharsets.UTF_8));
+        assertEquals(SECOM_DataProductType.S125, uploadArgument.getValue().getEnvelope().getDataProductType());
+        assertEquals(Boolean.TRUE, uploadArgument.getValue().getEnvelope().getFromSubscription());
+        assertEquals(AckRequestEnum.DELIVERED_ACK_REQUESTED, uploadArgument.getValue().getEnvelope().getAckRequest());
+        assertNotNull(uploadArgument.getValue().getEnvelope().getTransactionIdentifier());
+
+        // Verify that we updated the timestamp of the subscription
+        verify(this.secomSubscriptionRepo, times(1)).save(any());
+        assertNotNull(this.existingSubscriptionRequest.getUpdatedAt());
+    }
+
+    /**
+     * Test that for a given subscription and a list of received Aids to
+     * Navigation messages, this function will send the appropriate message to
+     * the SECOM client, for which the callback endpoint is already provided.
+     */
+    @Test
+    void testSendToSubscriptionWithCallbackEndpointExchangeSet() throws JAXBException, IOException {
+        // Specify that this is for an S-100 exchange set and mock the generation
+        this.existingSubscriptionRequest.setContainerType(ContainerTypeEnum.S100_ExchangeSet);
+        this.existingSubscriptionRequest.setCallbackEndpoint(URI.create("http://localhost").toURL());
+        doReturn("exchangeSet".getBytes()).when(this.s100ExchangeSetService).packageToExchangeSet(any(), any(), any());
+
+        // Mock a SECOM client
+        final SecomClient secomClient = mock(SecomClient.class);
+        doReturn(secomClient).when(this.secomService).getClient(this.existingSubscriptionRequest.getCallbackEndpoint());
 
         // Perform the service call
         this.secomSubscriptionService.sendToSubscription(this.existingSubscriptionRequest, this.s125Dataset);
