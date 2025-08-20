@@ -37,11 +37,7 @@ public class SecomV2OpenApiInfoProviderImpl implements SecomV2OpenApiInfoProvide
                         .version("v0.0.1")
                         .contact(new Contact().email("Nikolaos.Vastardis@gla-rad.org"))
                         .license(new License().name("Apache 2.0").url("http://www.apache.org/licenses/LICENSE-2.0.html")))
-                .servers(Arrays.asList(new Server[]{
-                        new Server().url("https://rnavlab.gla-rad.org/enav/aton-service/api/secom"),
-                        new Server().url("https://enav.grad-rrnav.pub/enav/aton-service/api/secom"),
-                        new Server().url("http://localhost:8766/api/secom")
-                }))
+                .servers(Arrays.asList(new Server().url("/api/secom")))
                 .externalDocs(new ExternalDocumentation()
                         .description("SpringShop Wiki Documentation")
                         .url("https://springshop.wiki.github.org/docs"));
