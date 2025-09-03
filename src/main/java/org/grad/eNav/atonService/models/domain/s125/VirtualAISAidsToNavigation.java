@@ -16,41 +16,27 @@
 
 package org.grad.eNav.atonService.models.domain.s125;
 
-import _int.iho.s125.gml.cs0._1.StatusType;
-import _int.iho.s125.gml.cs0._1.VirtualAISAidToNavigationTypeType;
-import jakarta.persistence.ElementCollection;
+import _int.iho.s_125.gml.cs0._1.VirtualAISAidToNavigationTypeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
-
-import java.math.BigDecimal;
-import java.math.BigInteger;
-import java.util.List;
 
 /**
  * The S-125 Virtual AIS Aids to Navigation Entity Class.
  * <p>
  * This is the basic class for implementing the S-125-compatible Virtual AIS
  * Aids to Navigation type. It is modelled as an entity that extends the
- * {@link AISAidToNavigation} super class.
+ * {@link ElectronicAton} super class.
  *
  * @author Nikolaos Vastardis (email: Nikolaos.Vastardis@gla-rad.org)
- * @see _int.iho.s125.gml.cs0._1.VirtualAISAidToNavigation
+ * @see _int.iho.s_125.gml.cs0._1.VirtualAISAidToNavigation
  */
 @Entity
-public class VirtualAISAidToNavigation extends AISAidToNavigation {
+public class VirtualAISAidsToNavigation extends ElectronicAton {
 
     // Class Variables
     @Enumerated(EnumType.STRING)
     private VirtualAISAidToNavigationTypeType virtualAISAidToNavigationType;
-
-    private BigDecimal estimatedRangeOfTransmission;
-
-    private BigInteger mmsiCode;
-
-    @Enumerated(EnumType.STRING)
-    @ElementCollection(targetClass = StatusType.class)
-    private List<StatusType> statuses;
 
     /**
      * Gets virtual ais aid to navigation type.
@@ -70,57 +56,4 @@ public class VirtualAISAidToNavigation extends AISAidToNavigation {
         this.virtualAISAidToNavigationType = virtualAISAidToNavigationType;
     }
 
-    /**
-     * Gets estimated range of transmission.
-     *
-     * @return the estimated range of transmission
-     */
-    public BigDecimal getEstimatedRangeOfTransmission() {
-        return estimatedRangeOfTransmission;
-    }
-
-    /**
-     * Sets estimated range of transmission.
-     *
-     * @param estimatedRangeOfTransmission the estimated range of transmission
-     */
-    public void setEstimatedRangeOfTransmission(BigDecimal estimatedRangeOfTransmission) {
-        this.estimatedRangeOfTransmission = estimatedRangeOfTransmission;
-    }
-
-    /**
-     * Gets mmsi code.
-     *
-     * @return the mmsi code
-     */
-    public BigInteger getMmsiCode() {
-        return mmsiCode;
-    }
-
-    /**
-     * Sets mmsi code.
-     *
-     * @param mmsiCode the mmsi code
-     */
-    public void setMmsiCode(BigInteger mmsiCode) {
-        this.mmsiCode = mmsiCode;
-    }
-
-    /**
-     * Gets statuses.
-     *
-     * @return the statuses
-     */
-    public List<StatusType> getStatuses() {
-        return statuses;
-    }
-
-    /**
-     * Sets statuses.
-     *
-     * @param statuses the statuses
-     */
-    public void setStatuses(List<StatusType> statuses) {
-        this.statuses = statuses;
-    }
 }

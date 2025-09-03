@@ -19,6 +19,7 @@ package org.grad.eNav.atonService.models.domain.s125;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 
+import java.io.Serializable;
 import java.math.BigInteger;
 
 /**
@@ -29,25 +30,34 @@ import java.math.BigInteger;
  * and simple text (along with the respective language).
  *
  * @author Nikolaos Vastardis (email: Nikolaos.Vastardis@gla-rad.org)
- * @see _int.iho.s125.gml.cs0._1.InformationType
+ * @see _int.iho.s_125.gml.cs0._1.InformationType
  */
 @Entity
-public class Information {
+public class Information implements Serializable {
 
     // Class Variables
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "information_generator")
     @SequenceGenerator(name="information_generator", sequenceName = "information_seq", allocationSize=1)
     private BigInteger id;
+
     private String fileLocator;
+
     private String fileReference;
+
     private String headline;
+
     private String language;
+
     private String text;
 
     @JsonBackReference
     @ManyToOne
     private AidsToNavigation feature;
+
+    @JsonBackReference
+    @ManyToOne
+    private DangerousFeature dangerousFeature;
 
     /**
      * Gets id.
@@ -173,5 +183,23 @@ public class Information {
      */
     public void setFeature(AidsToNavigation feature) {
         this.feature = feature;
+    }
+
+    /**
+     * Gets dangerous feature.
+     *
+     * @return the dangerous feature
+     */
+    public DangerousFeature getDangerousFeature() {
+        return dangerousFeature;
+    }
+
+    /**
+     * Sets dangerous feature.
+     *
+     * @param dangerousFeature the dangerous feature
+     */
+    public void setDangerousFeature(DangerousFeature dangerousFeature) {
+        this.dangerousFeature = dangerousFeature;
     }
 }

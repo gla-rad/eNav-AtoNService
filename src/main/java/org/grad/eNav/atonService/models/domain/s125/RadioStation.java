@@ -16,12 +16,12 @@
 
 package org.grad.eNav.atonService.models.domain.s125;
 
-import _int.iho.s125.gml.cs0._1.CategoryOfRadioStationType;
-import _int.iho.s125.gml.cs0._1.StatusType;
+import _int.iho.s_125.gml.cs0._1.CategoryOfRadioStationType;
+import _int.iho.s_125.gml.cs0._1.StatusType;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 
-import java.util.List;
+import java.util.Set;
 
 /**
  * The S-125 Radio Station Entity Class.
@@ -31,7 +31,7 @@ import java.util.List;
  * class.
  *
  * @author Nikolaos Vastardis (email: Nikolaos.Vastardis@gla-rad.org)
- * @see _int.iho.s125.gml.cs0._1.RadioStation
+ * @see _int.iho.s_125.gml.cs0._1.RadioStation
  */
 @Entity
 public class RadioStation extends Equipment {
@@ -45,7 +45,7 @@ public class RadioStation extends Equipment {
 
     @JsonManagedReference
     @ManyToMany(mappedBy = "broadcastBy")
-    private List<AISAidToNavigation> broadcasts;
+    private Set<ElectronicAton> broadcasts;
 
     /**
      * Gets category of radio station.
@@ -88,7 +88,7 @@ public class RadioStation extends Equipment {
      *
      * @return the broadcasts
      */
-    public List<AISAidToNavigation> getBroadcasts() {
+    public Set<ElectronicAton> getBroadcasts() {
         return broadcasts;
     }
 
@@ -97,7 +97,7 @@ public class RadioStation extends Equipment {
      *
      * @param broadcasts the broadcasts
      */
-    public void setBroadcasts(List<AISAidToNavigation> broadcasts) {
+    public void setBroadcasts(Set<ElectronicAton> broadcasts) {
         this.broadcasts = broadcasts;
     }
 }

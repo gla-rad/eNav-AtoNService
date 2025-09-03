@@ -16,11 +16,11 @@
 
 package org.grad.eNav.atonService.models.domain.s125;
 
-import _int.iho.s125.gml.cs0._1.CategoryOfNavigationLineType;
-import _int.iho.s125.gml.cs0._1.StatusType;
+import _int.iho.s_125.gml.cs0._1.CategoryOfNavigationLineType;
+import _int.iho.s_125.gml.cs0._1.StatusType;
 import jakarta.persistence.*;
 import java.math.BigDecimal;
-import java.util.List;
+import java.util.Set;
 
 /**
  * The S-125 Navigation Line Entity Class.
@@ -30,7 +30,7 @@ import java.util.List;
  * super class.
  *
  * @author Nikolaos Vastardis (email: Nikolaos.Vastardis@gla-rad.org)
- * @see _int.iho.s125.gml.cs0._1.NavigationLine
+ * @see _int.iho.s_125.gml.cs0._1.NavigationLine
  */
 @Entity
 public class NavigationLine extends AidsToNavigation {
@@ -39,14 +39,14 @@ public class NavigationLine extends AidsToNavigation {
     @Enumerated(EnumType.STRING)
     private CategoryOfNavigationLineType categoryOfNavigationLine;
 
-    private BigDecimal orientation;
+    private Orientation orientation;
 
     @Enumerated(EnumType.STRING)
     @ElementCollection(targetClass = StatusType.class)
-    private List<StatusType> statuses;
+    private Set<StatusType> statuses;
 
     @ManyToMany(mappedBy = "navigationLines")
-    private List<RecommendedTrack> navigableTracks;
+    private Set<RecommendedTrack> navigableTracks;
 
     /**
      * Gets category of navigation line.
@@ -71,7 +71,7 @@ public class NavigationLine extends AidsToNavigation {
      *
      * @return the orientation
      */
-    public BigDecimal getOrientation() {
+    public Orientation getOrientation() {
         return orientation;
     }
 
@@ -80,7 +80,7 @@ public class NavigationLine extends AidsToNavigation {
      *
      * @param orientation the orientation
      */
-    public void setOrientation(BigDecimal orientation) {
+    public void setOrientation(Orientation orientation) {
         this.orientation = orientation;
     }
 
@@ -89,7 +89,7 @@ public class NavigationLine extends AidsToNavigation {
      *
      * @return the statuses
      */
-    public List<StatusType> getStatuses() {
+    public Set<StatusType> getStatuses() {
         return statuses;
     }
 
@@ -98,7 +98,7 @@ public class NavigationLine extends AidsToNavigation {
      *
      * @param statuses the statuses
      */
-    public void setStatuses(List<StatusType> statuses) {
+    public void setStatuses(Set<StatusType> statuses) {
         this.statuses = statuses;
     }
 
@@ -107,7 +107,7 @@ public class NavigationLine extends AidsToNavigation {
      *
      * @return the navigable tracks
      */
-    public List<RecommendedTrack> getNavigableTracks() {
+    public Set<RecommendedTrack> getNavigableTracks() {
         return navigableTracks;
     }
 
@@ -116,7 +116,7 @@ public class NavigationLine extends AidsToNavigation {
      *
      * @param navigableTracks the navigable tracks
      */
-    public void setNavigableTracks(List<RecommendedTrack> navigableTracks) {
+    public void setNavigableTracks(Set<RecommendedTrack> navigableTracks) {
         this.navigableTracks = navigableTracks;
     }
 }

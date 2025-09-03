@@ -16,10 +16,10 @@
 
 package org.grad.eNav.atonService.services;
 
-import _int.iho.s125.gml.cs0._1.CategoryOfAggregationType;
+import _int.iho.s_125.gml.cs0._1.CategoryOfAggregationType;
 import org.grad.eNav.atonService.exceptions.DataNotFoundException;
 import org.grad.eNav.atonService.models.domain.s125.*;
-import org.grad.eNav.atonService.repos.AggregationRepo;
+import org.grad.eNav.atonService.repos.AtonAggregationRepo;
 import org.grad.eNav.atonService.repos.AidsToNavigationRepo;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -43,7 +43,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-class AggregationServiceTest {
+class AtonAggregationServiceTest {
 
     /**
      * The Tested Service.
@@ -56,7 +56,7 @@ class AggregationServiceTest {
      * The Aggregation Repo mock.
      */
     @Mock
-    AggregationRepo aggregationRepo;
+    AtonAggregationRepo atonAggregationRepo;
 
     /**
      * The Aids to Navigation Repo mock.
@@ -65,7 +65,7 @@ class AggregationServiceTest {
     AidsToNavigationRepo aidsToNavigationRepo;
 
     // Test Variables
-    private Aggregation aggregation;
+    private AtonAggregation aggregation;
 
     /**
      * Common setup for all the tests.
@@ -75,9 +75,9 @@ class AggregationServiceTest {
         // Create a temp geometry factory to get a test geometries
         GeometryFactory factory = new GeometryFactory(new PrecisionModel(), 4326);
 
-        this.aggregation = new Aggregation();
+        this.aggregation = new AtonAggregation();
         this.aggregation.setId(BigInteger.ONE);
-        this.aggregation.setAggregationType(CategoryOfAggregationType.BUOY_MOORING);
+        this.aggregation.setAggregationType(CategoryOfAggregationType.LEADING_LINE);
 
         // Initialise the AtoN messages list
         for(long i=0; i<5; i++) {
@@ -103,10 +103,10 @@ class AggregationServiceTest {
      */
     @Test
     void testSave() {
-        doReturn(this.aggregation).when(this.aggregationRepo).save(any());
+        doReturn(this.aggregation).when(this.atonAggregationRepo).save(any());
 
         // Perform the service call
-        Aggregation result = this.aggregationService.save(this.aggregation);
+        AtonAggregation result = this.aggregationService.save(this.aggregation);
 
         // Test the result
         assertNotNull(result);
@@ -117,7 +117,7 @@ class AggregationServiceTest {
         assertTrue(result.getPeers().containsAll(this.aggregation.getPeers()));
 
         // Also, that a saving call took place in the repository
-        verify(this.aggregationRepo, times(1)).save(this.aggregation);
+        verify(this.atonAggregationRepo, times(1)).save(this.aggregation);
     }
 
     /**
@@ -125,14 +125,14 @@ class AggregationServiceTest {
      */
     @Test
     void testDelete() throws DataNotFoundException {
-        doReturn(Optional.of(this.aggregation)).when(this.aggregationRepo).findById(this.aggregation.getId());
-        doNothing().when(this.aggregationRepo).delete(this.aggregation);
+        doReturn(Optional.of(this.aggregation)).when(this.atonAggregationRepo).findById(this.aggregation.getId());
+        doNothing().when(this.atonAggregationRepo).delete(this.aggregation);
 
         // Perform the service call
         this.aggregationService.delete(this.aggregation.getId());
 
         // Verify that a deletion call took place in the repository
-        verify(this.aggregationRepo, times(1)).delete(this.aggregation);
+        verify(this.atonAggregationRepo, times(1)).delete(this.aggregation);
     }
 
     /**
@@ -144,7 +144,7 @@ class AggregationServiceTest {
      */
     @Test
     void testUpdateAidsToNavigationAggregations() {
-        doReturn(Collections.emptySet()).when(this.aggregationRepo).findByIncludedIdCode(any());
+        doReturn(Collections.emptySet()).when(this.atonAggregationRepo).findByIncludedIdCode(any());
         doAnswer((inv) ->
                 this.aggregation.getPeers()
                         .stream()
@@ -154,7 +154,7 @@ class AggregationServiceTest {
         doAnswer((inv) -> inv.getArgument(0)).when(this.aggregationService).save(any());
 
         // Perform the service  call
-        final Set<Aggregation> result = this.aggregationService.updateAidsToNavigationAggregations("aton-number", Collections.singleton(this.aggregation));
+        final Set<AtonAggregation> result = this.aggregationService.updateAidsToNavigationAggregations("aton-number", Collections.singleton(this.aggregation));
 
         // Now make sure the response is as expected
         assertNotNull(result);
@@ -162,7 +162,7 @@ class AggregationServiceTest {
         assertEquals(1, result.size());
 
         // Inspect the included aggregation
-        final Aggregation resultAggregation = result.stream().findFirst().orElse(null);
+        final AtonAggregation resultAggregation = result.stream().findFirst().orElse(null);
         assertNotNull(resultAggregation);
         assertEquals(this.aggregation.getId(), resultAggregation.getId());
         assertEquals(this.aggregation.getAggregationType(), resultAggregation.getAggregationType());

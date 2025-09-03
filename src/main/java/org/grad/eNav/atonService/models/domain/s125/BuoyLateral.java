@@ -16,20 +16,20 @@
 
 package org.grad.eNav.atonService.models.domain.s125;
 
-import _int.iho.s125.gml.cs0._1.CategoryOfLateralMarkType;
+import _int.iho.s_125.gml.cs0._1.CategoryOfLateralMarkType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 
 /**
- * The S-125 Buoy Lateral Entity Class.
+ * The S-125 Lateral Buoy Entity Class.
  * <p>
  * This is the basic class for implementing the S-125-compatible Buoy Lateral
  * type. It is modelled as an entity that extends the {@link GenericBuoy} super
  * class.
  *
  * @author Nikolaos Vastardis (email: Nikolaos.Vastardis@gla-rad.org)
- * @see _int.iho.s125.gml.cs0._1.BuoyLateral
+ * @see _int.iho.s_125.gml.cs0._1.LateralBuoy
  */
 @Entity
 public class BuoyLateral extends GenericBuoy {

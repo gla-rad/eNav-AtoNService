@@ -16,21 +16,20 @@
 
 package org.grad.eNav.atonService.utils;
 
-import _int.iho.s125.s100.gml.base._5_2.CurveProperty;
-import _int.iho.s125.s100.gml.base._5_2.MultiPointProperty;
-import _int.iho.s125.s100.gml.base._5_2.PointProperty;
-import _int.iho.s125.s100.gml.base._5_2.SurfaceProperty;
-import _int.iho.s125.s100.gml.profiles._5_2.BoundingShapeType;
-import _int.iho.s125.s100.gml.profiles._5_2.EnvelopeType;
-import _int.iho.s125.s100.gml.profiles._5_2.Pos;
-import _int.iho.s125.s100.gml.profiles._5_2.impl.BoundingShapeTypeImpl;
-import _int.iho.s125.s100.gml.profiles._5_2.impl.EnvelopeTypeImpl;
-import _int.iho.s125.s100.gml.profiles._5_2.impl.PosImpl;
-import _int.iho.s125.gml.cs0._1.Dataset;
-import _int.iho.s125.gml.cs0._1.impl.AggregationImpl;
-import _int.iho.s125.gml.cs0._1.impl.AssociationImpl;
-import _int.iho.s125.gml.cs0._1.impl.DatasetImpl;
-import _int.iho.s125.gml.cs0._1.impl.ObjectFactory;
+import _int.iho.s_125.gml.cs0._1.AtonAggregation;
+import _int.iho.s_125.gml.cs0._1.AtonAssociation;
+import _int.iho.s_125.s_100.gml.base._5_2.CurveProperty;
+import _int.iho.s_125.s_100.gml.base._5_2.MultiPointProperty;
+import _int.iho.s_125.s_100.gml.base._5_2.PointProperty;
+import _int.iho.s_125.s_100.gml.base._5_2.SurfaceProperty;
+import _int.iho.s_125.s_100.gml.profiles._5_2.BoundingShapeType;
+import _int.iho.s_125.s_100.gml.profiles._5_2.EnvelopeType;
+import _int.iho.s_125.s_100.gml.profiles._5_2.Pos;
+import _int.iho.s_125.s_100.gml.profiles._5_2.impl.BoundingShapeTypeImpl;
+import _int.iho.s_125.s_100.gml.profiles._5_2.impl.EnvelopeTypeImpl;
+import _int.iho.s_125.s_100.gml.profiles._5_2.impl.PosImpl;
+import _int.iho.s_125.gml.cs0._1.Dataset;
+import _int.iho.s_125.gml.cs0._1.impl.DatasetImpl;
 import jakarta.validation.constraints.NotNull;
 import org.apache.commons.lang3.StringUtils;
 import org.grad.eNav.atonService.models.domain.DatasetContent;
@@ -43,7 +42,6 @@ import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.Geometry;
 import org.modelmapper.ModelMapper;
 
-import java.net.URI;
 import java.util.*;
 
 public class S125DatasetBuilder {
@@ -136,7 +134,7 @@ public class S125DatasetBuilder {
                 .map(AidsToNavigation::getAggregations)
                 .flatMap(Set::stream)
                 .distinct()
-                .map(agg -> this.modelMapper.map(agg, AggregationImpl.class))
+                .map(agg -> this.modelMapper.map(agg, AtonAggregation.class))
                 .toList());
 
         // Append the associations
@@ -146,7 +144,7 @@ public class S125DatasetBuilder {
                 .map(AidsToNavigation::getAssociations)
                 .flatMap(Set::stream)
                 .distinct()
-                .map(ass -> this.modelMapper.map(ass, AssociationImpl.class))
+                .map(ass -> this.modelMapper.map(ass, AtonAssociation.class))
                 .toList());
 
         // Return the dataset

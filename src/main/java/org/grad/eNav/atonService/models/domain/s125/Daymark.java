@@ -16,13 +16,13 @@
 
 package org.grad.eNav.atonService.models.domain.s125;
 
-import _int.iho.s125.gml.cs0._1.*;
+import _int.iho.s_125.gml.cs0._1.*;
 import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import java.math.BigDecimal;
-import java.util.List;
+import java.util.Set;
 
 /**
  * The S-125 Daymark Entity Class.
@@ -32,7 +32,7 @@ import java.util.List;
  * class.
  *
  * @author Nikolaos Vastardis (email: Nikolaos.Vastardis@gla-rad.org)
- * @see _int.iho.s125.gml.cs0._1.Daymark
+ * @see _int.iho.s_125.gml.cs0._1.Daymark
  */
 @Entity
 public class Daymark extends Equipment {
@@ -42,21 +42,21 @@ public class Daymark extends Equipment {
 
     @Enumerated(EnumType.STRING)
     @ElementCollection(targetClass = ColourType.class)
-    private List<ColourType> colours;
+    private Set<ColourType> colours;
 
     @Enumerated(EnumType.STRING)
     @ElementCollection(targetClass = ColourPatternType.class)
-    private List<ColourPatternType> colourPatterns;
+    private Set<ColourPatternType> colourPatterns;
 
     private BigDecimal height;
 
     @Enumerated(EnumType.STRING)
     @ElementCollection(targetClass = NatureOfConstructionType.class)
-    private List<NatureOfConstructionType> natureOfConstructions;
+    private Set<NatureOfConstructionType> natureOfConstructions;
 
     @Enumerated(EnumType.STRING)
     @ElementCollection(targetClass = StatusType.class)
-    private List<StatusType> statuses;
+    private Set<StatusType> statuses;
 
     private String topmarkDaymarkShape;
 
@@ -83,7 +83,7 @@ public class Daymark extends Equipment {
      *
      * @return the colours
      */
-    public List<ColourType> getColours() {
+    public Set<ColourType> getColours() {
         return colours;
     }
 
@@ -92,7 +92,7 @@ public class Daymark extends Equipment {
      *
      * @param colours the colours
      */
-    public void setColours(List<ColourType> colours) {
+    public void setColours(Set<ColourType> colours) {
         this.colours = colours;
     }
 
@@ -101,7 +101,7 @@ public class Daymark extends Equipment {
      *
      * @return the colour patterns
      */
-    public List<ColourPatternType> getColourPatterns() {
+    public Set<ColourPatternType> getColourPatterns() {
         return colourPatterns;
     }
 
@@ -110,7 +110,7 @@ public class Daymark extends Equipment {
      *
      * @param colourPatterns the colour patterns
      */
-    public void setColourPatterns(List<ColourPatternType> colourPatterns) {
+    public void setColourPatterns(Set<ColourPatternType> colourPatterns) {
         this.colourPatterns = colourPatterns;
     }
 
@@ -137,7 +137,7 @@ public class Daymark extends Equipment {
      *
      * @return the nature of constructions
      */
-    public List<NatureOfConstructionType> getNatureOfConstructions() {
+    public Set<NatureOfConstructionType> getNatureOfConstructions() {
         return natureOfConstructions;
     }
 
@@ -146,7 +146,7 @@ public class Daymark extends Equipment {
      *
      * @param natureOfConstructions the nature of constructions
      */
-    public void setNatureOfConstructions(List<NatureOfConstructionType> natureOfConstructions) {
+    public void setNatureOfConstructions(Set<NatureOfConstructionType> natureOfConstructions) {
         this.natureOfConstructions = natureOfConstructions;
     }
 
@@ -155,7 +155,7 @@ public class Daymark extends Equipment {
      *
      * @return the statuses
      */
-    public List<StatusType> getStatuses() {
+    public Set<StatusType> getStatuses() {
         return statuses;
     }
 
@@ -164,7 +164,7 @@ public class Daymark extends Equipment {
      *
      * @param statuses the statuses
      */
-    public void setStatuses(List<StatusType> statuses) {
+    public void setStatuses(Set<StatusType> statuses) {
         this.statuses = statuses;
     }
 

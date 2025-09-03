@@ -16,7 +16,7 @@
 
 package org.grad.eNav.atonService.models.domain.s125;
 
-import _int.iho.s125.gml.cs0._1.CategoryOfAggregationType;
+import _int.iho.s_125.gml.cs0._1.CategoryOfAggregationType;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
@@ -28,15 +28,15 @@ import java.util.*;
 /**
  * The S-125 Aggregation Entity Class
  * <p/>
- * This class implements the {@link _int.iho.s125.gml.cs0._1.Aggregation}
+ * This class implements the {@link _int.iho.s_125.gml.cs0._1.AtonAggregation}
  * objects of the S-125 data product. These can be used to group multiple
  * Aids to Navigation into a single aggregation with a give type.
  *
  * @author Nikolaos Vastardis (email: Nikolaos.Vastardis@gla-rad.org)
- * @see  _int.iho.s125.gml.cs0._1.Aggregation
+ * @see  _int.iho.s_125.gml.cs0._1.AtonAggregation
  */
 @Entity
-public class Aggregation implements Serializable {
+public class AtonAggregation implements Serializable {
 
     // Class Variables
     @Id
@@ -122,7 +122,7 @@ public class Aggregation implements Serializable {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof Aggregation that)) return false;
+        if (!(o instanceof AtonAggregation that)) return false;
         return aggregationType == that.aggregationType
                 && Objects.equals(this.getPeers().size(), that.getPeers().size())
                 && new HashSet<>(this.getPeerIDCodes()).containsAll(that.getPeerIDCodes());

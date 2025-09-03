@@ -16,14 +16,14 @@
 
 package org.grad.eNav.atonService.models.domain.s125;
 
-import _int.iho.s125.gml.cs0._1.*;
+import _int.iho.s_125.gml.cs0._1.*;
 import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.util.List;
+import java.util.Set;
 
 /**
  * The S-125 Light Entity Class.
@@ -33,7 +33,7 @@ import java.util.List;
  * class.
  *
  * @author Nikolaos Vastardis (email: Nikolaos.Vastardis@gla-rad.org)
- * @see _int.iho.s125.gml.cs0._1.Light
+ * @see _int.iho.s_125.gml.cs0._1.LightAllAround
  */
 @Entity
 public class Light extends Equipment {
@@ -41,7 +41,7 @@ public class Light extends Equipment {
     // Class Variables
     @Enumerated(EnumType.STRING)
     @ElementCollection(targetClass = CategoryOfLightType.class)
-    private List<CategoryOfLightType> categoryOfLights;
+    private Set<CategoryOfLightType> categoryOfLights;
 
     @Enumerated(EnumType.STRING)
     private ColourType colour;
@@ -56,7 +56,7 @@ public class Light extends Equipment {
 
     @Enumerated(EnumType.STRING)
     @ElementCollection(targetClass = LightVisibilityType.class)
-    private List<LightVisibilityType> lightVisibilities;
+    private Set<LightVisibilityType> lightVisibilities;
 
     @Enumerated(EnumType.STRING)
     private MarksNavigationalSystemOfType marksNavigationalSystemOf;
@@ -77,7 +77,7 @@ public class Light extends Equipment {
 
     @Enumerated(EnumType.STRING)
     @ElementCollection(targetClass = StatusType.class)
-    private List<StatusType> statuses;
+    private Set<StatusType> statuses;
 
     private BigDecimal valueOfNominalRange;
 
@@ -86,7 +86,7 @@ public class Light extends Equipment {
      *
      * @return the category of lights
      */
-    public List<CategoryOfLightType> getCategoryOfLights() {
+    public Set<CategoryOfLightType> getCategoryOfLights() {
         return categoryOfLights;
     }
 
@@ -95,7 +95,7 @@ public class Light extends Equipment {
      *
      * @param categoryOfLights the category of lights
      */
-    public void setCategoryOfLights(List<CategoryOfLightType> categoryOfLights) {
+    public void setCategoryOfLights(Set<CategoryOfLightType> categoryOfLights) {
         this.categoryOfLights = categoryOfLights;
     }
 
@@ -176,7 +176,7 @@ public class Light extends Equipment {
      *
      * @return the light visibilities
      */
-    public List<LightVisibilityType> getLightVisibilities() {
+    public Set<LightVisibilityType> getLightVisibilities() {
         return lightVisibilities;
     }
 
@@ -185,7 +185,7 @@ public class Light extends Equipment {
      *
      * @param lightVisibilities the light visibilities
      */
-    public void setLightVisibilities(List<LightVisibilityType> lightVisibilities) {
+    public void setLightVisibilities(Set<LightVisibilityType> lightVisibilities) {
         this.lightVisibilities = lightVisibilities;
     }
 
@@ -338,7 +338,7 @@ public class Light extends Equipment {
      *
      * @return the statuses
      */
-    public List<StatusType> getStatuses() {
+    public Set<StatusType> getStatuses() {
         return statuses;
     }
 
@@ -347,7 +347,7 @@ public class Light extends Equipment {
      *
      * @param statuses the statuses
      */
-    public void setStatuses(List<StatusType> statuses) {
+    public void setStatuses(Set<StatusType> statuses) {
         this.statuses = statuses;
     }
 

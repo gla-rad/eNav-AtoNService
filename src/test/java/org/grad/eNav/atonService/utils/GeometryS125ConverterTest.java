@@ -17,17 +17,17 @@
 package org.grad.eNav.atonService.utils;
 
 
-import _int.iho.s125.s100.gml.base._5_2.CurveProperty;
-import _int.iho.s125.s100.gml.base._5_2.PointProperty;
-import _int.iho.s125.s100.gml.base._5_2.S100SpatialAttributeType;
-import _int.iho.s125.s100.gml.base._5_2.SurfaceProperty;
-import _int.iho.s125.s100.gml.profiles._5_2.*;
-import _int.iho.s125.s100.gml.profiles._5_2.impl.PosListImpl;
-import _int.iho.s125.gml.cs0._1.Dataset;
-import _int.iho.s125.gml.cs0._1.impl.VirtualAISAidToNavigationImpl;
+import _int.iho.s_125.s_100.gml.base._5_2.CurveProperty;
+import _int.iho.s_125.s_100.gml.base._5_2.PointProperty;
+import _int.iho.s_125.s_100.gml.base._5_2.S100SpatialAttributeType;
+import _int.iho.s_125.s_100.gml.base._5_2.SurfaceProperty;
+import _int.iho.s_125.s_100.gml.profiles._5_2.*;
+import _int.iho.s_125.s_100.gml.profiles._5_2.impl.PosListImpl;
+import _int.iho.s_125.gml.cs0._1.Dataset;
+import _int.iho.s_125.gml.cs0._1.impl.VirtualAISAidToNavigationImpl;
 import jakarta.xml.bind.JAXBException;
 import org.apache.commons.io.IOUtils;
-import org.grad.eNav.atonService.models.domain.s125.VirtualAISAidToNavigation;
+import org.grad.eNav.atonService.models.domain.s125.VirtualAISAidsToNavigation;
 import org.grad.eNav.s125.utils.S125Utils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -90,8 +90,8 @@ class GeometryS125ConverterTest {
         // Make sure the result looks OK
         assertNotNull(result);
         assertEquals(Point.class, result.getClass());
-        assertEquals(1.4233333, ((Point)result).getX());
-        assertEquals(51.8916667, ((Point)result).getY());
+        assertEquals(51.8916667, ((Point)result).getX());
+        assertEquals(1.4233333, ((Point)result).getY());
     }
 
     /**
@@ -106,7 +106,7 @@ class GeometryS125ConverterTest {
         Point point = this.factory.createPoint(new Coordinate(coords.get(0), coords.get(1)));
 
         // Create a typical Aids to Navigation
-        VirtualAISAidToNavigation virtualAISAidToNavigation = new VirtualAISAidToNavigation();
+        VirtualAISAidsToNavigation virtualAISAidToNavigation = new VirtualAISAidsToNavigation();
         virtualAISAidToNavigation.setGeometry(point);
 
         // Convert to S-125 geometry

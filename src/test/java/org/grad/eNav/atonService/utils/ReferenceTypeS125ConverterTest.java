@@ -16,7 +16,7 @@
 
 package org.grad.eNav.atonService.utils;
 
-import _int.iho.s125.s100.gml.profiles._5_2.ReferenceType;
+import _int.iho.s_125.s_100.gml.profiles._5_2.ReferenceType;
 import org.grad.eNav.atonService.models.domain.s125.*;
 import org.grad.eNav.atonService.models.enums.ReferenceTypeRole;
 import org.junit.jupiter.api.BeforeEach;
@@ -48,7 +48,7 @@ class ReferenceTypeS125ConverterTest {
         GeometryFactory factory = new GeometryFactory(new PrecisionModel(), 4326);
 
         // Initialise a single AtoN object
-        this.aidToNavigation = new VirtualAISAidToNavigation();
+        this.aidToNavigation = new VirtualAISAidsToNavigation();
         aidToNavigation.setId(BigInteger.ZERO);
         aidToNavigation.setIdCode("Virtual AtoN ID");
         aidToNavigation.setGeometry(factory.createPoint(new Coordinate(0, 0)));

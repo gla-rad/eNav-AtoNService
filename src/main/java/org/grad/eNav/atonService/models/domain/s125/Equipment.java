@@ -30,7 +30,7 @@ import jakarta.persistence.ManyToOne;
  * Each equipment links to a parent structure object where it is located.
  *
  * @author Nikolaos Vastardis (email: Nikolaos.Vastardis@gla-rad.org)
- * @see _int.iho.s125.gml.cs0._1.EquipmentType
+ * @see _int.iho.s_125.gml.cs0._1.EquipmentType
  */
 @Entity
 public abstract class Equipment extends AidsToNavigation {

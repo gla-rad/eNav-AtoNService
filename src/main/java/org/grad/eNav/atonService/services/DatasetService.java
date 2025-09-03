@@ -17,7 +17,7 @@
 package org.grad.eNav.atonService.services;
 
 
-import _int.iho.s125.s100.gml.base._5_2.MDTopicCategoryCode;
+import _int.iho.s_125.s_100.gml.base._5_2.MDTopicCategoryCode;
 import jakarta.persistence.EntityManager;
 import jakarta.validation.constraints.NotNull;
 import lombok.extern.slf4j.Slf4j;
@@ -235,11 +235,11 @@ public class DatasetService {
         // If not defined, set a default dataset ISO 19115-1 topic category
         Optional.of(dataset.getDatasetIdentificationInformation())
                 .map(S125DatasetIdentification::getDatasetTopicCategories)
-                .filter(not(List::isEmpty))
+                .filter(not(Set::isEmpty))
                 .ifPresentOrElse(
                         datasetTopicCategories -> { },
                         () -> dataset.getDatasetIdentificationInformation()
-                                .setDatasetTopicCategories(Collections.singletonList(MDTopicCategoryCode.OCEANS))
+                                .setDatasetTopicCategories(Collections.singleton(MDTopicCategoryCode.OCEANS))
                 );
 
         // Never accept the content from the input, could be wrong. If defined,

@@ -17,10 +17,11 @@
 package org.grad.eNav.atonService.models.domain.s125;
 
 
-import _int.iho.s125.gml.cs0._1.*;
+import _int.iho.s_125.gml.cs0._1.*;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
-import java.math.BigDecimal;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * The S-125 Generic Buoy Entity Class.
@@ -30,7 +31,7 @@ import java.util.List;
  * that we can extend this for each Buoy type.
  *
  * @author Nikolaos Vastardis (email: Nikolaos.Vastardis@gla-rad.org)
- * @see _int.iho.s125.gml.cs0._1.GenericBuoyType
+ * @see _int.iho.s_125.gml.cs0._1.GenericBuoyType
  */
 @Entity
 public abstract class GenericBuoy extends StructureObject {
@@ -41,27 +42,30 @@ public abstract class GenericBuoy extends StructureObject {
 
     @Enumerated(EnumType.STRING)
     @ElementCollection(targetClass = ColourType.class)
-    private List<ColourType> colours;
+    private Set<ColourType> colours;
 
     @Enumerated(EnumType.STRING)
     @ElementCollection(targetClass = ColourPatternType.class)
-    private List<ColourPatternType> colourPatterns;
-
-    @Enumerated(EnumType.STRING)
-    private RadarConspicuousType radarConspicuous;
+    private Set<ColourPatternType> colourPatterns;
 
     @Enumerated(EnumType.STRING)
     private MarksNavigationalSystemOfType marksNavigationalSystemOf;
 
     @Enumerated(EnumType.STRING)
     @ElementCollection(targetClass = NatureOfConstructionType.class)
-    private List<NatureOfConstructionType> natureOfconstuctions;
+    private Set<NatureOfConstructionType> natureOfconstuctions;
+
+    private Boolean radarConspicuous;
+
+    private String typeOfBuoy;
 
     @Enumerated(EnumType.STRING)
     @ElementCollection(targetClass = StatusType.class)
-    private List<StatusType> statuses;
+    private Set<StatusType> statuses;
 
-    private BigDecimal verticalLength;
+    @JsonManagedReference
+    @OneToMany(mappedBy = "structure", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    final private Set<Topmark> equipments = new HashSet<>();
 
     /**
      * Gets buoy shape.
@@ -86,7 +90,7 @@ public abstract class GenericBuoy extends StructureObject {
      *
      * @return the colours
      */
-    public List<ColourType> getColours() {
+    public Set<ColourType> getColours() {
         return colours;
     }
 
@@ -95,7 +99,7 @@ public abstract class GenericBuoy extends StructureObject {
      *
      * @param colours the colours
      */
-    public void setColours(List<ColourType> colours) {
+    public void setColours(Set<ColourType> colours) {
         this.colours = colours;
     }
 
@@ -104,7 +108,7 @@ public abstract class GenericBuoy extends StructureObject {
      *
      * @return the colour patterns
      */
-    public List<ColourPatternType> getColourPatterns() {
+    public Set<ColourPatternType> getColourPatterns() {
         return colourPatterns;
     }
 
@@ -113,26 +117,8 @@ public abstract class GenericBuoy extends StructureObject {
      *
      * @param colourPatterns the colour patterns
      */
-    public void setColourPatterns(List<ColourPatternType> colourPatterns) {
+    public void setColourPatterns(Set<ColourPatternType> colourPatterns) {
         this.colourPatterns = colourPatterns;
-    }
-
-    /**
-     * Gets radar conspicuous.
-     *
-     * @return the radar conspicuous
-     */
-    public RadarConspicuousType getRadarConspicuous() {
-        return radarConspicuous;
-    }
-
-    /**
-     * Sets radar conspicuous.
-     *
-     * @param radarConspicuous the radar conspicuous
-     */
-    public void setRadarConspicuous(RadarConspicuousType radarConspicuous) {
-        this.radarConspicuous = radarConspicuous;
     }
 
     /**
@@ -158,7 +144,7 @@ public abstract class GenericBuoy extends StructureObject {
      *
      * @return the nature ofconstuctions
      */
-    public List<NatureOfConstructionType> getNatureOfconstuctions() {
+    public Set<NatureOfConstructionType> getNatureOfconstuctions() {
         return natureOfconstuctions;
     }
 
@@ -167,8 +153,44 @@ public abstract class GenericBuoy extends StructureObject {
      *
      * @param natureOfconstuctions the nature ofconstuctions
      */
-    public void setNatureOfconstuctions(List<NatureOfConstructionType> natureOfconstuctions) {
+    public void setNatureOfconstuctions(Set<NatureOfConstructionType> natureOfconstuctions) {
         this.natureOfconstuctions = natureOfconstuctions;
+    }
+
+    /**
+     * Gets radar conspicuous.
+     *
+     * @return the radar conspicuous
+     */
+    public Boolean getRadarConspicuous() {
+        return radarConspicuous;
+    }
+
+    /**
+     * Sets radar conspicuous.
+     *
+     * @param radarConspicuous the radar conspicuous
+     */
+    public void setRadarConspicuous(Boolean radarConspicuous) {
+        this.radarConspicuous = radarConspicuous;
+    }
+
+    /**
+     * Gets type of buoy.
+     *
+     * @return the type of buoy
+     */
+    public String getTypeOfBuoy() {
+        return typeOfBuoy;
+    }
+
+    /**
+     * Sets type of buoy.
+     *
+     * @param typeOfBuoy the type of buoy
+     */
+    public void setTypeOfBuoy(String typeOfBuoy) {
+        this.typeOfBuoy = typeOfBuoy;
     }
 
     /**
@@ -176,7 +198,7 @@ public abstract class GenericBuoy extends StructureObject {
      *
      * @return the statuses
      */
-    public List<StatusType> getStatuses() {
+    public Set<StatusType> getStatuses() {
         return statuses;
     }
 
@@ -185,25 +207,31 @@ public abstract class GenericBuoy extends StructureObject {
      *
      * @param statuses the statuses
      */
-    public void setStatuses(List<StatusType> statuses) {
+    public void setStatuses(Set<StatusType> statuses) {
         this.statuses = statuses;
     }
 
     /**
-     * Gets vertical length.
+     * Gets equipments.
      *
-     * @return the vertical length
+     * @return the equipments
      */
-    public BigDecimal getVerticalLength() {
-        return verticalLength;
+    public Set<Topmark> getEquipments() {
+        return equipments;
     }
 
     /**
-     * Sets vertical length.
+     * Sets equipment.
      *
-     * @param verticalLength the vertical length
+     * @param equipments the equipments
      */
-    public void setVerticalLength(BigDecimal verticalLength) {
-        this.verticalLength = verticalLength;
+    public void setEquipment(Set<Topmark> equipments) {
+        this.equipments.clear();
+        if (equipments != null) {
+            // Set the structure correctly
+            equipments.forEach(fn -> fn.setStructure(this));
+            // And update the equipments
+            this.equipments.addAll(equipments);
+        }
     }
 }

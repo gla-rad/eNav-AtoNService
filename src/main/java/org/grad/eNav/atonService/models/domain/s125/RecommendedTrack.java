@@ -16,12 +16,11 @@
 
 package org.grad.eNav.atonService.models.domain.s125;
 
-import _int.iho.s125.gml.cs0._1.CategoryOfRecommendedTrackType;
-import _int.iho.s125.gml.cs0._1.StatusType;
-import _int.iho.s125.gml.cs0._1.TrafficFlowType;
+import _int.iho.s_125.gml.cs0._1.*;
 import jakarta.persistence.*;
 import java.math.BigDecimal;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * The S-125 Recommended Track Entity Class.
@@ -31,57 +30,121 @@ import java.util.List;
  * {@link AidsToNavigation} super class.
  *
  * @author Nikolaos Vastardis (email: Nikolaos.Vastardis@gla-rad.org)
- * @see _int.iho.s125.gml.cs0._1.RecommendedTrack
+ * @see _int.iho.s_125.gml.cs0._1.RecommendedTrack
  */
 @Entity
 public class RecommendedTrack extends AidsToNavigation {
 
     // Class Variables
+    private Boolean basedOnFixedMarks;
+
+    private BigDecimal depthRangeMinimumValue;
+
+    private BigDecimal maximumPermittedDraught;
+
     @Enumerated(EnumType.STRING)
-    protected CategoryOfRecommendedTrackType categoryOfRecommendedTrack;
+    private VerticalDatumType verticalDatum;
 
-    protected BigDecimal orientation;
+    private Orientation orientation;
 
-    /**
-     * The Statuses.
-     */
+    private VerticalUncertainty verticalUncertainty;
+
+    @Enumerated(EnumType.STRING)
+    @ElementCollection(targetClass = QualityOfVerticalMeasurementType.class)
+    private Set<QualityOfVerticalMeasurementType> qualityOfVerticalMeasurement;
+
+    @Enumerated(EnumType.STRING)
+    @ElementCollection(targetClass = TechniqueOfVerticalMeasurementType.class)
+    private Set<TechniqueOfVerticalMeasurementType> techniqueOfVerticalMeasurements;
+
+    @Enumerated(EnumType.STRING)
+    private TrafficFlowType trafficFlow;
+
     @Enumerated(EnumType.STRING)
     @ElementCollection(targetClass = StatusType.class)
-    protected List<StatusType> statuses;
-
-    /**
-     * The Traffic flow.
-     */
-    @Enumerated(EnumType.STRING)
-    protected TrafficFlowType trafficFlow;
+    private Set<StatusType> statuses;
 
     /**
      * The Navigation lines.
      */
-    @ManyToMany(cascade = { CascadeType.ALL })
+    @ManyToMany(cascade = {CascadeType.ALL})
     @JoinTable(
             name = "recommended_track_nav_lines",
-            joinColumns = { @JoinColumn(name = "recommended_track_id") },
-            inverseJoinColumns = { @JoinColumn(name = "navigation_line_id") }
+            joinColumns = {@JoinColumn(name = "recommended_track_id")},
+            inverseJoinColumns = {@JoinColumn(name = "navigation_line_id")}
     )
-    protected List<NavigationLine> navigationLines;
+    private final Set<NavigationLine> navigationLines = new HashSet<>();
 
     /**
-     * Gets category of recommended track.
+     * Gets based on fixed marks.
      *
-     * @return the category of recommended track
+     * @return the based on fixed marks
      */
-    public CategoryOfRecommendedTrackType getCategoryOfRecommendedTrack() {
-        return categoryOfRecommendedTrack;
+    public Boolean getBasedOnFixedMarks() {
+        return basedOnFixedMarks;
     }
 
     /**
-     * Sets category of recommended track.
+     * Sets based on fixed marks.
      *
-     * @param categoryOfRecommendedTrack the category of recommended track
+     * @param basedOnFixedMarks the based on fixed marks
      */
-    public void setCategoryOfRecommendedTrack(CategoryOfRecommendedTrackType categoryOfRecommendedTrack) {
-        this.categoryOfRecommendedTrack = categoryOfRecommendedTrack;
+    public void setBasedOnFixedMarks(Boolean basedOnFixedMarks) {
+        this.basedOnFixedMarks = basedOnFixedMarks;
+    }
+
+    /**
+     * Gets depth range minimum value.
+     *
+     * @return the depth range minimum value
+     */
+    public BigDecimal getDepthRangeMinimumValue() {
+        return depthRangeMinimumValue;
+    }
+
+    /**
+     * Sets depth range minimum value.
+     *
+     * @param depthRangeMinimumValue the depth range minimum value
+     */
+    public void setDepthRangeMinimumValue(BigDecimal depthRangeMinimumValue) {
+        this.depthRangeMinimumValue = depthRangeMinimumValue;
+    }
+
+    /**
+     * Gets maximum permitted draught.
+     *
+     * @return the maximum permitted draught
+     */
+    public BigDecimal getMaximumPermittedDraught() {
+        return maximumPermittedDraught;
+    }
+
+    /**
+     * Sets maximum permitted draught.
+     *
+     * @param maximumPermittedDraught the maximum permitted draught
+     */
+    public void setMaximumPermittedDraught(BigDecimal maximumPermittedDraught) {
+        this.maximumPermittedDraught = maximumPermittedDraught;
+    }
+
+    /**
+     * Gets vertical datum.
+     *
+     * @return the vertical datum
+     */
+    public VerticalDatumType getVerticalDatum() {
+        return verticalDatum;
+    }
+
+    /**
+     * Sets vertical datum.
+     *
+     * @param verticalDatum the vertical datum
+     */
+    public void setVerticalDatum(VerticalDatumType verticalDatum) {
+        this.verticalDatum = verticalDatum;
     }
 
     /**
@@ -89,7 +152,7 @@ public class RecommendedTrack extends AidsToNavigation {
      *
      * @return the orientation
      */
-    public BigDecimal getOrientation() {
+    public Orientation getOrientation() {
         return orientation;
     }
 
@@ -98,26 +161,62 @@ public class RecommendedTrack extends AidsToNavigation {
      *
      * @param orientation the orientation
      */
-    public void setOrientation(BigDecimal orientation) {
+    public void setOrientation(Orientation orientation) {
         this.orientation = orientation;
     }
 
     /**
-     * Gets statuses.
+     * Gets vertical uncertainty.
      *
-     * @return the statuses
+     * @return the vertical uncertainty
      */
-    public List<StatusType> getStatuses() {
-        return statuses;
+    public VerticalUncertainty getVerticalUncertainty() {
+        return verticalUncertainty;
     }
 
     /**
-     * Sets statuses.
+     * Sets vertical uncertainty.
      *
-     * @param statuses the statuses
+     * @param verticalUncertainty the vertical uncertainty
      */
-    public void setStatuses(List<StatusType> statuses) {
-        this.statuses = statuses;
+    public void setVerticalUncertainty(VerticalUncertainty verticalUncertainty) {
+        this.verticalUncertainty = verticalUncertainty;
+    }
+
+    /**
+     * Gets quality of vertical measurement.
+     *
+     * @return the quality of vertical measurement
+     */
+    public Set<QualityOfVerticalMeasurementType> getQualityOfVerticalMeasurement() {
+        return qualityOfVerticalMeasurement;
+    }
+
+    /**
+     * Sets quality of vertical measurement.
+     *
+     * @param qualityOfVerticalMeasurement the quality of vertical measurement
+     */
+    public void setQualityOfVerticalMeasurement(Set<QualityOfVerticalMeasurementType> qualityOfVerticalMeasurement) {
+        this.qualityOfVerticalMeasurement = qualityOfVerticalMeasurement;
+    }
+
+    /**
+     * Gets technique of vertical measurements.
+     *
+     * @return the technique of vertical measurements
+     */
+    public Set<TechniqueOfVerticalMeasurementType> getTechniqueOfVerticalMeasurements() {
+        return techniqueOfVerticalMeasurements;
+    }
+
+    /**
+     * Sets technique of vertical measurements.
+     *
+     * @param techniqueOfVerticalMeasurements the technique of vertical measurements
+     */
+    public void setTechniqueOfVerticalMeasurements(Set<TechniqueOfVerticalMeasurementType> techniqueOfVerticalMeasurements) {
+        this.techniqueOfVerticalMeasurements = techniqueOfVerticalMeasurements;
     }
 
     /**
@@ -139,11 +238,29 @@ public class RecommendedTrack extends AidsToNavigation {
     }
 
     /**
+     * Gets statuses.
+     *
+     * @return the statuses
+     */
+    public Set<StatusType> getStatuses() {
+        return statuses;
+    }
+
+    /**
+     * Sets statuses.
+     *
+     * @param statuses the statuses
+     */
+    public void setStatuses(Set<StatusType> statuses) {
+        this.statuses = statuses;
+    }
+
+    /**
      * Gets navigation lines.
      *
      * @return the navigation lines
      */
-    public List<NavigationLine> getNavigationLines() {
+    public Set<NavigationLine> getNavigationLines() {
         return navigationLines;
     }
 
@@ -152,7 +269,13 @@ public class RecommendedTrack extends AidsToNavigation {
      *
      * @param navigationLines the navigation lines
      */
-    public void setNavigationLines(List<NavigationLine> navigationLines) {
-        this.navigationLines = navigationLines;
+    public void setNavigationLines(Set<NavigationLine> navigationLines) {
+        this.navigationLines.clear();
+        if (navigationLines != null) {
+            // Set the parent correctly
+            navigationLines.forEach(fn -> fn.getNavigableTracks().add(this));
+            // And update the associations
+            this.navigationLines.addAll(navigationLines);
+        }
     }
 }

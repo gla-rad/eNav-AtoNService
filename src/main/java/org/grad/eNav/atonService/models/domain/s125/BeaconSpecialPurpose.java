@@ -16,13 +16,13 @@
 
 package org.grad.eNav.atonService.models.domain.s125;
 
-import _int.iho.s125.gml.cs0._1.CategoryOfSpecialPurposeMarkType;
+import _int.iho.s_125.gml.cs0._1.CategoryOfSpecialPurposeMarkType;
 import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 
-import java.util.List;
+import java.util.Set;
 
 /**
  * The S-125 Beacon Special Purpose Entity Class.
@@ -32,22 +32,21 @@ import java.util.List;
  * {@link GenericBeacon} super class.
  *
  * @author Nikolaos Vastardis (email: Nikolaos.Vastardis@gla-rad.org)
- * @see _int.iho.s125.gml.cs0._1.BeaconSpecialPurposeGeneral
- */
+ * @see _int.iho.s_125.gml.cs0._1.SpecialPurposeGeneralBeacon */
 @Entity
 public class BeaconSpecialPurpose extends GenericBeacon {
 
     // Class Variables
     @Enumerated(EnumType.STRING)
     @ElementCollection(targetClass = CategoryOfSpecialPurposeMarkType.class)
-    private List<CategoryOfSpecialPurposeMarkType> categoryOfSpecialPurposeMarks;
+    private Set<CategoryOfSpecialPurposeMarkType> categoryOfSpecialPurposeMarks;
 
     /**
      * Gets category of special purpose marks.
      *
      * @return the category of special purpose marks
      */
-    public List<CategoryOfSpecialPurposeMarkType> getCategoryOfSpecialPurposeMarks() {
+    public Set<CategoryOfSpecialPurposeMarkType> getCategoryOfSpecialPurposeMarks() {
         return categoryOfSpecialPurposeMarks;
     }
 
@@ -56,7 +55,7 @@ public class BeaconSpecialPurpose extends GenericBeacon {
      *
      * @param categoryOfSpecialPurposeMarks the category of special purpose marks
      */
-    public void setCategoryOfSpecialPurposeMarks(List<CategoryOfSpecialPurposeMarkType> categoryOfSpecialPurposeMarks) {
+    public void setCategoryOfSpecialPurposeMarks(Set<CategoryOfSpecialPurposeMarkType> categoryOfSpecialPurposeMarks) {
         this.categoryOfSpecialPurposeMarks = categoryOfSpecialPurposeMarks;
     }
 }

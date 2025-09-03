@@ -16,11 +16,11 @@
 
 package org.grad.eNav.atonService.services;
 
-import _int.iho.s125.gml.cs0._1.CategoryOfAssociationType;
+import _int.iho.s_125.gml.cs0._1.CategoryOfAssociationType;
 import org.grad.eNav.atonService.exceptions.DataNotFoundException;
 import org.grad.eNav.atonService.models.domain.s125.*;
 import org.grad.eNav.atonService.repos.AidsToNavigationRepo;
-import org.grad.eNav.atonService.repos.AssociationRepo;
+import org.grad.eNav.atonService.repos.AtonAssociationRepo;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -43,7 +43,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-class AssociationServiceTest {
+class AtonAssociationServiceTest {
 
     /**
      * The Tested Service.
@@ -56,7 +56,7 @@ class AssociationServiceTest {
      * The Association Repo mock.
      */
     @Mock
-    AssociationRepo associationRepo;
+    AtonAssociationRepo atonAssociationRepo;
 
     /**
      * The Aids to Navigation Repo mock.
@@ -65,7 +65,7 @@ class AssociationServiceTest {
     AidsToNavigationRepo aidsToNavigationRepo;
 
     // Test Variables
-    private Association association;
+    private AtonAssociation association;
 
     /**
      * Common setup for all the tests.
@@ -75,9 +75,9 @@ class AssociationServiceTest {
         // Create a temp geometry factory to get a test geometries
         GeometryFactory factory = new GeometryFactory(new PrecisionModel(), 4326);
 
-        this.association = new Association();
+        this.association = new AtonAssociation();
         this.association.setId(BigInteger.ONE);
-        this.association.setAssociationType(CategoryOfAssociationType.DANGER_MARKINGS);
+        this.association.setCategoryOfAssociation(CategoryOfAssociationType.DANGER_MARKINGS);
 
         // Initialise the AtoN messages list
         for(long i=0; i<5; i++) {
@@ -103,21 +103,21 @@ class AssociationServiceTest {
      */
     @Test
     void testSave() {
-        doReturn(this.association).when(this.associationRepo).save(any());
+        doReturn(this.association).when(this.atonAssociationRepo).save(any());
 
         // Perform the service call
-        Association result = this.associationService.save(this.association);
+        AtonAssociation result = this.associationService.save(this.association);
 
         // Test the result
         assertNotNull(result);
         assertEquals(this.association.getId(), result.getId());
-        assertEquals(this.association.getAssociationType(), result.getAssociationType());
+        assertEquals(this.association.getCategoryOfAssociation(), result.getCategoryOfAssociation());
         assertNotNull(result.getPeers());
         assertEquals(this.association.getPeers().size(), result.getPeers().size());
         assertTrue(result.getPeers().containsAll(this.association.getPeers()));
 
         // Also, that a saving call took place in the repository
-        verify(this.associationRepo, times(1)).save(this.association);
+        verify(this.atonAssociationRepo, times(1)).save(this.association);
     }
 
     /**
@@ -125,14 +125,14 @@ class AssociationServiceTest {
      */
     @Test
     void testDelete() throws DataNotFoundException {
-        doReturn(Optional.of(this.association)).when(this.associationRepo).findById(this.association.getId());
-        doNothing().when(this.associationRepo).delete(this.association);
+        doReturn(Optional.of(this.association)).when(this.atonAssociationRepo).findById(this.association.getId());
+        doNothing().when(this.atonAssociationRepo).delete(this.association);
 
         // Perform the service call
         this.associationService.delete(this.association.getId());
 
         // Verify that a deletion call took place in the repository
-        verify(this.associationRepo, times(1)).delete(this.association);
+        verify(this.atonAssociationRepo, times(1)).delete(this.association);
     }
 
     /**
@@ -144,7 +144,7 @@ class AssociationServiceTest {
      */
     @Test
     void testUpdateAidsToNavigationAssociations() {
-        doReturn(Collections.emptySet()).when(this.associationRepo).findByIncludedIdCode(any());
+        doReturn(Collections.emptySet()).when(this.atonAssociationRepo).findByIncludedIdCode(any());
         doAnswer((inv) ->
                 this.association.getPeers()
                         .stream()
@@ -154,7 +154,7 @@ class AssociationServiceTest {
         doAnswer((inv) -> inv.getArgument(0)).when(this.associationService).save(any());
 
         // Perform the service  call
-        final Set<Association> result = this.associationService.updateAidsToNavigationAssociations("aton-number", Collections.singleton(this.association));
+        final Set<AtonAssociation> result = this.associationService.updateAidsToNavigationAssociations("aton-number", Collections.singleton(this.association));
 
         // Now make sure the response is as expected
         assertNotNull(result);
@@ -162,10 +162,10 @@ class AssociationServiceTest {
         assertEquals(1, result.size());
 
         // Inspect the included aggregation
-        final Association resultAssociation = result.stream().findFirst().orElse(null);
+        final AtonAssociation resultAssociation = result.stream().findFirst().orElse(null);
         assertNotNull(resultAssociation);
         assertEquals(this.association.getId(), resultAssociation.getId());
-        assertEquals(this.association.getAssociationType(), resultAssociation.getAssociationType());
+        assertEquals(this.association.getCategoryOfAssociation(), resultAssociation.getCategoryOfAssociation());
         assertNotNull(resultAssociation.getPeers());
         assertFalse(resultAssociation.getPeers().isEmpty());
         assertEquals(this.association.getPeers().size(), resultAssociation.getPeers().size());

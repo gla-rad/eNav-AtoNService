@@ -28,9 +28,9 @@ import org.apache.lucene.spatial.prefix.tree.SpatialPrefixTree;
 import org.apache.lucene.spatial.query.SpatialArgs;
 import org.apache.lucene.spatial.query.SpatialOperation;
 import org.grad.eNav.atonService.exceptions.DataNotFoundException;
-import org.grad.eNav.atonService.models.domain.s125.Aggregation;
+import org.grad.eNav.atonService.models.domain.s125.AtonAggregation;
 import org.grad.eNav.atonService.models.domain.s125.AidsToNavigation;
-import org.grad.eNav.atonService.models.domain.s125.Association;
+import org.grad.eNav.atonService.models.domain.s125.AtonAssociation;
 import org.grad.eNav.atonService.models.domain.s125.FeatureName;
 import org.grad.eNav.atonService.models.dtos.datatables.DtPagingRequest;
 import org.grad.eNav.atonService.repos.AidsToNavigationRepo;
@@ -270,12 +270,12 @@ public class AidsToNavigationService {
         aidsToNavigation.getAggregations().stream()
                 .peek(aggr -> aggr.getPeers().remove(aidsToNavigation))
                 .filter(aggr -> aggr.getPeers().isEmpty())
-                .map(Aggregation::getId)
+                .map(AtonAggregation::getId)
                 .forEach(this.aggregationService::delete);
         aidsToNavigation.getAssociations().stream()
                 .peek(asso -> asso.getPeers().remove(aidsToNavigation))
                 .filter(asso -> asso.getPeers().isEmpty())
-                .map(Association::getId)
+                .map(AtonAssociation::getId)
                 .forEach(this.associationService::delete);
 
         // Now delete the aid to navigation

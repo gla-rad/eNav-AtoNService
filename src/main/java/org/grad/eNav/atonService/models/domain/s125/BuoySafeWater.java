@@ -26,7 +26,7 @@ import jakarta.persistence.Entity;
  * class.
  *
  * @author Nikolaos Vastardis (email: Nikolaos.Vastardis@gla-rad.org)
- * @see _int.iho.s125.gml.cs0._1.BuoySafeWater
+ * @see _int.iho.s_125.gml.cs0._1.SafeWaterBuoy
  */
 @Entity
 public class BuoySafeWater extends GenericBuoy {

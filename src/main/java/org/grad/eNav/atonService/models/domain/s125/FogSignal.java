@@ -16,13 +16,13 @@
 
 package org.grad.eNav.atonService.models.domain.s125;
 
-import _int.iho.s125.gml.cs0._1.CategoryOfFogSignalType;
-import _int.iho.s125.gml.cs0._1.StatusType;
+import _int.iho.s_125.gml.cs0._1.CategoryOfFogSignalType;
+import _int.iho.s_125.gml.cs0._1.StatusType;
 import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
-import java.util.List;
+import java.util.Set;
 
 /**
  * The S-125 Fog Signal Entity Class.
@@ -32,20 +32,38 @@ import java.util.List;
  * class.
  *
  * @author Nikolaos Vastardis (email: Nikolaos.Vastardis@gla-rad.org)
- * @see _int.iho.s125.gml.cs0._1.FogSignalsType
+ * @see _int.iho.s_125.gml.cs0._1.FogSignal
  */
 @Entity
 public class FogSignal extends Equipment {
 
     // Class Variables
+    private SignalSequence signalSequence;
+
     @Enumerated(EnumType.STRING)
     private CategoryOfFogSignalType categoryOfFogSignal;
 
-    private String signalSequence;
-
     @Enumerated(EnumType.STRING)
     @ElementCollection(targetClass = StatusType.class)
-    private List<StatusType> statuses;
+    private Set<StatusType> statuses;
+
+    /**
+     * Gets signal sequence.
+     *
+     * @return the signal sequence
+     */
+    public SignalSequence getSignalSequence() {
+        return signalSequence;
+    }
+
+    /**
+     * Sets signal sequence.
+     *
+     * @param signalSequence the signal sequence
+     */
+    public void setSignalSequence(SignalSequence signalSequence) {
+        this.signalSequence = signalSequence;
+    }
 
     /**
      * Gets category of fog signal.
@@ -66,29 +84,11 @@ public class FogSignal extends Equipment {
     }
 
     /**
-     * Gets signal sequence.
-     *
-     * @return the signal sequence
-     */
-    public String getSignalSequence() {
-        return signalSequence;
-    }
-
-    /**
-     * Sets signal sequence.
-     *
-     * @param signalSequence the signal sequence
-     */
-    public void setSignalSequence(String signalSequence) {
-        this.signalSequence = signalSequence;
-    }
-
-    /**
      * Gets statuses.
      *
      * @return the statuses
      */
-    public List<StatusType> getStatuses() {
+    public Set<StatusType> getStatuses() {
         return statuses;
     }
 
@@ -97,7 +97,7 @@ public class FogSignal extends Equipment {
      *
      * @param statuses the statuses
      */
-    public void setStatuses(List<StatusType> statuses) {
+    public void setStatuses(Set<StatusType> statuses) {
         this.statuses = statuses;
     }
 }

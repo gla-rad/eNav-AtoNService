@@ -30,7 +30,7 @@ import java.math.BigInteger;
  * code and whether this should be selected for the final UI display.
  *
  * @author Nikolaos Vastardis (email: Nikolaos.Vastardis@gla-rad.org)
- * @see _int.iho.s125.gml.cs0._1.FeatureNameType
+ * @see _int.iho.s_125.gml.cs0._1.FeatureNameType
  */
 @Entity
 public class FeatureName implements Serializable  {

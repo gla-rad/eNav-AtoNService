@@ -16,13 +16,13 @@
 
 package org.grad.eNav.atonService.models.domain.s125;
 
-import _int.iho.s125.gml.cs0._1.StatusType;
+import _int.iho.s_125.gml.cs0._1.StatusType;
 import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import java.math.BigDecimal;
-import java.util.List;
+import java.util.Set;
 
 /**
  * The S-125 Radar Reflector Entity Class.
@@ -32,17 +32,17 @@ import java.util.List;
  * class.
  *
  * @author Nikolaos Vastardis (email: Nikolaos.Vastardis@gla-rad.org)
- * @see _int.iho.s125.gml.cs0._1.RadarReflector
+ * @see _int.iho.s_125.gml.cs0._1.RadarReflector
  */
 @Entity
 public class RadarReflector extends Equipment {
 
     // Class Variables
-    protected BigDecimal height;
+    private BigDecimal height;
 
     @Enumerated(EnumType.STRING)
     @ElementCollection(targetClass = StatusType.class)
-    private List<StatusType> statuses;
+    private Set<StatusType> statuses;
 
     /**
      * Gets height.
@@ -67,7 +67,7 @@ public class RadarReflector extends Equipment {
      *
      * @return the statuses
      */
-    public List<StatusType> getStatuses() {
+    public Set<StatusType> getStatuses() {
         return statuses;
     }
 
@@ -76,7 +76,7 @@ public class RadarReflector extends Equipment {
      *
      * @param statuses the statuses
      */
-    public void setStatuses(List<StatusType> statuses) {
+    public void setStatuses(Set<StatusType> statuses) {
         this.statuses = statuses;
     }
 }

@@ -16,15 +16,16 @@
 
 package org.grad.eNav.atonService.config;
 
-import _int.iho.s125.s100.gml.base._5_2.impl.DataSetIdentificationTypeImpl;
-import _int.iho.s125.gml.cs0._1.AidsToNavigationType;
-import _int.iho.s125.gml.cs0._1.Dataset;
-import _int.iho.s125.gml.cs0._1.impl.*;
+import _int.iho.s_125.gml.cs0._1.*;
+import _int.iho.s_125.s_100.gml.base._5_2.impl.DataSetIdentificationTypeImpl;
+import _int.iho.s_125.gml.cs0._1.impl.*;
 import jakarta.xml.bind.JAXBException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.text.CaseUtils;
 import org.grad.eNav.atonService.models.domain.s100.ServiceInformationConfig;
 import org.grad.eNav.atonService.models.domain.s125.*;
+import org.grad.eNav.atonService.models.domain.s125.AtonAggregation;
+import org.grad.eNav.atonService.models.domain.s125.AtonAssociation;
 import org.grad.eNav.atonService.models.domain.secom.SubscriptionRequest;
 import org.grad.eNav.atonService.models.dtos.s125.AidsToNavigationDto;
 import org.grad.eNav.atonService.models.enums.ReferenceTypeRole;
@@ -136,13 +137,33 @@ public class GlobalConfig {
                     .implicitMappings()
                     .addMappings(mapper -> {
                         mapper.skip(AidsToNavigation::setId); // We don't know if the ID is correct so skip it
-                        mapper.using(ctx -> S125Utils.s100TruncatedDateToLocalDate(((AidsToNavigationType)ctx.getSource()).getDateStart()))
+                        mapper.using(ctx -> Optional.ofNullable(ctx.getSource())
+                                                .map(AidsToNavigationType.class::cast)
+                                                .map(AidsToNavigationType::getFixedDateRange)
+                                                .map(FixedDateRangeType::getDateStart)
+                                                .map(S125Utils::s100TruncatedDateToLocalDate)
+                                                .orElse(null))
                                 .map(src -> src, AidsToNavigation::setDateStart);
-                        mapper.using(ctx -> S125Utils.s100TruncatedDateToLocalDate(((AidsToNavigationType)ctx.getSource()).getDateEnd()))
+                        mapper.using(ctx -> Optional.ofNullable(ctx.getSource())
+                                        .map(AidsToNavigationType.class::cast)
+                                        .map(AidsToNavigationType::getFixedDateRange)
+                                        .map(FixedDateRangeType::getDateEnd)
+                                        .map(S125Utils::s100TruncatedDateToLocalDate)
+                                        .orElse(null))
                                 .map(src -> src, AidsToNavigation::setDateEnd);
-                        mapper.using(ctx -> S125Utils.s100TruncatedDateToLocalDate(((AidsToNavigationType)ctx.getSource()).getPeriodStart()))
+                        mapper.using(ctx -> Optional.ofNullable(ctx.getSource())
+                                        .map(AidsToNavigationType.class::cast)
+                                        .map(AidsToNavigationType::getPeriodicDateRange)
+                                        .map(PeriodicDateRangeType::getDateStart)
+                                        .map(S125Utils::s100TruncatedDateToLocalDate)
+                                        .orElse(null))
                                 .map(src -> src, AidsToNavigation::setPeriodStart);
-                        mapper.using(ctx -> S125Utils.s100TruncatedDateToLocalDate(((AidsToNavigationType)ctx.getSource()).getPeriodEnd()))
+                        mapper.using(ctx -> Optional.ofNullable(ctx.getSource())
+                                        .map(AidsToNavigationType.class::cast)
+                                        .map(AidsToNavigationType::getPeriodicDateRange)
+                                        .map(PeriodicDateRangeType::getDateEnd)
+                                        .map(S125Utils::s100TruncatedDateToLocalDate)
+                                        .orElse(null))
                                 .map(src -> src, AidsToNavigation::setPeriodEnd);
                         mapper.using(ctx -> new GeometryS125Converter().convertToGeometry(((AidsToNavigationType) ctx.getSource())))
                                 .map(src -> src, AidsToNavigation::setGeometry);
@@ -170,13 +191,21 @@ public class GlobalConfig {
                         mapper.using(ctx -> "ID-ATON-" + ((AidsToNavigation) ctx.getSource()).getId())
                                 .map(src -> src, AidsToNavigationType::setId);
                         mapper.using(ctx -> S125Utils.localDateToS100TruncatedDate(((AidsToNavigation)ctx.getSource()).getDateStart()))
-                                .map(src -> src, AidsToNavigationType::setDateStart);
+                                .map(src -> src, (dst, val) -> Optional.ofNullable(dst)
+                                        .map(AidsToNavigationType::getFixedDateRange)
+                                        .ifPresent((fixedDateRangeType) -> fixedDateRangeType.setDateStart((S100TruncatedDate)val)));
                         mapper.using(ctx -> S125Utils.localDateToS100TruncatedDate(((AidsToNavigation)ctx.getSource()).getDateEnd()))
-                                .map(src -> src, AidsToNavigationType::setDateEnd);
+                                .map(src -> src, (dst, val) -> Optional.ofNullable(dst)
+                                        .map(AidsToNavigationType::getFixedDateRange)
+                                        .ifPresent((fixedDateRangeType) -> fixedDateRangeType.setDateEnd((S100TruncatedDate)val)));
                         mapper.using(ctx -> S125Utils.localDateToS100TruncatedDate(((AidsToNavigation)ctx.getSource()).getPeriodStart()))
-                                .map(src -> src, AidsToNavigationType::setPeriodStart);
+                                .map(src -> src, (dst, val) -> Optional.ofNullable(dst)
+                                        .map(AidsToNavigationType::getPeriodicDateRange)
+                                        .ifPresent((periodicDateRangeType) -> periodicDateRangeType.setDateStart((S100TruncatedDate)val)));
                         mapper.using(ctx -> S125Utils.localDateToS100TruncatedDate(((AidsToNavigation)ctx.getSource()).getPeriodEnd()))
-                                .map(src -> src, AidsToNavigationType::setPeriodEnd);
+                                .map(src -> src,  (dst, val) -> Optional.ofNullable(dst)
+                                        .map(AidsToNavigationType::getPeriodicDateRange)
+                                        .ifPresent((periodicDateRangeType) -> periodicDateRangeType.setDateEnd((S100TruncatedDate)val)));
                         mapper.using(ctx -> modelMapper.map(((AidsToNavigation)ctx.getSource()).getInformations(), new TypeToken<List<InformationTypeImpl>>() {}.getType()) )
                                 .map(src -> src, AidsToNavigationTypeImpl::setInformations);
                         mapper.using(ctx -> modelMapper.map(((AidsToNavigation)ctx.getSource()).getFeatureNames(), new TypeToken<List<FeatureNameTypeImpl>>() {}.getType()) )
@@ -211,33 +240,33 @@ public class GlobalConfig {
         }
 
         // Create the Aggregation/Association type maps
-        modelMapper.createTypeMap(AggregationImpl.class, Aggregation.class)
+        modelMapper.createTypeMap(AtonAggregationImpl.class, AtonAggregation.class)
                 .implicitMappings()
                 .addMappings(mapper -> {
-                    mapper.skip(Aggregation::setId); // We don't know if the ID is correct so skip it
-                    mapper.skip(Aggregation::setPeers);
+                    mapper.skip(AtonAggregation::setId); // We don't know if the ID is correct so skip it
+                    mapper.skip(AtonAggregation::setPeers);
                 });
-        modelMapper.createTypeMap(AssociationImpl.class, Association.class)
+        modelMapper.createTypeMap(AtonAssociationImpl.class, AtonAssociation.class)
                 .implicitMappings()
                 .addMappings(mapper -> {
-                    mapper.skip(Association::setId); // We don't know if the ID is correct so skip it
-                    mapper.skip(Association::setPeers);
+                    mapper.skip(AtonAssociation::setId); // We don't know if the ID is correct so skip it
+                    mapper.skip(AtonAssociation::setPeers);
                 });
-        modelMapper.createTypeMap(Aggregation.class, AggregationImpl.class)
+        modelMapper.createTypeMap(AtonAggregation.class, AtonAggregationImpl.class)
                 .implicitMappings()
                 .addMappings(mapper -> {
-                    mapper.using(ctx -> "ID-AGGR-" + ((Aggregation) ctx.getSource()).getId())
-                            .map(src -> src, AggregationImpl::setId);
-                    mapper.using(ctx -> new ReferenceTypeS125Converter().convertToReferenceTypes(((Aggregation) ctx.getSource()).getPeers(), ReferenceTypeRole.AGGREGATION))
-                            .map(src-> src, AggregationImpl::setPeers);
+                    mapper.using(ctx -> "ID-AGGR-" + ((AtonAggregation) ctx.getSource()).getId())
+                            .map(src -> src, AtonAggregationImpl::setId);
+                    mapper.using(ctx -> new ReferenceTypeS125Converter().convertToReferenceTypes(((AtonAggregation) ctx.getSource()).getPeers(), ReferenceTypeRole.AGGREGATION))
+                            .map(src-> src, AtonAggregationImpl::setPeers);
                 });
-        modelMapper.createTypeMap(Association.class, AssociationImpl.class)
+        modelMapper.createTypeMap(AtonAssociation.class, AtonAssociationImpl.class)
                 .implicitMappings()
                 .addMappings(mapper -> {
-                    mapper.using(ctx -> "ID-ASSO-" + ((Association) ctx.getSource()).getId())
-                            .map(src -> src, AssociationImpl::setId);
-                    mapper.using(ctx -> new ReferenceTypeS125Converter().convertToReferenceTypes(((Association) ctx.getSource()).getPeers(), ReferenceTypeRole.ASSOCIATION))
-                            .map(src-> src, AssociationImpl::setPeers);
+                    mapper.using(ctx -> "ID-ASSO-" + ((AtonAssociation) ctx.getSource()).getId())
+                            .map(src -> src, AtonAssociationImpl::setId);
+                    mapper.using(ctx -> new ReferenceTypeS125Converter().convertToReferenceTypes(((AtonAssociation) ctx.getSource()).getPeers(), ReferenceTypeRole.ASSOCIATION))
+                            .map(src-> src, AtonAssociationImpl::setPeers);
                 });
 
         // Create the Base Aids to Navigation type map for the DTOs

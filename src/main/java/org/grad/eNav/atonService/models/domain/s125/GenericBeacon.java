@@ -16,13 +16,13 @@
 
 package org.grad.eNav.atonService.models.domain.s125;
 
-import _int.iho.s125.gml.cs0._1.*;
+import _int.iho.s_125.gml.cs0._1.*;
 import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import java.math.BigDecimal;
-import java.util.List;
+import java.util.Set;
 
 /**
  * The S-125 Generic Beacon Entity Class.
@@ -32,7 +32,7 @@ import java.util.List;
  * that we can extend this for each Beacon type.
  *
  * @author Nikolaos Vastardis (email: Nikolaos.Vastardis@gla-rad.org)
- * @see _int.iho.s125.gml.cs0._1.GenericBeaconType
+ * @see _int.iho.s_125.gml.cs0._1.GenericBeaconType
  */
 @Entity
 public abstract class GenericBeacon extends StructureObject {
@@ -43,17 +43,11 @@ public abstract class GenericBeacon extends StructureObject {
 
     @Enumerated(EnumType.STRING)
     @ElementCollection(targetClass = ColourType.class)
-    private List<ColourType> colours;
+    private Set<ColourType> colours;
 
     @Enumerated(EnumType.STRING)
     @ElementCollection(targetClass = ColourPatternType.class)
-    private List<ColourPatternType> colourPatterns;
-
-    @Enumerated(EnumType.STRING)
-    private RadarConspicuousType radarConspicuous;
-
-    @Enumerated(EnumType.STRING)
-    private VisualProminenceType visualProminence;
+    private Set<ColourPatternType> colourPatterns;
 
     private BigDecimal height;
 
@@ -62,13 +56,18 @@ public abstract class GenericBeacon extends StructureObject {
 
     @Enumerated(EnumType.STRING)
     @ElementCollection(targetClass = NatureOfConstructionType.class)
-    private List<NatureOfConstructionType> natureOfConstructions;
+    private Set<NatureOfConstructionType> natureOfConstructions;
+
+    private Boolean radarConspicuous;
+
+    @Enumerated(EnumType.STRING)
+    private VisualProminenceType visualProminence;
 
     private BigDecimal verticalLength;
 
     @Enumerated(EnumType.STRING)
     @ElementCollection(targetClass = StatusType.class)
-    private List<StatusType> statuses;
+    private Set<StatusType> statuses;
 
     /**
      * Gets beacon shape.
@@ -93,7 +92,7 @@ public abstract class GenericBeacon extends StructureObject {
      *
      * @return the colours
      */
-    public List<ColourType> getColours() {
+    public Set<ColourType> getColours() {
         return colours;
     }
 
@@ -102,7 +101,7 @@ public abstract class GenericBeacon extends StructureObject {
      *
      * @param colours the colours
      */
-    public void setColours(List<ColourType> colours) {
+    public void setColours(Set<ColourType> colours) {
         this.colours = colours;
     }
 
@@ -111,7 +110,7 @@ public abstract class GenericBeacon extends StructureObject {
      *
      * @return the colour patterns
      */
-    public List<ColourPatternType> getColourPatterns() {
+    public Set<ColourPatternType> getColourPatterns() {
         return colourPatterns;
     }
 
@@ -120,7 +119,7 @@ public abstract class GenericBeacon extends StructureObject {
      *
      * @param colourPatterns the colour patterns
      */
-    public void setColourPatterns(List<ColourPatternType> colourPatterns) {
+    public void setColourPatterns(Set<ColourPatternType> colourPatterns) {
         this.colourPatterns = colourPatterns;
     }
 
@@ -129,35 +128,8 @@ public abstract class GenericBeacon extends StructureObject {
      *
      * @return the radar conspicuous
      */
-    public RadarConspicuousType getRadarConspicuous() {
+    public Boolean getRadarConspicuous() {
         return radarConspicuous;
-    }
-
-    /**
-     * Sets radar conspicuous.
-     *
-     * @param radarConspicuous the radar conspicuous
-     */
-    public void setRadarConspicuous(RadarConspicuousType radarConspicuous) {
-        this.radarConspicuous = radarConspicuous;
-    }
-
-    /**
-     * Gets visual prominence.
-     *
-     * @return the visual prominence
-     */
-    public VisualProminenceType getVisualProminence() {
-        return visualProminence;
-    }
-
-    /**
-     * Sets visually conspicuous.
-     *
-     * @param visualProminence the visually conspicuous
-     */
-    public void setVisualProminence(VisualProminenceType visualProminence) {
-        this.visualProminence = visualProminence;
     }
 
     /**
@@ -201,7 +173,7 @@ public abstract class GenericBeacon extends StructureObject {
      *
      * @return the nature of constructions
      */
-    public List<NatureOfConstructionType> getNatureOfConstructions() {
+    public Set<NatureOfConstructionType> getNatureOfConstructions() {
         return natureOfConstructions;
     }
 
@@ -210,8 +182,35 @@ public abstract class GenericBeacon extends StructureObject {
      *
      * @param natureOfConstructions the nature of constructions
      */
-    public void setNatureOfConstructions(List<NatureOfConstructionType> natureOfConstructions) {
+    public void setNatureOfConstructions(Set<NatureOfConstructionType> natureOfConstructions) {
         this.natureOfConstructions = natureOfConstructions;
+    }
+
+    /**
+     * Sets radar conspicuous.
+     *
+     * @param radarConspicuous the radar conspicuous
+     */
+    public void setRadarConspicuous(Boolean radarConspicuous) {
+        this.radarConspicuous = radarConspicuous;
+    }
+
+    /**
+     * Gets visual prominence.
+     *
+     * @return the visual prominence
+     */
+    public VisualProminenceType getVisualProminence() {
+        return visualProminence;
+    }
+
+    /**
+     * Sets visually conspicuous.
+     *
+     * @param visualProminence the visually conspicuous
+     */
+    public void setVisualProminence(VisualProminenceType visualProminence) {
+        this.visualProminence = visualProminence;
     }
 
     /**
@@ -237,7 +236,7 @@ public abstract class GenericBeacon extends StructureObject {
      *
      * @return the statuses
      */
-    public List<StatusType> getStatuses() {
+    public Set<StatusType> getStatuses() {
         return statuses;
     }
 
@@ -246,7 +245,7 @@ public abstract class GenericBeacon extends StructureObject {
      *
      * @param statuses the statuses
      */
-    public void setStatuses(List<StatusType> statuses) {
+    public void setStatuses(Set<StatusType> statuses) {
         this.statuses = statuses;
     }
 

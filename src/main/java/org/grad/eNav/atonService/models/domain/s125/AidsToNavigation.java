@@ -37,7 +37,6 @@ import java.math.BigInteger;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 /**
@@ -48,7 +47,7 @@ import java.util.Set;
  * abstract so that we can extend this for each Aids to Navigation type.
  *
  * @author Nikolaos Vastardis (email: Nikolaos.Vastardis@gla-rad.org)
- * @see _int.iho.s125.gml.cs0._1.AidsToNavigationType
+ * @see _int.iho.s_125.gml.cs0._1.AidsToNavigationType
  */
 @Entity
 @EntityListeners(AuditingEntityListener.class)
@@ -69,17 +68,30 @@ public abstract class AidsToNavigation implements Serializable {
     @Column(unique=true)
     private String idCode;
 
-    @GenericField(indexNullAs = "9999-01-01")
-    private LocalDate dateEnd;
+    @KeywordField(sortable = Sortable.YES)
+    @Column(unique=true)
+    private String interoperabilityIdentifier;
+
+    @KeywordField(sortable = Sortable.YES)
+    private String source;
+
+    @GenericField(indexNullAs = "1970-01-01")
+    private LocalDate sourceDate;
+
+    @GenericField(indexNullAs = "1970-01-01")
+    private LocalDate installationDate;
 
     @GenericField(indexNullAs = "1970-01-01")
     private LocalDate dateStart;
 
     @GenericField(indexNullAs = "9999-01-01")
-    private LocalDate periodEnd;
+    private LocalDate dateEnd;
 
     @GenericField(indexNullAs = "1970-01-01")
     private LocalDate periodStart;
+
+    @GenericField(indexNullAs = "9999-01-01")
+    private LocalDate periodEnd;
 
     private BigInteger scaleMinimum;
 
@@ -100,11 +112,14 @@ public abstract class AidsToNavigation implements Serializable {
 
     @JsonManagedReference
     @ManyToMany(mappedBy = "peers")
-    final private Set<Aggregation> aggregations = new HashSet<>();
+    final private Set<AtonAggregation> aggregations = new HashSet<>();
 
     @JsonManagedReference
     @ManyToMany(mappedBy = "peers")
-    final private Set<Association> associations = new HashSet<>();
+    final private Set<AtonAssociation> associations = new HashSet<>();
+
+    @ElementCollection
+    private Set<String> seasonalActionRequireds;
 
     @GenericField()
     @LastModifiedDate
@@ -144,6 +159,68 @@ public abstract class AidsToNavigation implements Serializable {
      */
     public void setIdCode(String idCode) {
         this.idCode = idCode;
+    }
+
+    /**
+     * Gets interoperability identifier.
+     *
+     * @return the interoperability identifier
+     */
+    public String getInteroperabilityIdentifier() {
+        return interoperabilityIdentifier;
+    }
+
+    /**
+     * Sets interoperability identifier.
+     *
+     * @param interoperabilityIdentifier the interoperability identifier
+     */
+    public void setInteroperabilityIdentifier(String interoperabilityIdentifier) {
+        this.interoperabilityIdentifier = interoperabilityIdentifier;
+    }
+
+    /**
+     * Gets source.
+     *
+     * @return the source
+     */
+    public String getSource() {
+        return source;
+    }
+
+    /**
+     * Sets source.
+     *
+     * @param source the source
+     */
+    public void setSource(String source) {
+        this.source = source;
+    }
+
+    /**
+     * Gets source date.
+     *
+     * @return the source date
+     */
+    public LocalDate getSourceDate() {
+        return sourceDate;
+    }
+
+    /**
+     * Sets source date.
+     *
+     * @param sourceDate the source date
+     */
+    public void setSourceDate(LocalDate sourceDate) {
+        this.sourceDate = sourceDate;
+    }
+
+    public LocalDate getInstallationDate() {
+        return installationDate;
+    }
+
+    public void setInstallationDate(LocalDate installationDate) {
+        this.installationDate = installationDate;
     }
 
     /**
@@ -325,7 +402,7 @@ public abstract class AidsToNavigation implements Serializable {
      *
      * @return the aggregations
      */
-    public Set<Aggregation> getAggregations() {
+    public Set<AtonAggregation> getAggregations() {
         return aggregations;
     }
 
@@ -334,7 +411,7 @@ public abstract class AidsToNavigation implements Serializable {
      *
      * @param aggregations the aggregations
      */
-    public void setAggregations(Set<Aggregation> aggregations) {
+    public void setAggregations(Set<AtonAggregation> aggregations) {
         this.aggregations.clear();
         if (aggregations != null) {
             // Set the parent correctly
@@ -349,7 +426,7 @@ public abstract class AidsToNavigation implements Serializable {
      *
      * @return the associations
      */
-    public Set<Association> getAssociations() {
+    public Set<AtonAssociation> getAssociations() {
         return associations;
     }
 
@@ -358,7 +435,7 @@ public abstract class AidsToNavigation implements Serializable {
      *
      * @param associations the associations
      */
-    public void setAssociations(Set<Association> associations) {
+    public void setAssociations(Set<AtonAssociation> associations) {
         this.associations.clear();
         if (associations != null) {
             // Set the parent correctly
@@ -366,6 +443,24 @@ public abstract class AidsToNavigation implements Serializable {
             // And update the associations
             this.associations.addAll(associations);
         }
+    }
+
+    /**
+     * Gets seasonal action requireds.
+     *
+     * @return the seasonal action requireds
+     */
+    public Set<String> getSeasonalActionRequireds() {
+        return seasonalActionRequireds;
+    }
+
+    /**
+     * Sets seasonal action requireds.
+     *
+     * @param seasonalActionRequireds the seasonal action requireds
+     */
+    public void setSeasonalActionRequireds(Set<String> seasonalActionRequireds) {
+        this.seasonalActionRequireds = seasonalActionRequireds;
     }
 
     /**

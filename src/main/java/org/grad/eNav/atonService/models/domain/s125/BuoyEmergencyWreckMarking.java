@@ -19,14 +19,14 @@ package org.grad.eNav.atonService.models.domain.s125;
 import jakarta.persistence.Entity;
 
 /**
- * The S-124 Buoy Emergency Wreck Marking Entity Class.
+ * The S-125 Buoy Emergency Wreck Marking Entity Class.
  * <p>
  * This is the basic class for implementing the S-201-compatible Buoy
  * Emergency Wreck Marking type. It is modelled as an entity that extends the
  * {@link GenericBuoy} super class.
  *
  * @author Nikolaos Vastardis (email: Nikolaos.Vastardis@gla-rad.org)
- * @see _int.iho.s125.gml.cs0._1.BuoyEmergencyWreckMarking
+ * @see _int.iho.s_125.gml.cs0._1.EmergencyWreckMarkingBuoy
  */
 @Entity
 public class BuoyEmergencyWreckMarking extends GenericBuoy {

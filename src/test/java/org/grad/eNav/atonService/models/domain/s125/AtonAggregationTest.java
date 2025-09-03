@@ -16,7 +16,7 @@
 
 package org.grad.eNav.atonService.models.domain.s125;
 
-import _int.iho.s125.gml.cs0._1.CategoryOfAggregationType;
+import _int.iho.s_125.gml.cs0._1.CategoryOfAggregationType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.locationtech.jts.geom.Coordinate;
@@ -32,11 +32,11 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class AggregationTest {
+class AtonAggregationTest {
 
     // Test Variables
-    private Aggregation aggregation1;
-    private Aggregation aggregation2;
+    private AtonAggregation aggregation1;
+    private AtonAggregation aggregation2;
 
     /**
      * Common setup for all the tests.
@@ -47,12 +47,12 @@ class AggregationTest {
         GeometryFactory factory = new GeometryFactory(new PrecisionModel(), 4326);
 
         // Construct the aggregations
-        this.aggregation1 = new Aggregation();
+        this.aggregation1 = new AtonAggregation();
         this.aggregation1.setId(BigInteger.ONE);
-        this.aggregation1.setAggregationType(CategoryOfAggregationType.BUOY_MOORING);
-        this.aggregation2 = new Aggregation();
+        this.aggregation1.setAggregationType(CategoryOfAggregationType.LEADING_LINE);
+        this.aggregation2 = new AtonAggregation();
         this.aggregation2.setId(BigInteger.ONE);
-        this.aggregation2.setAggregationType(CategoryOfAggregationType.BUOY_MOORING);
+        this.aggregation2.setAggregationType(CategoryOfAggregationType.LEADING_LINE);
 
         // Initialise the AtoN messages list
         List<AidsToNavigation> aidsToNavigationList = new ArrayList<>();
