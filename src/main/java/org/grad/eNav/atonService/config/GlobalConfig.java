@@ -26,15 +26,14 @@ import org.grad.eNav.atonService.models.domain.s100.ServiceInformationConfig;
 import org.grad.eNav.atonService.models.domain.s125.*;
 import org.grad.eNav.atonService.models.domain.s125.AtonAggregation;
 import org.grad.eNav.atonService.models.domain.s125.AtonAssociation;
+import org.grad.eNav.atonService.models.domain.s125.FogSignal;
 import org.grad.eNav.atonService.models.domain.secom.SubscriptionRequest;
 import org.grad.eNav.atonService.models.dtos.s125.AidsToNavigationDto;
 import org.grad.eNav.atonService.models.enums.ReferenceTypeRole;
 import org.grad.eNav.atonService.utils.*;
 import org.grad.eNav.s125.utils.S125Utils;
 import org.locationtech.jts.io.ParseException;
-import org.modelmapper.ModelMapper;
-import org.modelmapper.TypeToken;
-import org.modelmapper.ValidationException;
+import org.modelmapper.*;
 import org.modelmapper.convention.MatchingStrategies;
 import org.modelmapper.spi.ErrorMessage;
 import org.modelmapper.spi.MappingContext;
@@ -137,33 +136,29 @@ public class GlobalConfig {
                     .implicitMappings()
                     .addMappings(mapper -> {
                         mapper.skip(AidsToNavigation::setId); // We don't know if the ID is correct so skip it
-                        mapper.using(ctx -> Optional.ofNullable(ctx.getSource())
-                                                .map(AidsToNavigationType.class::cast)
-                                                .map(AidsToNavigationType::getFixedDateRange)
+                        mapper.using(ctx -> S125Utils.s100TruncatedDateToLocalDate(Optional.ofNullable(ctx.getSource())
+                                                .map(AidsToNavigationTypeImpl.class::cast)
+                                                .map(AidsToNavigationTypeImpl::getFixedDateRange)
                                                 .map(FixedDateRangeType::getDateStart)
-                                                .map(S125Utils::s100TruncatedDateToLocalDate)
-                                                .orElse(null))
+                                                .orElse(null)))
                                 .map(src -> src, AidsToNavigation::setDateStart);
-                        mapper.using(ctx -> Optional.ofNullable(ctx.getSource())
-                                        .map(AidsToNavigationType.class::cast)
-                                        .map(AidsToNavigationType::getFixedDateRange)
+                        mapper.using(ctx -> S125Utils.s100TruncatedDateToLocalDate(Optional.ofNullable(ctx.getSource())
+                                        .map(AidsToNavigationTypeImpl.class::cast)
+                                        .map(AidsToNavigationTypeImpl::getFixedDateRange)
                                         .map(FixedDateRangeType::getDateEnd)
-                                        .map(S125Utils::s100TruncatedDateToLocalDate)
-                                        .orElse(null))
+                                        .orElse(null)))
                                 .map(src -> src, AidsToNavigation::setDateEnd);
-                        mapper.using(ctx -> Optional.ofNullable(ctx.getSource())
-                                        .map(AidsToNavigationType.class::cast)
-                                        .map(AidsToNavigationType::getPeriodicDateRange)
+                        mapper.using(ctx -> S125Utils.s100TruncatedDateToLocalDate(Optional.ofNullable(ctx.getSource())
+                                        .map(AidsToNavigationTypeImpl.class::cast)
+                                        .map(AidsToNavigationTypeImpl::getPeriodicDateRange)
                                         .map(PeriodicDateRangeType::getDateStart)
-                                        .map(S125Utils::s100TruncatedDateToLocalDate)
-                                        .orElse(null))
+                                        .orElse(null)))
                                 .map(src -> src, AidsToNavigation::setPeriodStart);
-                        mapper.using(ctx -> Optional.ofNullable(ctx.getSource())
-                                        .map(AidsToNavigationType.class::cast)
-                                        .map(AidsToNavigationType::getPeriodicDateRange)
+                        mapper.using(ctx -> S125Utils.s100TruncatedDateToLocalDate(Optional.ofNullable(ctx.getSource())
+                                        .map(AidsToNavigationTypeImpl.class::cast)
+                                        .map(AidsToNavigationTypeImpl::getPeriodicDateRange)
                                         .map(PeriodicDateRangeType::getDateEnd)
-                                        .map(S125Utils::s100TruncatedDateToLocalDate)
-                                        .orElse(null))
+                                        .orElse(null)))
                                 .map(src -> src, AidsToNavigation::setPeriodEnd);
                         mapper.using(ctx -> new GeometryS125Converter().convertToGeometry(((AidsToNavigationType) ctx.getSource())))
                                 .map(src -> src, AidsToNavigation::setGeometry);
@@ -190,22 +185,24 @@ public class GlobalConfig {
                     .addMappings(mapper -> {
                         mapper.using(ctx -> "ID-ATON-" + ((AidsToNavigation) ctx.getSource()).getId())
                                 .map(src -> src, AidsToNavigationType::setId);
-                        mapper.using(ctx -> S125Utils.localDateToS100TruncatedDate(((AidsToNavigation)ctx.getSource()).getDateStart()))
-                                .map(src -> src, (dst, val) -> Optional.ofNullable(dst)
-                                        .map(AidsToNavigationType::getFixedDateRange)
-                                        .ifPresent((fixedDateRangeType) -> fixedDateRangeType.setDateStart((S100TruncatedDate)val)));
-                        mapper.using(ctx -> S125Utils.localDateToS100TruncatedDate(((AidsToNavigation)ctx.getSource()).getDateEnd()))
-                                .map(src -> src, (dst, val) -> Optional.ofNullable(dst)
-                                        .map(AidsToNavigationType::getFixedDateRange)
-                                        .ifPresent((fixedDateRangeType) -> fixedDateRangeType.setDateEnd((S100TruncatedDate)val)));
-                        mapper.using(ctx -> S125Utils.localDateToS100TruncatedDate(((AidsToNavigation)ctx.getSource()).getPeriodStart()))
-                                .map(src -> src, (dst, val) -> Optional.ofNullable(dst)
-                                        .map(AidsToNavigationType::getPeriodicDateRange)
-                                        .ifPresent((periodicDateRangeType) -> periodicDateRangeType.setDateStart((S100TruncatedDate)val)));
-                        mapper.using(ctx -> S125Utils.localDateToS100TruncatedDate(((AidsToNavigation)ctx.getSource()).getPeriodEnd()))
-                                .map(src -> src,  (dst, val) -> Optional.ofNullable(dst)
-                                        .map(AidsToNavigationType::getPeriodicDateRange)
-                                        .ifPresent((periodicDateRangeType) -> periodicDateRangeType.setDateEnd((S100TruncatedDate)val)));
+                        mapper.when(ctx -> ctx.getDestinationType().equals(FixedDateRangeType.class))
+                                .with(ctx -> new FixedDateRangeTypeImpl())
+                                .using(ctx -> {
+                                    final FixedDateRangeType fixedDateRangeType = new FixedDateRangeTypeImpl();
+                                    fixedDateRangeType.setDateStart(S125Utils.localDateToS100TruncatedDate(((AidsToNavigation)ctx.getSource()).getDateStart()));
+                                    fixedDateRangeType.setDateEnd(S125Utils.localDateToS100TruncatedDate(((AidsToNavigation)ctx.getSource()).getDateEnd()));
+                                    return  fixedDateRangeType;
+                                })
+                                .map(src -> src, AidsToNavigationType::setFixedDateRange);
+                        mapper.when(ctx -> ctx.getDestinationType().equals(PeriodicDateRangeType.class))
+                                .with(ctx -> new PeriodicDateRangeTypeImpl())
+                                .using(ctx -> {
+                                    final PeriodicDateRangeType periodicDateRangeType = new PeriodicDateRangeTypeImpl();
+                                    periodicDateRangeType.setDateStart(S125Utils.localDateToS100TruncatedDate(((AidsToNavigation)ctx.getSource()).getPeriodStart()));
+                                    periodicDateRangeType.setDateEnd(S125Utils.localDateToS100TruncatedDate(((AidsToNavigation)ctx.getSource()).getPeriodEnd()));
+                                    return  periodicDateRangeType;
+                                })
+                                .map(src -> src, AidsToNavigationType::setPeriodicDateRange);
                         mapper.using(ctx -> modelMapper.map(((AidsToNavigation)ctx.getSource()).getInformations(), new TypeToken<List<InformationTypeImpl>>() {}.getType()) )
                                 .map(src -> src, AidsToNavigationTypeImpl::setInformations);
                         mapper.using(ctx -> modelMapper.map(((AidsToNavigation)ctx.getSource()).getFeatureNames(), new TypeToken<List<FeatureNameTypeImpl>>() {}.getType()) )
@@ -268,6 +265,10 @@ public class GlobalConfig {
                     mapper.using(ctx -> new ReferenceTypeS125Converter().convertToReferenceTypes(((AtonAssociation) ctx.getSource()).getPeers(), ReferenceTypeRole.ASSOCIATION))
                             .map(src-> src, AtonAssociationImpl::setPeers);
                 });
+
+        // For interface fields that don't have constructors, use converters
+        modelMapper.addConverter(ctx -> new SignalSequenceTypeImpl(),
+                SignalSequence.class, SignalSequenceType.class);
 
         // Create the Base Aids to Navigation type map for the DTOs
         modelMapper.createTypeMap(AidsToNavigation.class, AidsToNavigationDto.class)

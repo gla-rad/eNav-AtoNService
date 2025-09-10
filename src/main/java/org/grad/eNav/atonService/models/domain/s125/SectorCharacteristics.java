@@ -16,9 +16,7 @@
 
 package org.grad.eNav.atonService.models.domain.s125;
 
-import _int.iho.s_125.gml.cs0._1.CategoryOfLightType;
 import _int.iho.s_125.gml.cs0._1.LightCharacteristicType;
-import _int.iho.s_125.gml.cs0._1.impl.SignalSequenceTypeImpl;
 import jakarta.persistence.*;
 
 import java.io.Serializable;
