@@ -26,12 +26,13 @@ import org.grad.eNav.atonService.models.domain.s100.ServiceInformationConfig;
 import org.grad.eNav.atonService.models.domain.s125.*;
 import org.grad.eNav.atonService.models.domain.s125.AtonAggregation;
 import org.grad.eNav.atonService.models.domain.s125.AtonAssociation;
-import org.grad.eNav.atonService.models.domain.s125.FogSignal;
 import org.grad.eNav.atonService.models.domain.secom.SubscriptionRequest;
 import org.grad.eNav.atonService.models.dtos.s125.AidsToNavigationDto;
 import org.grad.eNav.atonService.models.enums.ReferenceTypeRole;
 import org.grad.eNav.atonService.utils.*;
 import org.grad.eNav.s125.utils.S125Utils;
+import org.grad.secom.core.models.SubscriptionRequestObject;
+import org.grad.secomv2.core.models.EnvelopeSubscriptionObject;
 import org.locationtech.jts.io.ParseException;
 import org.modelmapper.*;
 import org.modelmapper.convention.MatchingStrategies;
@@ -122,6 +123,10 @@ public class GlobalConfig {
                             .map(src -> src, DatasetImpl::setMembers);
                 })
                 .implicitMappings();
+
+        // For interface fields that don't have constructors, use converters
+        modelMapper.addConverter(ctx -> new SignalSequenceTypeImpl(),
+                SignalSequence.class, SignalSequenceType.class);
 
         // Loop all the mapped S-125 AtoN types and configure the model mapper
         // to translate correctly from the S-125 onto the local classes and
@@ -266,10 +271,6 @@ public class GlobalConfig {
                             .map(src-> src, AtonAssociationImpl::setPeers);
                 });
 
-        // For interface fields that don't have constructors, use converters
-        modelMapper.addConverter(ctx -> new SignalSequenceTypeImpl(),
-                SignalSequence.class, SignalSequenceType.class);
-
         // Create the Base Aids to Navigation type map for the DTOs
         modelMapper.createTypeMap(AidsToNavigation.class, AidsToNavigationDto.class)
                 .implicitMappings()
@@ -296,9 +297,9 @@ public class GlobalConfig {
                 .implicitMappings()
                 .addMappings(mapper -> {
                     mapper.using(ctx -> SecomUtils.translateSecomContainerTypeEnum((org.grad.secom.core.models.enums.ContainerTypeEnum)ctx.getSource()))
-                            .map(src -> src.getContainerType(), SubscriptionRequest::setContainerType);
+                            .map(SubscriptionRequestObject::getContainerType, SubscriptionRequest::setContainerType);
                     mapper.using(ctx -> SecomUtils.translateSecomDataProductTypeEnum((org.grad.secom.core.models.enums.SECOM_DataProductType)ctx.getSource()))
-                            .map(src -> src.getDataProductType(), SubscriptionRequest::setDataProductType);
+                            .map(SubscriptionRequestObject::getDataProductType, SubscriptionRequest::setDataProductType);
                     mapper.using(ctx -> Optional.of(ctx)
                             .map(MappingContext::getSource)
                             .map(String.class::cast)
@@ -310,7 +311,7 @@ public class GlobalConfig {
                                 }
                             })
                             .orElse(null))
-                            .map(src -> src.getGeometry(), SubscriptionRequest::setGeometry);
+                            .map(SubscriptionRequestObject::getGeometry, SubscriptionRequest::setGeometry);
                 });
 
         // Now map the SECOM v2.0 Subscription Requests - Use the envelope
@@ -328,7 +329,7 @@ public class GlobalConfig {
                                         }
                                     })
                                     .orElse(null))
-                            .map(src -> src.getGeometry(), SubscriptionRequest::setGeometry);
+                            .map(EnvelopeSubscriptionObject::getGeometry, SubscriptionRequest::setGeometry);
                 });
         // ================================================================== //
 
