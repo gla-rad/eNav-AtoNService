@@ -113,6 +113,7 @@ public class S125DatasetIdentification {
         this.datasetTitle = "GRAD e-Navigation S-125 Dataset";
         this.datasetReferenceDate = LocalDate.now();
         this.datasetLanguage = Locale.getDefault().getISO3Language();
+        this.datasetAbstract = "";
 
         // Also se the dataset category topics by default to OCEANS
         this.datasetTopicCategories = new HashSet<>();

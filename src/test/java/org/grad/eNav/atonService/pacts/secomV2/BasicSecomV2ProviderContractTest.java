@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.grad.eNav.atonService.pacts;
+package org.grad.eNav.atonService.pacts.secomV2;
 
 import au.com.dius.pact.provider.junit5.HttpTestTarget;
 import au.com.dius.pact.provider.junit5.PactVerificationContext;
@@ -28,7 +28,7 @@ import org.grad.eNav.atonService.feign.CKeeperClient;
 import org.grad.eNav.atonService.services.DatasetService;
 import org.grad.eNav.atonService.services.UnLoCodeService;
 import org.grad.eNav.atonService.services.secom.SecomSubscriptionService;
-import org.grad.secom.core.components.SecomSignatureFilter;
+import org.grad.secomv2.core.components.SecomSignatureFilter;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.TestTemplate;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -43,7 +43,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 /**
- * The S125SecomProviderContractTest Class.
+ * The SecomProviderContractTest Class.
  * <p/>
  * The main class for performing the Pact contract testing. This class
  * initiates the Springboot testing environment (without security) and
@@ -52,8 +52,8 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
  * using the states available.
  * <p/>
  * These tests will check against the latest consumer pact contract published
- * for the SecomS125Service, i.e. SECOM-compliant services that specialise in
- * S-125 data.
+ * for the SecomService, i.e. generic SECOM-compliant services that do not
+ * specialise in any S-100 data.
  *
  * @author Nikolaos Vastardis (email: Nikolaos.Vastardis@gla-rad.org)
  */
@@ -63,15 +63,15 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 @Import({TestingConfiguration.class, TestFeignSecurityConfig.class})
 @IgnoreNoPactsToVerify
 @PactBroker
-@Provider("SecomS125Service")
-public class S125SecomProviderContractTest implements
-        PingSecomControllerTestInterface,
-        CapabilitySecomControllerTestInterface,
-        GetSummarySecomControllerTestInterface,
-        GetSecomControllerTestInterface,
-        AcknowledgementSecomControllerTestInterface,
-        SubscriptionSecomControllerTestInterface,
-        RemoveSubscriptionSecomControllerTestInterface
+@Provider("SecomV2Service")
+public class BasicSecomV2ProviderContractTest implements
+        PingSecomV2ControllerTestInterface,
+        CapabilitySecomV2ControllerTestInterface,
+        GetSummarySecomV2ControllerTestInterface,
+        GetSecomV2ControllerTestInterface,
+        AcknowledgementSecomV2ControllerTestInterface,
+        SubscriptionSecomV2ControllerTestInterface,
+        RemoveSubscriptionSecomV2ControllerTestInterface
 {
     /**
      * The port the test service is running on.

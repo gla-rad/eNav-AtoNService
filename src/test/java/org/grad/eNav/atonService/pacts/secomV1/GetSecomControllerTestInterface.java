@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.grad.eNav.atonService.pacts;
+package org.grad.eNav.atonService.pacts.secomV1;
 
 import au.com.dius.pact.provider.junitsupport.State;
 import feign.Response;

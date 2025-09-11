@@ -14,10 +14,13 @@
  * limitations under the License.
  */
 
-package org.grad.eNav.atonService.pacts;
+package org.grad.eNav.atonService.pacts.secomV2;
 
+import _int.iho.s_125.s_100.gml.base._5_2.DataSetIdentificationType;
+import _int.iho.s_125.s_100.gml.base._5_2.impl.DataSetIdentificationTypeImpl;
 import au.com.dius.pact.provider.junitsupport.State;
 import org.grad.eNav.atonService.models.domain.s125.S125Dataset;
+import org.grad.eNav.atonService.models.domain.s125.S125DatasetIdentification;
 import org.grad.eNav.atonService.services.DatasetService;
 import org.grad.eNav.atonService.services.UnLoCodeService;
 import org.locationtech.jts.geom.Coordinate;
@@ -39,7 +42,7 @@ import static org.mockito.Mockito.doReturn;
  *
  * @author Nikolaos Vastardis (email: Nikolaos.Vastardis@gla-rad.org)
  */
-public interface GetSummarySecomControllerTestInterface {
+public interface GetSummarySecomV2ControllerTestInterface {
 
     /**
      * Provides a geometry factory to setup test geometries.

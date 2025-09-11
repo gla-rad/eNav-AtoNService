@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.grad.eNav.atonService.pacts;
+package org.grad.eNav.atonService.pacts.secomV2;
 
 import au.com.dius.pact.provider.junitsupport.State;
 import org.grad.eNav.atonService.models.domain.secom.SubscriptionRequest;
@@ -32,7 +32,7 @@ import static org.mockito.Mockito.doReturn;
  *
  * @author Nikolaos Vastardis (email: Nikolaos.Vastardis@gla-rad.org)
  */
-public interface SubscriptionSecomControllerTestInterface {
+public interface SubscriptionSecomV2ControllerTestInterface {
 
     /**
      * Provides the mocked SECOM subscription service to the tests.
