@@ -33,7 +33,7 @@ import java.math.BigInteger;
  * @see _int.iho.s_125.gml.cs0._1.InformationType
  */
 @Entity
-public abstract class Information implements Serializable {
+public class Information implements Serializable {
 
     // Class Variables
     @Id
