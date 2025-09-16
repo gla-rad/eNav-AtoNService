@@ -16,6 +16,7 @@
 
 package org.grad.eNav.atonService.services;
 
+import _int.iho.s_125.gml.cs0._1.ChangeTypesType;
 import jakarta.persistence.EntityManager;
 import org.grad.eNav.atonService.exceptions.DataNotFoundException;
 import org.grad.eNav.atonService.exceptions.DeletedAtoNsInDatasetContentGenerationException;
@@ -140,8 +141,9 @@ class DatasetServiceTest {
             featureName.setName("Aton No" + i);
             aidsToNavigation.setFeatureNames(Collections.singleton(featureName));
             // Add the information entries
-            Information information = new Information();
+            AtonStatusInformation information = new AtonStatusInformation();
             information.setText("Description of AtoN No" + i);
+            information.setChangeTypes(ChangeTypesType.TEMPORARY_CHANGES);
             aidsToNavigation.setInformations(Collections.singleton(information));
             this.aidsToNavigationList.add(aidsToNavigation);
         }

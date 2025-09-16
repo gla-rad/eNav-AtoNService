@@ -21,10 +21,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.grad.eNav.atonService.TestFeignSecurityConfig;
 import org.grad.eNav.atonService.TestingConfiguration;
 import org.grad.eNav.atonService.exceptions.DataNotFoundException;
-import org.grad.eNav.atonService.models.domain.s125.AidsToNavigation;
-import org.grad.eNav.atonService.models.domain.s125.BeaconCardinal;
-import org.grad.eNav.atonService.models.domain.s125.FeatureName;
-import org.grad.eNav.atonService.models.domain.s125.Information;
+import org.grad.eNav.atonService.models.domain.s125.*;
 import org.grad.eNav.atonService.models.dtos.datatables.*;
 import org.grad.eNav.atonService.models.dtos.s125.AidsToNavigationDto;
 import org.grad.eNav.atonService.models.dtos.s125.FeatureNameDto;
@@ -122,7 +119,7 @@ class AidsToNavigationControllerTest {
             featureName.setName("Aton No" + i);
             aidsToNavigation.setFeatureNames(Collections.singleton(featureName));
             // Add the information entries
-            Information information = new Information();
+            AtonStatusInformation information = new AtonStatusInformation();
             information.setText("Description of AtoN No" + i);
             aidsToNavigation.setInformations(Collections.singleton(information));
             this.aidsToNavigationList.add(aidsToNavigation);
@@ -142,7 +139,7 @@ class AidsToNavigationControllerTest {
         featureName.setName("Aton No 1");
         existingAidsToNavigation.setFeatureNames(Collections.singleton(featureName));
         // Add the information entries
-        Information information = new Information();
+        AtonStatusInformation information = new AtonStatusInformation();
         information.setId(BigInteger.ONE);
         information.setText("Description of AtoN No 1");
         existingAidsToNavigation.setInformations(Collections.singleton(information));

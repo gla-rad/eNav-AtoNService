@@ -16,11 +16,9 @@
 
 package org.grad.eNav.atonService.services;
 
+import _int.iho.s_125.gml.cs0._1.ChangeTypesType;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.grad.eNav.atonService.models.domain.s125.AidsToNavigation;
-import org.grad.eNav.atonService.models.domain.s125.BeaconCardinal;
-import org.grad.eNav.atonService.models.domain.s125.FeatureName;
-import org.grad.eNav.atonService.models.domain.s125.Information;
+import org.grad.eNav.atonService.models.domain.s125.*;
 import org.grad.eNav.atonService.models.enums.DatasetOperation;
 import org.grad.secomv2.core.models.enums.SECOM_DataProductType;
 import org.junit.jupiter.api.BeforeEach;
@@ -93,8 +91,9 @@ class S125WebSocketServiceTest {
         featureName.setName("Aton No1 ");
         aidsToNavigation.setFeatureNames(Collections.singleton(featureName));
         // Add the information entries
-        Information information = new Information();
+        AtonStatusInformation information = new AtonStatusInformation();
         information.setText("Description of AtoN No 1");
+        information.setChangeTypes(ChangeTypesType.TEMPORARY_CHANGES);
         aidsToNavigation.setInformations(Collections.singleton(information));
 
         // Also set the web-socket service topic prefix

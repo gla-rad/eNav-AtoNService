@@ -65,7 +65,7 @@ class AtonAssociationTest {
             featureName.setName("Aton No" + i);
             aidsToNavigation.setFeatureNames(Collections.singleton(featureName));
             // Add the information entries
-            Information information = new Information();
+            AtonStatusInformation information = new AtonStatusInformation();
             information.setText("Description of AtoN No" + i);
             aidsToNavigation.setInformations(Collections.singleton(information));
             aidsToNavigationList.add(aidsToNavigation);

@@ -49,10 +49,10 @@ class AtonAggregationTest {
         // Construct the aggregations
         this.aggregation1 = new AtonAggregation();
         this.aggregation1.setId(BigInteger.ONE);
-        this.aggregation1.setAggregationType(CategoryOfAggregationType.LEADING_LINE);
+        this.aggregation1.setCategoryOfAggregation(CategoryOfAggregationType.LEADING_LINE);
         this.aggregation2 = new AtonAggregation();
         this.aggregation2.setId(BigInteger.ONE);
-        this.aggregation2.setAggregationType(CategoryOfAggregationType.LEADING_LINE);
+        this.aggregation2.setCategoryOfAggregation(CategoryOfAggregationType.LEADING_LINE);
 
         // Initialise the AtoN messages list
         List<AidsToNavigation> aidsToNavigationList = new ArrayList<>();
@@ -66,7 +66,7 @@ class AtonAggregationTest {
             featureName.setName("Aton No" + i);
             aidsToNavigation.setFeatureNames(Collections.singleton(featureName));
             // Add the information entries
-            Information information = new Information();
+            AtonStatusInformation information = new AtonStatusInformation();
             information.setText("Description of AtoN No" + i);
             aidsToNavigation.setInformations(Collections.singleton(information));
             aidsToNavigationList.add(aidsToNavigation);

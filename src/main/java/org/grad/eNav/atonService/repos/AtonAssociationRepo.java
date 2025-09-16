@@ -24,7 +24,7 @@ import java.math.BigInteger;
 import java.util.Set;
 
 /**
- * Spring Data JPA repository for the Association entities.
+ * Spring Data JPA repository for the AtoN Association entities.
  *
  * @author Nikolaos Vastardis (email: Nikolaos.Vastardis@gla-rad.org)
  */

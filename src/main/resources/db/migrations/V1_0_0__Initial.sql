@@ -236,7 +236,7 @@ CREATE SEQUENCE public.association_seq
 
 CREATE TABLE public.aton_aggregation (
     id numeric(38,0) NOT NULL,
-    aggregation_type character varying(255),
+    category_of_aggregation character varying(255),
     CONSTRAINT aton_aggregation_aggregation_type_check CHECK (((aggregation_type)::text = ANY ((ARRAY['LEADING_LINE'::character varying, 'MEASURED_DISTANCE'::character varying, 'RANGE_SYSTEM'::character varying])::text[])))
 );
 

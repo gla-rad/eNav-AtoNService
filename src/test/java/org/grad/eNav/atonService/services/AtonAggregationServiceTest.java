@@ -17,6 +17,7 @@
 package org.grad.eNav.atonService.services;
 
 import _int.iho.s_125.gml.cs0._1.CategoryOfAggregationType;
+import _int.iho.s_125.gml.cs0._1.ChangeTypesType;
 import org.grad.eNav.atonService.exceptions.DataNotFoundException;
 import org.grad.eNav.atonService.models.domain.s125.*;
 import org.grad.eNav.atonService.repos.AtonAggregationRepo;
@@ -77,7 +78,7 @@ class AtonAggregationServiceTest {
 
         this.aggregation = new AtonAggregation();
         this.aggregation.setId(BigInteger.ONE);
-        this.aggregation.setAggregationType(CategoryOfAggregationType.LEADING_LINE);
+        this.aggregation.setCategoryOfAggregation(CategoryOfAggregationType.LEADING_LINE);
 
         // Initialise the AtoN messages list
         for(long i=0; i<5; i++) {
@@ -90,8 +91,9 @@ class AtonAggregationServiceTest {
             featureName.setName("Aton No" + i);
             aidsToNavigation.setFeatureNames(Collections.singleton(featureName));
             // Add the information entries
-            Information information = new Information();
+            AtonStatusInformation information = new AtonStatusInformation();
             information.setText("Description of AtoN No" + i);
+            information.setChangeTypes(ChangeTypesType.TEMPORARY_CHANGES);
             aidsToNavigation.setInformations(Collections.singleton(information));
             this.aggregation.getPeers().add(aidsToNavigation);
         }
@@ -111,7 +113,7 @@ class AtonAggregationServiceTest {
         // Test the result
         assertNotNull(result);
         assertEquals(this.aggregation.getId(), result.getId());
-        assertEquals(this.aggregation.getAggregationType(), result.getAggregationType());
+        assertEquals(this.aggregation.getCategoryOfAggregation(), result.getCategoryOfAggregation());
         assertNotNull(result.getPeers());
         assertEquals(this.aggregation.getPeers().size(), result.getPeers().size());
         assertTrue(result.getPeers().containsAll(this.aggregation.getPeers()));
@@ -165,7 +167,7 @@ class AtonAggregationServiceTest {
         final AtonAggregation resultAggregation = result.stream().findFirst().orElse(null);
         assertNotNull(resultAggregation);
         assertEquals(this.aggregation.getId(), resultAggregation.getId());
-        assertEquals(this.aggregation.getAggregationType(), resultAggregation.getAggregationType());
+        assertEquals(this.aggregation.getCategoryOfAggregation(), resultAggregation.getCategoryOfAggregation());
         assertNotNull(resultAggregation.getPeers());
         assertFalse(resultAggregation.getPeers().isEmpty());
         assertEquals(this.aggregation.getPeers().size(), resultAggregation.getPeers().size());

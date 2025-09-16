@@ -21,7 +21,7 @@ import jakarta.persistence.Embeddable;
 import java.io.Serializable;
 
 /**
- * The S-125 Ebscured Sector Embeddable Class.
+MInor * The S-125 Obscured Sector Embeddable Class.
  * <p>
  * This is the basic class for implementing the S-125-compatible Obscured
  * Sector ype.

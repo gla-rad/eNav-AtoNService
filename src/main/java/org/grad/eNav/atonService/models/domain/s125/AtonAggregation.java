@@ -24,6 +24,7 @@ import jakarta.persistence.*;
 import java.io.Serializable;
 import java.math.BigInteger;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * The S-125 Aggregation Entity Class
@@ -45,7 +46,7 @@ public class AtonAggregation implements Serializable {
     private BigInteger id;
 
     @Enumerated(EnumType.STRING)
-    private CategoryOfAggregationType aggregationType;
+    private CategoryOfAggregationType categoryOfAggregation;
 
     @JsonBackReference
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
@@ -75,21 +76,21 @@ public class AtonAggregation implements Serializable {
     }
 
     /**
-     * Gets aggregation type.
+     * Gets category of aggregation.
      *
-     * @return the aggregation type
+     * @return the category of aggregation
      */
-    public CategoryOfAggregationType getAggregationType() {
-        return aggregationType;
+    public CategoryOfAggregationType getCategoryOfAggregation() {
+        return categoryOfAggregation;
     }
 
     /**
-     * Sets aggregation type.
+     * Sets category of aggregation.
      *
-     * @param aggregationType the aggregation type
+     * @param categoryOfAggregationType the category of aggregation
      */
-    public void setAggregationType(CategoryOfAggregationType aggregationType) {
-        this.aggregationType = aggregationType;
+    public void setCategoryOfAggregation(CategoryOfAggregationType categoryOfAggregationType) {
+        this.categoryOfAggregation = categoryOfAggregationType;
     }
 
     /**
@@ -123,7 +124,7 @@ public class AtonAggregation implements Serializable {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof AtonAggregation that)) return false;
-        return aggregationType == that.aggregationType
+        return categoryOfAggregation == that.categoryOfAggregation
                 && Objects.equals(this.getPeers().size(), that.getPeers().size())
                 && new HashSet<>(this.getPeerIDCodes()).containsAll(that.getPeerIDCodes());
     }
@@ -136,7 +137,7 @@ public class AtonAggregation implements Serializable {
     @Override
     public int hashCode() {
         return Objects.hash(
-                aggregationType,
+                categoryOfAggregation,
                 Arrays.hashCode(this.getPeerIDCodes().toArray())
         );
     }
@@ -147,11 +148,10 @@ public class AtonAggregation implements Serializable {
      * @return a list of all the peer AtoN ID Codes included in the aggregation
      */
     @JsonIgnore
-    public List<String> getPeerIDCodes() {
+    public Set<String> getPeerIDCodes() {
         return this.getPeers()
                 .stream()
                 .map(AidsToNavigation::getIdCode)
-                .sorted()
-                .toList();
+                .collect(Collectors.toSet());
     }
 }

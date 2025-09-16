@@ -27,7 +27,7 @@ import java.io.Serializable;
  * Information type.
  *
  * @author Nikolaos Vastardis (email: Nikolaos.Vastardis@gla-rad.org)
- * @see _int.iho.s_125.gml.cs0._1.SectorCharacteristicsType
+ * @see _int.iho.s_125.gml.cs0._1.SectorInformationType
  */
 @Embeddable
 public class SectorInformation implements Serializable {
