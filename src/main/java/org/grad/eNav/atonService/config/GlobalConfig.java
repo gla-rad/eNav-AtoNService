@@ -125,8 +125,15 @@ public class GlobalConfig {
                 .implicitMappings();
 
         // For interface fields that don't have constructors, use converters
+        modelMapper.addConverter(ctx -> new FeatureNameTypeImpl(),
+                FeatureName.class, FeatureNameType.class);
         modelMapper.addConverter(ctx -> new SignalSequenceTypeImpl(),
                 SignalSequence.class, SignalSequenceType.class);
+        modelMapper.addConverter(ctx -> new MultiplicityOfFeaturesTypeImpl(),
+                MultiplicityOfFeatures.class, MultiplicityOfFeaturesType.class);
+        modelMapper.addConverter(ctx -> new SectorCharacteristicsTypeImpl(),
+                SectorCharacteristics.class, SectorCharacteristicsType.class);
+
 
         // Loop all the mapped S-125 AtoN types and configure the model mapper
         // to translate correctly from the S-125 onto the local classes and
