@@ -43,7 +43,7 @@ public class LightSector implements Serializable {
 
     // Class Variables
     @Enumerated(EnumType.STRING)
-    @ElementCollection(targetClass = CategoryOfLightType.class)
+    @ElementCollection(targetClass = ColourType.class)
     private Set<ColourType> colours;
 
     private DirectionalCharacter directionalCharacter;
