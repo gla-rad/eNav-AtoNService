@@ -20,6 +20,7 @@ import _int.iho.s_125.gml.cs0._1.CategoryOfNavigationLineType;
 import _int.iho.s_125.gml.cs0._1.StatusType;
 import jakarta.persistence.*;
 import java.math.BigDecimal;
+import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -46,7 +47,7 @@ public class NavigationLine extends AidsToNavigation {
     private Set<StatusType> statuses;
 
     @ManyToMany(mappedBy = "navigationLines")
-    private Set<RecommendedTrack> navigableTracks;
+    final private Set<RecommendedTrack> navigableTracks = new HashSet<>();
 
     /**
      * Gets category of navigation line.
@@ -117,6 +118,10 @@ public class NavigationLine extends AidsToNavigation {
      * @param navigableTracks the navigable tracks
      */
     public void setNavigableTracks(Set<RecommendedTrack> navigableTracks) {
-        this.navigableTracks = navigableTracks;
+        this.navigableTracks.clear();
+        if(navigableTracks != null) {
+            navigableTracks.forEach(navigableTrack -> navigableTrack.getNavigationLines().add(this));
+            this.navigableTracks.addAll(navigableTracks);
+        }
     }
 }

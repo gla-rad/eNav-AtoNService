@@ -44,7 +44,7 @@ public class RadarTransponderBeacon extends Equipment {
 
     private String signalGroup;
 
-    private String signalSequence;
+    private BigDecimal valueOfNominalRange;
 
     @Embedded
     @AttributeOverrides({
@@ -72,14 +72,11 @@ public class RadarTransponderBeacon extends Equipment {
     })
     private SectorLimitDetails sectorLimitTwo;
 
+    private SignalSequence signalSequence;
+
     @Enumerated(EnumType.STRING)
     @ElementCollection(targetClass = StatusType.class)
     private Set<StatusType> statuses;
-
-    /**
-     * The Value of nominal range.
-     */
-    private BigDecimal valueOfNominalRange;
 
     /**
      * Gets category of radar transponder beacon type.
@@ -136,21 +133,21 @@ public class RadarTransponderBeacon extends Equipment {
     }
 
     /**
-     * Gets signal sequence.
+     * Gets value of nominal range.
      *
-     * @return the signal sequence
+     * @return the value of nominal range
      */
-    public String getSignalSequence() {
-        return signalSequence;
+    public BigDecimal getValueOfNominalRange() {
+        return valueOfNominalRange;
     }
 
     /**
-     * Sets signal sequence.
+     * Sets value of nominal range.
      *
-     * @param signalSequence the signal sequence
+     * @param valueOfNominalRange the value of nominal range
      */
-    public void setSignalSequence(String signalSequence) {
-        this.signalSequence = signalSequence;
+    public void setValueOfNominalRange(BigDecimal valueOfNominalRange) {
+        this.valueOfNominalRange = valueOfNominalRange;
     }
 
     /**
@@ -190,6 +187,24 @@ public class RadarTransponderBeacon extends Equipment {
     }
 
     /**
+     * Gets signal sequence.
+     *
+     * @return the signal sequence
+     */
+    public SignalSequence getSignalSequence() {
+        return signalSequence;
+    }
+
+    /**
+     * Sets signal sequence.
+     *
+     * @param signalSequence the signal sequence
+     */
+    public void setSignalSequence(SignalSequence signalSequence) {
+        this.signalSequence = signalSequence;
+    }
+
+    /**
      * Gets statuses.
      *
      * @return the statuses
@@ -205,23 +220,5 @@ public class RadarTransponderBeacon extends Equipment {
      */
     public void setStatuses(Set<StatusType> statuses) {
         this.statuses = statuses;
-    }
-
-    /**
-     * Gets value of nominal range.
-     *
-     * @return the value of nominal range
-     */
-    public BigDecimal getValueOfNominalRange() {
-        return valueOfNominalRange;
-    }
-
-    /**
-     * Sets value of nominal range.
-     *
-     * @param valueOfNominalRange the value of nominal range
-     */
-    public void setValueOfNominalRange(BigDecimal valueOfNominalRange) {
-        this.valueOfNominalRange = valueOfNominalRange;
     }
 }

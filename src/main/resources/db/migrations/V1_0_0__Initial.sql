@@ -123,6 +123,7 @@ CREATE TABLE public.aids_to_navigation (
     category_of_radar_transponder_beacon_type character varying(255),
     category_of_radio_station character varying(255),
     category_of_silo_tank character varying(255),
+    category_of_syntheticaisaidto_navigation character varying(255),
     colour character varying(255),
     condition character varying(255),
     exhibition_condition_of_light character varying(255),
@@ -160,6 +161,7 @@ CREATE TABLE public.aids_to_navigation (
     CONSTRAINT aids_to_navigation_category_of_radio_station_check CHECK (((category_of_radio_station)::text = ANY ((ARRAY['CIRCULAR_NON_DIRECTIONAL_MARINE_OR_AERO_MARINE_RADIOBEACON'::character varying, 'DIRECTIONAL_RADIOBEACON'::character varying, 'ROTATING_PATTERN_RADIOBEACON'::character varying, 'CONSOL_BEACON'::character varying, 'RADIO_DIRECTION_FINDING_STATION'::character varying, 'COAST_RADIO_STATION_PROVIDING_QTG_SERVICE'::character varying, 'AERONAUTICAL_RADIOBEACON'::character varying, 'DECCA'::character varying, 'LORAN_C'::character varying, 'DIFFERENTIAL_GNSS'::character varying, 'TORAN'::character varying, 'OMEGA'::character varying, 'SYLEDIS'::character varying, 'CHAIKA'::character varying, 'RADIO_TELEPHONE_STATION'::character varying, 'AIS_BASE_STATION'::character varying])::text[]))),
     CONSTRAINT aids_to_navigation_category_of_silo_tank_check CHECK (((category_of_silo_tank)::text = ANY ((ARRAY['SILO_IN_GENERAL'::character varying, 'TANK_IN_GENERAL'::character varying, 'GRAIN_ELEVATOR'::character varying, 'WATER_TOWER'::character varying])::text[]))),
     CONSTRAINT aids_to_navigation_category_of_special_purpose_mark_check CHECK (((category_of_special_purpose_mark >= 0) AND (category_of_special_purpose_mark <= 62))),
+    CONSTRAINT aids_to_navigation_category_of_syntheticaisaidto_navigati_check CHECK (((category_of_syntheticaisaidto_navigation)::text = ANY ((ARRAY['PREDICTED'::character varying, 'MONITORED'::character varying])::text[]))),
     CONSTRAINT aids_to_navigation_colour_check CHECK (((colour)::text = ANY ((ARRAY['WHITE'::character varying, 'BLACK'::character varying, 'RED'::character varying, 'GREEN'::character varying, 'BLUE'::character varying, 'YELLOW'::character varying, 'GREY'::character varying, 'BROWN'::character varying, 'AMBER'::character varying, 'VIOLET'::character varying, 'ORANGE'::character varying, 'MAGENTA'::character varying, 'PINK'::character varying, 'GREEN_A'::character varying, 'GREEN_B'::character varying, 'WHITE_TEMPORARY'::character varying, 'RED_TEMPORARY'::character varying, 'YELLOW_TEMPORARY'::character varying, 'GREEN_PREFERRED'::character varying, 'GREEN_TEMPORARY'::character varying])::text[]))),
     CONSTRAINT aids_to_navigation_condition_check CHECK (((condition)::text = ANY ((ARRAY['UNDER_CONSTRUCTION'::character varying, 'RUINED'::character varying, 'UNDER_RECLAMATION'::character varying, 'WINGLESS'::character varying, 'PLANNED_CONSTRUCTION'::character varying])::text[]))),
     CONSTRAINT aids_to_navigation_exhibition_condition_of_light_check CHECK (((exhibition_condition_of_light)::text = ANY ((ARRAY['LIGHT_SHOWN_WITHOUT_CHANGE_OF_CHARACTER'::character varying, 'DAYTIME_LIGHT'::character varying, 'FOG_LIGHT'::character varying, 'NIGHT_LIGHT'::character varying])::text[]))),
@@ -177,22 +179,24 @@ CREATE TABLE public.aids_to_navigation (
 
 
 --
+-- Name: aids_to_navigation_feature_names; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.aids_to_navigation_feature_names (
+    aids_to_navigation_id numeric(38,0) NOT NULL,
+    display_name boolean,
+    language character varying(255),
+    name character varying(255)
+);
+
+
+--
 -- Name: aids_to_navigation_seasonal_action_requireds; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE public.aids_to_navigation_seasonal_action_requireds (
     aids_to_navigation_id numeric(38,0) NOT NULL,
     seasonal_action_requireds character varying(255)
-);
-
-
---
--- Name: aids_to_navigation_sector_characteristics; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.aids_to_navigation_sector_characteristics (
-    light_sectored_id numeric(38,0) NOT NULL,
-    sector_characteristics_id numeric(38,0) NOT NULL
 );
 
 
@@ -237,7 +241,7 @@ CREATE SEQUENCE public.association_seq
 CREATE TABLE public.aton_aggregation (
     id numeric(38,0) NOT NULL,
     category_of_aggregation character varying(255),
-    CONSTRAINT aton_aggregation_aggregation_type_check CHECK (((aggregation_type)::text = ANY ((ARRAY['LEADING_LINE'::character varying, 'MEASURED_DISTANCE'::character varying, 'RANGE_SYSTEM'::character varying])::text[])))
+    CONSTRAINT aton_aggregation_category_of_aggregation_check CHECK (((category_of_aggregation)::text = ANY ((ARRAY['LEADING_LINE'::character varying, 'MEASURED_DISTANCE'::character varying, 'RANGE_SYSTEM'::character varying])::text[])))
 );
 
 
@@ -445,31 +449,6 @@ CREATE TABLE public.electronic_aton_statuses (
 
 
 --
--- Name: feature_name; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.feature_name (
-    display_name boolean,
-    feature_id numeric(38,0),
-    id numeric(38,0) NOT NULL,
-    language character varying(255),
-    name character varying(255)
-);
-
-
---
--- Name: feature_name_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE public.feature_name_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
 -- Name: fog_signal_statuses; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -598,7 +577,6 @@ CREATE TABLE public.information (
     dangerous_feature_id numeric(38,0),
     feature_id numeric(38,0),
     id numeric(38,0) NOT NULL,
-    source_date date,
     dtype character varying(31) NOT NULL,
     aton_commissioning character varying(255),
     aton_removal character varying(255),
@@ -611,14 +589,11 @@ CREATE TABLE public.information (
     fixed_aton_change character varying(255),
     floating_aton_change character varying(255),
     headline character varying(255),
-    horizontal_datum character varying(255),
     language character varying(255),
     lighted_aton_change character varying(255),
     nmea_string character varying(255),
     positioning_device character varying(255),
     positioning_equipment character varying(255),
-    positioning_procedure character varying(255),
-    reference_point character varying(255),
     text character varying(255),
     CONSTRAINT information_aton_commissioning_check CHECK (((aton_commissioning)::text = ANY ((ARRAY['BUOY_ESTABLISHMENT'::character varying, 'LIGHT_ESTABLISHMENT'::character varying, 'BEACON_ESTABLISHMENT'::character varying, 'AUDIBLE_SIGNAL_ESTABLISHMENT'::character varying, 'FOG_SIGNAL_ESTABLISHMENT'::character varying, 'AIS_TRANSMITTER_ESTABLISHMENT'::character varying, 'V_AIS_ESTABLISHMENT'::character varying, 'RACON_ESTABLISHMENT'::character varying, 'DGPS_STATION_ESTABLISHMENT'::character varying, 'E_LORAN_STATION_ESTABLISHMENT'::character varying, 'DGLONASS_STATION_ESTABLISHMENT'::character varying, 'E_CHAYKA_STATION_ESTABLISHMENT'::character varying, 'EGNOS_ESTABLISHMENT'::character varying])::text[]))),
     CONSTRAINT information_aton_removal_check CHECK (((aton_removal)::text = ANY ((ARRAY['BUOY_REMOVAL'::character varying, 'BUOY_TEMPORARY_REMOVAL'::character varying, 'LIGHT_REMOVAL'::character varying, 'LIGHT_TEMPORARY_REMOVAL'::character varying, 'BEACON_REMOVAL'::character varying, 'BEACON_TEMPORARY_REMOVAL'::character varying, 'FOG_SIGNAL_REMOVAL'::character varying, 'FOG_SIGNAL_TEMPORARY_REMOVAL'::character varying, 'AUDIBLE_SIGNAL_REMOVAL'::character varying, 'AUDIBLE_SIGNAL_TEMPORARY_REMOVAL'::character varying, 'V_AIS_REMOVAL'::character varying, 'V_AIS_TEMPORARY_REMOVAL'::character varying, 'RACON_SIGNAL_REMOVAL'::character varying, 'RACON_TEMPORARY_REMOVAL'::character varying, 'DGPS_REMOVAL'::character varying, 'DGPS_TEMPORARY_REMOVAL'::character varying, 'EGNOS_REMOVAL'::character varying, 'EGNOS_TEMPORARY_REMOVAL'::character varying, 'LORAN_C_STATION_REMOVAL'::character varying, 'LORAN_C_STATION_TEMPORARY_REMOVAL'::character varying, 'E_LORAN_REMOVAL'::character varying, 'E_LORAN_TEMPORARY_REMOVAL'::character varying, 'CHAYKA_STATION_REMOVAL'::character varying, 'CHAYKA_STATION_TEMPORARY_REMOVAL'::character varying, 'E_CHAYKA_STATION_REMOVAL'::character varying, 'E_CHAYKA_STATION_TEMPORARY_REMOVAL'::character varying])::text[]))),
@@ -628,7 +603,6 @@ CREATE TABLE public.information (
     CONSTRAINT information_electronic_aton_change_check CHECK (((electronic_aton_change)::text = ANY ((ARRAY['AIS_TRANSMITTER_OUT_OF_SERVICE'::character varying, 'AIS_TRANSMITTER_UNRELIABLE'::character varying, 'AIS_TRANSMITTER_OPERATING_PROPERLY'::character varying, 'V_AIS_OUT_OF_SERVICE'::character varying, 'V_AIS_UNRELIABLE'::character varying, 'V_AIS_OPERATING_PROPERLY'::character varying, 'RACON_OUT_OF_SERVICE'::character varying, 'RACON_UNRELIABLE'::character varying, 'RACON_OPERATING_PROPERLY'::character varying, 'DGPS_OUT_OF_SERVICE'::character varying, 'DGPS_OPERATING_PROPERLY'::character varying, 'DGPS_UNRELIABLE'::character varying, 'LORAN_C_OPERATING_PROPERLY'::character varying, 'LORAN_C_UNRELIABLE'::character varying, 'LORAN_C_OUT_OF_SERVICE'::character varying, 'E_LORAN_OPERATING_PROPERLY'::character varying, 'E_LORAN_UNRELIABLE'::character varying, 'E_LORAN_OUT_OF_SERVICE'::character varying, 'DGLOANSS_OPERATING_PROPERLY'::character varying, 'DGLOANSS_UNRELIABLE'::character varying, 'DGLOANSS_OUT_OF_SERVICE'::character varying, 'CHAYKA_OPERATING_PROPERLY'::character varying, 'CHAYKA_UNRELIABLE'::character varying, 'CHAYKA_OUT_OF_SERVICE'::character varying, 'E_CHAYKA_OPERATING_PROPERLY'::character varying, 'E_CHAYKA_UNRELIABLE'::character varying, 'E_CHAYKA_OUT_OF_SERVICE'::character varying, 'EGNOS_OPERATING_PROPERLY'::character varying, 'EGNOS_UNRELIABLE'::character varying, 'EGNOS_OUT_OF_SERVICE'::character varying])::text[]))),
     CONSTRAINT information_fixed_aton_change_check CHECK (((fixed_aton_change)::text = ANY ((ARRAY['BEACON_MISSING'::character varying, 'BEACON_DAMAGED'::character varying, 'LIGHT_BEACON_UNLIT'::character varying, 'LIGHT_BEACON_UNRELIABLE'::character varying, 'LIGHT_BEACON_NOT_SYNCHRONIZED'::character varying, 'LIGHT_BEACON_DAMAGED'::character varying, 'BEACON_TOPMARK_MISSING'::character varying, 'BEACON_TOPMARK_DAMAGED'::character varying, 'BEACON_DAYMARK_UNRELIABLE'::character varying, 'FLOODLIT_BEACON_UNLIT'::character varying, 'BEACON_RESTORED_TO_NORMAL'::character varying])::text[]))),
     CONSTRAINT information_floating_aton_change_check CHECK (((floating_aton_change)::text = ANY ((ARRAY['BUOY_ADRIFT'::character varying, 'BUOY_DAMAGED'::character varying, 'BUOY_DAYMARK_UNRELIABLE'::character varying, 'BUOY_DESTROYED'::character varying, 'BUOY_MISSING'::character varying, 'BUOY_MOVE'::character varying, 'BUOY_OFF_POSITION'::character varying, 'BUOY_RE_ESTABLISHMENT'::character varying, 'BUOY_RESTORED_TO_NORMAL'::character varying, 'BUOY_TOPMARK_DAMAGED'::character varying, 'BUOY_TOPMARK_MISSING'::character varying, 'BUOY_WILL_BE_WITHDRAWN'::character varying, 'BUOY_WITHDRAWN'::character varying, 'DECOMMISSIONED_FOR_WINTER'::character varying, 'LIFTED_FOR_WINTER'::character varying, 'LIGHT_BUOY_LIGHT_DAMAGED'::character varying, 'LIGHT_BUOY_LIGHT_NOT_SYNCHRONIZED'::character varying, 'LIGHT_BUOY_LIGHT_UNLIT'::character varying, 'LIGHT_BUOY_LIGHT_UNRELIABLE'::character varying, 'MARINE_AIDS_TO_NAVIGATION_UNRELIABLE'::character varying, 'RECOMMISSIONED_FOR_NAVIGATION_SEASON'::character varying, 'REPLACED_BY_WINTER_SPAR'::character varying, 'SEASONAL_DECOMMISSIONING_COMPLETE'::character varying, 'SEASONAL_DECOMMISSIONING_IN_PROGRESS'::character varying, 'SEASONAL_RECOMMISSIONING_COMPLETE'::character varying, 'SEASONAL_RECOMMISSIONING_IN_PROGRESS'::character varying])::text[]))),
-    CONSTRAINT information_horizontal_datum_check CHECK (((horizontal_datum)::text = ANY ((ARRAY['WGS_72'::character varying, 'WGS_84'::character varying, 'EUROPEAN_1950'::character varying, 'POTSDAM_DATUM'::character varying, 'ADINDAN'::character varying, 'AFGOOYE'::character varying, 'AIN_EL_ABD_1970'::character varying, 'ANNA_1_ASTRO_1965'::character varying, 'ANTIGUA_ISLAND_ASTRO_1943'::character varying, 'ARC_1950'::character varying, 'ARC_1960'::character varying, 'ASCENSION_ISLAND_1958'::character varying, 'ASTRO_BEACON_E_1945'::character varying, 'ASTRO_DOS_71_4'::character varying, 'ASTRO_TERN_ISLAND_FRIG_1961'::character varying, 'ASTRONOMICAL_STATION_1952'::character varying, 'AUSTRALIAN_GEODETIC_1966'::character varying, 'AUSTRALIAN_GEODETIC_1984'::character varying, 'AYABELLE_LIGHTHOUSE'::character varying, 'BELLEVUE_IGN'::character varying, 'BERMUDA_1957'::character varying, 'BISSAU'::character varying, 'BOGOTA_OBSERVATORY'::character varying, 'BUKIT_RIMPAH'::character varying, 'CAMP_AREA_ASTRO'::character varying, 'CAMPO_INCHAUSPE_1969'::character varying, 'CANTON_ASTRO_1966'::character varying, 'CAPE_DATUM'::character varying, 'CAPE_CANAVERAL'::character varying, 'CARTHAGE'::character varying, 'CHATAM_ISLAND_ASTRO_1971'::character varying, 'CHUA_ASTRO'::character varying, 'CORREGO_ALEGRE'::character varying, 'DABOLA'::character varying, 'DJAKARTA_BATAVIA'::character varying, 'DOS_1968'::character varying, 'EASTER_ISLAND_1967'::character varying, 'EUROPEAN_1979'::character varying, 'FORT_THOMAS_1955'::character varying, 'GAN_1970'::character varying, 'GEODETIC_DATUM_1949'::character varying, 'GRACIOSA_BASE_SW_1948'::character varying, 'GUAM_1963'::character varying, 'GUNUNG_SEGARA'::character varying, 'GUX_1_ASTRO'::character varying, 'HERAT_NORTH'::character varying, 'HJORSEY_1955'::character varying, 'HONG_KONG_1963'::character varying, 'HU_TZU_SHAN'::character varying, 'INDIAN'::character varying, 'INDIAN_1954'::character varying, 'INDIAN_1975'::character varying, 'IRELAND_1965'::character varying, 'ISTS_061_ASTRO_1968'::character varying, 'ISTS_073_ASTRO_1969'::character varying, 'JOHNSTON_ISLAND_1961'::character varying, 'KANDAWALA'::character varying, 'KERGUELEN_ISLAND_1949'::character varying, 'KERTAU_1968'::character varying, 'KUSAIE_ASTRO_1951'::character varying, 'L_C_5_ASTRO_1961'::character varying, 'LEIGON'::character varying, 'LIBERIA_1964'::character varying, 'LUZON'::character varying, 'MAHE_1971'::character varying, 'MASSAWA'::character varying, 'MERCHICH'::character varying, 'MIDWAY_ASTRO_1961'::character varying, 'MINNA'::character varying, 'MONTSERRAT_ISLAND_ASTRO_1958'::character varying, 'M_PORALOKO'::character varying, 'NAHRWAN'::character varying, 'NAPARIMA_BWI'::character varying, 'NORTH_AMERICAN_1927'::character varying, 'NORTH_AMERICAN_1983'::character varying, 'OBSERVATORIO_METEOROLOGICO_1939'::character varying, 'OLD_EGYPTIAN_1907'::character varying, 'OLD_HAWAIIAN'::character varying, 'OMAN'::character varying, 'ORDNANCE_SURVEY_OF_GREAT_BRITAIN_1936'::character varying, 'PICO_DE_LAS_NIEVES'::character varying, 'PITCAIRN_ASTRO_1967'::character varying, 'POINT_58'::character varying, 'POINTE_NOIRE_1948'::character varying, 'PORTO_SANTO_1936'::character varying, 'PROVISIONAL_SOUTH_AMERICAN_1956'::character varying, 'PROVISIONAL_SOUTH_CHILEAN_1963'::character varying, 'PUERTO_RICO'::character varying, 'QATAR_NATIONAL'::character varying, 'QORNOQ'::character varying, 'REUNION'::character varying, 'ROME_1940'::character varying, 'SANTO_DOS_1965'::character varying, 'SAO_BRAZ'::character varying, 'SAPPER_HILL_1943'::character varying, 'SCHWARZECK'::character varying, 'SELVAGEM_GRANDE_1938'::character varying, 'SOUTH_AMERICAN_1969'::character varying, 'SOUTH_ASIA'::character varying, 'TANANARIVE_OBSERVATORY_1925'::character varying, 'TIMBALAI_1948'::character varying, 'TOKYO'::character varying, 'TRISTAN_ASTRO_1968'::character varying, 'VITI_LEVU_1916'::character varying, 'WAKE_ENIWETOK_1960'::character varying, 'WAKE_ISLAND_ASTRO_1952'::character varying, 'YACARE'::character varying, 'ZANDERIJ'::character varying, 'AMERICAN_SAMOA_1962'::character varying, 'DECEPTION_ISLAND'::character varying, 'INDIAN_1960'::character varying, 'INDONESIAN_1974'::character varying, 'NORTH_SAHARA_1959'::character varying, 'PULKOVO_1942'::character varying, 'S_JTSK'::character varying, 'VOIROL_1950'::character varying, 'AVERAGE_TERRESTRIAL_SYSTEM_1977'::character varying, 'COMPENSATION_GEODESIQUE_DU_QUEBEC_1977'::character varying, 'FINNISH_KKJ'::character varying, 'ORDNANCE_SURVEY_OF_IRELAND'::character varying, 'REVISED_KERTAU'::character varying, 'REVISED_NAHRWAN'::character varying, 'GGRS_76_GREECE'::character varying, 'NOUVELLE_TRIANGULATION_DE_FRANCE'::character varying, 'RT_90_SWEDEN'::character varying, 'GEOCENTRIC_DATUM_OF_AUSTRALIA'::character varying, 'BJZ_54_A_954_BEIJING_COORDINATES'::character varying, 'MODIFIED_BJZ_54'::character varying, 'GDZ_80'::character varying, 'LOCAL_DATUM'::character varying])::text[]))),
     CONSTRAINT information_lighted_aton_change_check CHECK (((lighted_aton_change)::text = ANY ((ARRAY['LIGHT_UNLIT'::character varying, 'LIGHT_UNRELIABLE'::character varying, 'LIGHT_RE_ESTABLISHMENT'::character varying, 'LIGHT_RANGE_REDUCED'::character varying, 'LIGHT_WITHOUT_RHYTHM'::character varying, 'LIGHT_OUT_OF_SYNCHRONIZATION'::character varying, 'LIGHT_DAYMARK_UNRELIABLE'::character varying, 'LIGHT_OPERATING_PROPERLY'::character varying, 'SECTOR_LIGHT_SECTOR_OBSCURED'::character varying, 'FRONT_LEADING_RANGE_LIGHT_UNLIT'::character varying, 'REAR_LEADING_RANGE_LIGHT_UNLIT'::character varying, 'FRONT_LEADING_RANGE_LIGHT_UNRELIABLE'::character varying, 'REAR_LEADING_RANGE_LIGHT_UNRELIABLE'::character varying, 'FRONT_LEADING_RANGE_LIGHT_LIGHT_RANGE_REDUCED'::character varying, 'REAR_LEADING_RANGE_LIGHT_LIGHT_RANGE_REDUCED'::character varying, 'FRONT_LEADING_RANGE_LIGHT_WITHOUT_RHYTHM'::character varying, 'REAR_LEADING_RANGE_LIGHT_WITHOUT_RHYTHM'::character varying, 'LEADING_RANGE_LIGHTS_OUT_OF_SYNCHRONIZATION'::character varying, 'FRONT_LEADING_RANGE_BEACON_UNRELIABLE'::character varying, 'REAR_LEADING_RANGE_BEACON_UNRELIABLE'::character varying, 'FRONT_LEADING_RANGE_LIGHT_IS_OPERATING_PROPERLY'::character varying, 'REAR_LEADING_RANGE_LIGHT_IS_OPERATING_PROPERLY'::character varying, 'FRONT_LEADING_RANGE_BEACON_RESTORED_TO_NORMAL'::character varying, 'REAR_LEADING_RANGE_BEACON_RESTORED_TO_NORMAL'::character varying])::text[]))),
     CONSTRAINT information_positioning_equipment_check CHECK (((positioning_equipment)::text = ANY ((ARRAY['DGPS_RECEIVER'::character varying, 'GLONASS_RECEIVER'::character varying, 'GPS_RECEIVER'::character varying, 'GPS_WAAS_RECEIVER'::character varying])::text[])))
 );
@@ -1068,34 +1042,6 @@ CREATE TABLE public.retro_reflector_statuses (
 
 
 --
--- Name: rhythm_of_light; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.rhythm_of_light (
-    id numeric(38,0) NOT NULL,
-    signal_duration numeric(38,2),
-    signal_period numeric(38,2),
-    light_characteristic character varying(255),
-    signal_group character varying(255),
-    signal_status character varying(255),
-    CONSTRAINT rhythm_of_light_light_characteristic_check CHECK (((light_characteristic)::text = ANY ((ARRAY['FIXED'::character varying, 'FLASHING'::character varying, 'LONG_FLASHING'::character varying, 'QUICK_FLASHING'::character varying, 'VERY_QUICK_FLASHING'::character varying, 'CONTINUOUS_ULTRA_QUICK_FLASHING'::character varying, 'ISOPHASED'::character varying, 'OCCULTING'::character varying, 'MORSE'::character varying, 'FIXED_AND_FLASH'::character varying, 'FLASH_AND_LONG_FLASH'::character varying, 'OCCULTING_AND_FLASH'::character varying, 'FIXED_AND_LONG_FLASH'::character varying, 'OCCULTING_ALTERNATING'::character varying, 'LONG_FLASH_ALTERNATING'::character varying, 'FLASH_ALTERNATING'::character varying, 'GROUP_ALTERNATING'::character varying, 'QUICK_FLASH_PLUS_LONG_FLASH'::character varying, 'VERY_QUICK_FLASH_PLUS_LONG_FLASH'::character varying, 'ULTRA_QUICK_FLASH_PLUS_LONG_FLASH'::character varying, 'ALTERNATING'::character varying, 'FIXED_AND_ALTERNATING_FLASHING'::character varying, 'GROUP_OCCULTING_LIGHT'::character varying, 'COMPOSITE_GROUP_OCCULTING_LIGHT'::character varying, 'GROUP_FLASHING_LIGHT'::character varying, 'COMPOSITE_GROUP_FLASHING_LIGHT'::character varying, 'GROUP_QUICK_LIGHT'::character varying, 'GROUP_VERY_QUICK_LIGHT'::character varying])::text[]))),
-    CONSTRAINT rhythm_of_light_signal_status_check CHECK (((signal_status)::text = ANY ((ARRAY['LIT_SOUND'::character varying, 'ECLIPSED_SILENT'::character varying])::text[])))
-);
-
-
---
--- Name: rhythm_of_light_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE public.rhythm_of_light_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
 -- Name: s125_dataset_content_xref; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -1164,6 +1110,7 @@ CREATE TABLE public.sector_characteristics (
     sector_limit_one_line_length numeric(38,0),
     sector_limit_two_bearing numeric(38,2),
     sector_limit_two_line_length numeric(38,0),
+    sector_of_id numeric(38,0),
     signal_duration numeric(38,2),
     signal_period numeric(38,2),
     value_of_nominal_range numeric(38,2),
@@ -1269,8 +1216,6 @@ CREATE TABLE public.silo_tank_statuses (
 --
 
 CREATE TABLE public.subscription_request (
-    container_type smallint,
-    data_product_type smallint,
     push_all boolean,
     created_at timestamp(6) with time zone,
     subscription_period_end timestamp(6) with time zone,
@@ -1280,12 +1225,14 @@ CREATE TABLE public.subscription_request (
     uuid uuid NOT NULL,
     callback_endpoint character varying(255),
     client_mrn character varying(255),
+    container_type character varying(255),
+    data_product_type character varying(255),
     product_version character varying(255),
     unlocode character varying(255),
     geometry public.geometry,
     subscription_geometry public.geometry,
-    CONSTRAINT subscription_request_container_type_check CHECK (((container_type >= 0) AND (container_type <= 2))),
-    CONSTRAINT subscription_request_data_product_type_check CHECK (((data_product_type >= 0) AND (data_product_type <= 27)))
+    CONSTRAINT subscription_request_container_type_check CHECK (((container_type)::text = ANY ((ARRAY['S100_DataSet'::character varying, 'S100_ExchangeSet'::character varying, 'NONE'::character varying])::text[]))),
+    CONSTRAINT subscription_request_data_product_type_check CHECK (((data_product_type)::text = ANY ((ARRAY['OTHER'::character varying, 'S57'::character varying, 'S101'::character varying, 'S102'::character varying, 'S104'::character varying, 'S111'::character varying, 'S122'::character varying, 'S123'::character varying, 'S124'::character varying, 'S125'::character varying, 'S126'::character varying, 'S127'::character varying, 'S128'::character varying, 'S129'::character varying, 'S131'::character varying, 'S201'::character varying, 'S210'::character varying, 'S211'::character varying, 'S212'::character varying, 'S401'::character varying, 'S402'::character varying, 'S411'::character varying, 'S412'::character varying, 'S413'::character varying, 'S414'::character varying, 'S421'::character varying, 'RTZ'::character varying, 'EPC'::character varying])::text[])))
 );
 
 
@@ -1352,22 +1299,6 @@ ALTER TABLE ONLY public.aids_to_navigation
 
 ALTER TABLE ONLY public.aids_to_navigation
     ADD CONSTRAINT aids_to_navigation_pkey PRIMARY KEY (id);
-
-
---
--- Name: aids_to_navigation_sector_characteristics aids_to_navigation_sector_charact_sector_characteristics_id_key; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.aids_to_navigation_sector_characteristics
-    ADD CONSTRAINT aids_to_navigation_sector_charact_sector_characteristics_id_key UNIQUE (sector_characteristics_id);
-
-
---
--- Name: aids_to_navigation_sector_characteristics aids_to_navigation_sector_characteristics_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.aids_to_navigation_sector_characteristics
-    ADD CONSTRAINT aids_to_navigation_sector_characteristics_pkey PRIMARY KEY (light_sectored_id, sector_characteristics_id);
 
 
 --
@@ -1443,14 +1374,6 @@ ALTER TABLE ONLY public.dataset_content
 
 
 --
--- Name: feature_name feature_name_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.feature_name
-    ADD CONSTRAINT feature_name_pkey PRIMARY KEY (id);
-
-
---
 -- Name: information information_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -1464,14 +1387,6 @@ ALTER TABLE ONLY public.information
 
 ALTER TABLE ONLY public.recommended_track_nav_lines
     ADD CONSTRAINT recommended_track_nav_lines_pkey PRIMARY KEY (navigation_line_id, recommended_track_id);
-
-
---
--- Name: rhythm_of_light rhythm_of_light_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.rhythm_of_light
-    ADD CONSTRAINT rhythm_of_light_pkey PRIMARY KEY (id);
 
 
 --
@@ -1546,14 +1461,6 @@ ALTER TABLE ONLY public.dangerous_feature_association_join_table
 
 
 --
--- Name: aids_to_navigation_sector_characteristics fk17sgeteh0cwegfy8a8kxfcnue; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.aids_to_navigation_sector_characteristics
-    ADD CONSTRAINT fk17sgeteh0cwegfy8a8kxfcnue FOREIGN KEY (sector_characteristics_id) REFERENCES public.sector_characteristics(id);
-
-
---
 -- Name: association_join_table fk1crfhe99bfgl9pkx1u2el9t7e; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -1615,6 +1522,14 @@ ALTER TABLE ONLY public.beacon_special_purpose_category_of_special_purpose_marks
 
 ALTER TABLE ONLY public.offshore_platform_statuses
     ADD CONSTRAINT fk4a92ructtenbqc6dln1l64qa0 FOREIGN KEY (offshore_platform_id) REFERENCES public.aids_to_navigation(id);
+
+
+--
+-- Name: aids_to_navigation_feature_names fk4vi0j8yyshp2sxoye2e1m1hqo; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.aids_to_navigation_feature_names
+    ADD CONSTRAINT fk4vi0j8yyshp2sxoye2e1m1hqo FOREIGN KEY (aids_to_navigation_id) REFERENCES public.aids_to_navigation(id);
 
 
 --
@@ -1786,14 +1701,6 @@ ALTER TABLE ONLY public.s125_dataset_content_xref
 
 
 --
--- Name: feature_name fkab5fn0026au99gmc56o0kaj6j; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.feature_name
-    ADD CONSTRAINT fkab5fn0026au99gmc56o0kaj6j FOREIGN KEY (feature_id) REFERENCES public.aids_to_navigation(id);
-
-
---
 -- Name: silo_tank_colour_patterns fkamr0dmcs7cnq6sipg7wj9b8rm; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -1935,6 +1842,14 @@ ALTER TABLE ONLY public.recommended_track_nav_lines
 
 ALTER TABLE ONLY public.light_air_obstruction_light_visibilities
     ADD CONSTRAINT fkfa5fmfsbocisekt0i0ea73555 FOREIGN KEY (light_air_obstruction_id) REFERENCES public.aids_to_navigation(id);
+
+
+--
+-- Name: sector_characteristics fkfhy4r7jr448c77cml7ttbpvlx; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.sector_characteristics
+    ADD CONSTRAINT fkfhy4r7jr448c77cml7ttbpvlx FOREIGN KEY (sector_of_id) REFERENCES public.aids_to_navigation(id);
 
 
 --
@@ -2167,14 +2082,6 @@ ALTER TABLE ONLY public.generic_buoy_colours
 
 ALTER TABLE ONLY public.recommended_track_technique_of_vertical_measurements
     ADD CONSTRAINT fkqvh9qmt43ht3na3e8df02fs5m FOREIGN KEY (recommended_track_id) REFERENCES public.aids_to_navigation(id);
-
-
---
--- Name: aids_to_navigation_sector_characteristics fkrl4xg0dltch3w7nfya2kpixcv; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.aids_to_navigation_sector_characteristics
-    ADD CONSTRAINT fkrl4xg0dltch3w7nfya2kpixcv FOREIGN KEY (light_sectored_id) REFERENCES public.aids_to_navigation(id);
 
 
 --

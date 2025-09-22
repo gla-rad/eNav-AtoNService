@@ -72,6 +72,9 @@ public abstract class AidsToNavigation implements Serializable {
     @Column(unique=true)
     private String interoperabilityIdentifier;
 
+    @ElementCollection
+    private Set<FeatureName> featureNames;
+
     @KeywordField(sortable = Sortable.YES)
     private String source;
 
@@ -107,16 +110,12 @@ public abstract class AidsToNavigation implements Serializable {
     final private Set<Information> informations = new HashSet<>();
 
     @JsonManagedReference
-    @OneToMany(mappedBy = "feature", cascade = CascadeType.ALL, orphanRemoval = true)
-    final private Set<FeatureName> featureNames = new HashSet<>();
+    @ManyToMany(mappedBy = "peers")
+    final private Set<AtonAggregation> peerAtonAggregations = new HashSet<>();
 
     @JsonManagedReference
     @ManyToMany(mappedBy = "peers")
-    final private Set<AtonAggregation> aggregations = new HashSet<>();
-
-    @JsonManagedReference
-    @ManyToMany(mappedBy = "peers")
-    final private Set<AtonAssociation> associations = new HashSet<>();
+    final private Set<AtonAssociation> peerAtonAssociations = new HashSet<>();
 
     @ElementCollection
     private Set<String> seasonalActionRequireds;
@@ -177,6 +176,24 @@ public abstract class AidsToNavigation implements Serializable {
      */
     public void setInteroperabilityIdentifier(String interoperabilityIdentifier) {
         this.interoperabilityIdentifier = interoperabilityIdentifier;
+    }
+
+    /**
+     * Gets feature names.
+     *
+     * @return the feature names
+     */
+    public Set<FeatureName> getFeatureNames() {
+        return featureNames;
+    }
+
+    /**
+     * Sets feature names.
+     *
+     * @param featureNames the feature names
+     */
+    public void setFeatureNames(Set<FeatureName> featureNames) {
+        this.featureNames = featureNames;
     }
 
     /**
@@ -365,83 +382,53 @@ public abstract class AidsToNavigation implements Serializable {
      */
     public void setInformations(Set<Information> informations) {
         this.informations.clear();
-        if (informations != null) {
-            // Set the parent correctly
-            informations.forEach(fn -> fn.setFeature(this));
-            // And update the informations
+        if(informations != null) {
+            informations.forEach(information -> information.setFeature(this));
             this.informations.addAll(informations);
         }
     }
 
     /**
-     * Gets feature names.
+     * Gets peer aton aggregations.
      *
-     * @return the feature names
+     * @return the peer aton aggregations
      */
-    public Set<FeatureName> getFeatureNames() {
-        return featureNames;
+    public Set<AtonAggregation> getPeerAtonAggregations() {
+        return peerAtonAggregations;
     }
 
     /**
-     * Sets feature names.
+     * Sets peer aton aggregations.
      *
-     * @param featureNames the feature names
+     * @param peerAtonAggregations the peer aton aggregations
      */
-    public void setFeatureNames(Set<FeatureName> featureNames) {
-        this.featureNames.clear();
-        if (featureNames != null) {
-            // Set the parent correctly
-            featureNames.forEach(fn -> fn.setFeature(this));
-            // And update the feature names
-            this.featureNames.addAll(featureNames);
+    public void setPeerAtonAggregations(Set<AtonAggregation> peerAtonAggregations) {
+        this.peerAtonAggregations.clear();
+        if(peerAtonAggregations != null) {
+            peerAtonAggregations.forEach(aggregation -> aggregation.getPeers().add(this));
+            this.peerAtonAggregations.addAll(peerAtonAggregations);
         }
     }
 
     /**
-     * Gets aggregations.
+     * Gets peer aton associations.
      *
-     * @return the aggregations
+     * @return the peer aton associations
      */
-    public Set<AtonAggregation> getAggregations() {
-        return aggregations;
+    public Set<AtonAssociation> getPeerAtonAssociations() {
+        return peerAtonAssociations;
     }
 
     /**
-     * Sets aggregations.
+     * Sets peer aton associations.
      *
-     * @param aggregations the aggregations
+     * @param peerAtonAssociations the peer aton associations
      */
-    public void setAggregations(Set<AtonAggregation> aggregations) {
-        this.aggregations.clear();
-        if (aggregations != null) {
-            // Set the parent correctly
-            aggregations.forEach(fn -> fn.getPeers().add(this));
-            // And update the aggregations
-            this.aggregations.addAll(aggregations);
-        }
-    }
-
-    /**
-     * Gets associations.
-     *
-     * @return the associations
-     */
-    public Set<AtonAssociation> getAssociations() {
-        return associations;
-    }
-
-    /**
-     * Sets associations.
-     *
-     * @param associations the associations
-     */
-    public void setAssociations(Set<AtonAssociation> associations) {
-        this.associations.clear();
-        if (associations != null) {
-            // Set the parent correctly
-            associations.forEach(fn -> fn.getPeers().add(this));
-            // And update the associations
-            this.associations.addAll(associations);
+    public void setPeerAtonAssociations(Set<AtonAssociation> peerAtonAssociations) {
+        this.peerAtonAssociations.clear();
+        if(peerAtonAssociations != null) {
+            peerAtonAssociations.forEach(association -> association.getPeers().add(this));
+            this.peerAtonAssociations.addAll(peerAtonAssociations);
         }
     }
 

@@ -126,7 +126,6 @@ class AidsToNavigationServiceTest {
         this.newAidsToNavigation.setGeometry(factory.createPoint(new Coordinate(1, 1)));
         // Add the feature name entries
         FeatureName newFeatureName = new FeatureName();
-        newFeatureName.setId(BigInteger.ONE);
         newFeatureName.setName("Aton No 1");
         newAidsToNavigation.setFeatureNames(Collections.singleton(newFeatureName));
         // Add the information entries
@@ -143,7 +142,6 @@ class AidsToNavigationServiceTest {
         this.existingAidsToNavigation.setGeometry(factory.createPoint(new Coordinate(10, 10)));
         // Add the feature name entries
         FeatureName existingFeatureName = new FeatureName();
-        existingFeatureName.setId(BigInteger.ONE);
         existingFeatureName.setName("Aton No 10");
         existingAidsToNavigation.setFeatureNames(Collections.singleton(existingFeatureName));
         // Add the information entries

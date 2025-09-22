@@ -62,7 +62,7 @@ public class LightAirObstruction extends GenericLight {
     @ElementCollection(targetClass = LightVisibilityType.class)
     private Set<LightVisibilityType> lightVisibilities;
 
-    private MultiplicityOfFeatures multiplicity;
+    private MultiplicityOfFeatures multiplicityOfFeatures;
 
     /**
      * Gets exhibition condition of light.
@@ -155,20 +155,20 @@ public class LightAirObstruction extends GenericLight {
     }
 
     /**
-     * Gets multiplicity.
+     * Gets multiplicity of features.
      *
-     * @return the multiplicity
+     * @return the multiplicity of features
      */
-    public MultiplicityOfFeatures getMultiplicity() {
-        return multiplicity;
+    public MultiplicityOfFeatures getMultiplicityOfFeatures() {
+        return multiplicityOfFeatures;
     }
 
     /**
-     * Sets multiplicity.
+     * Sets multiplicity of features.
      *
-     * @param multiplicity the multiplicity
+     * @param multiplicityOfFeatures the multiplicity of features
      */
-    public void setMultiplicity(MultiplicityOfFeatures multiplicity) {
-        this.multiplicity = multiplicity;
+    public void setMultiplicityOfFeatures(MultiplicityOfFeatures multiplicityOfFeatures) {
+        this.multiplicityOfFeatures = multiplicityOfFeatures;
     }
 }

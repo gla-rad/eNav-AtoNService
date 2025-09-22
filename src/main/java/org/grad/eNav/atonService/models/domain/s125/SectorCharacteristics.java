@@ -17,6 +17,7 @@
 package org.grad.eNav.atonService.models.domain.s125;
 
 import _int.iho.s_125.gml.cs0._1.LightCharacteristicType;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 
 import java.io.Serializable;
@@ -52,6 +53,10 @@ public class SectorCharacteristics implements Serializable {
 
     @Enumerated(EnumType.STRING)
     private SignalSequence signalSequence;
+
+    @JsonBackReference
+    @ManyToOne
+    private LightSectored sectorOf;
 
     /**
      * Gets id.
@@ -159,5 +164,23 @@ public class SectorCharacteristics implements Serializable {
      */
     public void setSignalSequence(SignalSequence signalSequence) {
         this.signalSequence = signalSequence;
+    }
+
+    /**
+     * Gets sector of.
+     *
+     * @return the sector of
+     */
+    public LightSectored getSectorOf() {
+        return sectorOf;
+    }
+
+    /**
+     * Sets sector of.
+     *
+     * @param sectorOf the sector of
+     */
+    public void setSectorOf(LightSectored sectorOf) {
+        this.sectorOf = sectorOf;
     }
 }

@@ -128,8 +128,7 @@ class S125GDSServiceTest {
         // Perform the service call
         this.s125GDSService.destroy();
 
-        // Make sure the listeners and the Geomesa datastore gets disconnected
-        verify(mockListener, times(1)).destroy();
+        // Make sure the Geomesa datastore gets disconnected
         verify(this.consumer, times(1)).dispose();
     }
 
@@ -153,8 +152,7 @@ class S125GDSServiceTest {
         // Perform the service call
         this.s125GDSService.destroy();
 
-        // Make sure the listeners and the Geomesa datastore gets disconnected
-        verify(mockListener, times(1)).destroy();
+        // Make sure the Geomesa datastore gets disconnected
         verify(this.consumer, never()).dispose();
     }
 

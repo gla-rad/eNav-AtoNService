@@ -23,7 +23,7 @@ import java.io.Serializable;
 import java.math.BigInteger;
 
 /**
- * The S-125 Information Entity Class.
+ * The S-125 Information Embeddable Class.
  * <p/>
  * This class implements the Information type of the S-125 Aids to Navigation
  * objects which includes textual information like file references, headlines

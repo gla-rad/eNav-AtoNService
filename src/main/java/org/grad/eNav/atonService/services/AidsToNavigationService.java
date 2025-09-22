@@ -28,10 +28,7 @@ import org.apache.lucene.spatial.prefix.tree.SpatialPrefixTree;
 import org.apache.lucene.spatial.query.SpatialArgs;
 import org.apache.lucene.spatial.query.SpatialOperation;
 import org.grad.eNav.atonService.exceptions.DataNotFoundException;
-import org.grad.eNav.atonService.models.domain.s125.AtonAggregation;
-import org.grad.eNav.atonService.models.domain.s125.AidsToNavigation;
-import org.grad.eNav.atonService.models.domain.s125.AtonAssociation;
-import org.grad.eNav.atonService.models.domain.s125.FeatureName;
+import org.grad.eNav.atonService.models.domain.s125.*;
 import org.grad.eNav.atonService.models.dtos.datatables.DtPagingRequest;
 import org.grad.eNav.atonService.repos.AidsToNavigationRepo;
 import org.hibernate.search.backend.lucene.LuceneExtension;
@@ -215,19 +212,10 @@ public class AidsToNavigationService {
                 .ifPresent(aton -> {
                     // Re-use the object ID
                     aidsToNavigation.setId(aton.getId());
-                    // Re-use the existing feature name IDs
-                    final AtomicInteger featureNameCounter = new AtomicInteger();
-                    final List<BigInteger> featureNameIds = aton.getFeatureNames()
-                            .stream().map(FeatureName::getId)
-                            .toList();
-                    aidsToNavigation.getFeatureNames()
-                            .stream()
-                            .filter(fn -> featureNameCounter.get() < featureNameIds.size())
-                            .forEach(fn -> fn.setId(featureNameIds.get(featureNameCounter.getAndIncrement())));
                     // Re-use the existing information IDs
                     final AtomicInteger informationCounter = new AtomicInteger();
-                    final List<BigInteger> informationIds = aton.getFeatureNames()
-                            .stream().map(FeatureName::getId)
+                    final List<BigInteger> informationIds = aton.getInformations()
+                            .stream().map(Information::getId)
                             .toList();
                     aidsToNavigation.getInformations()
                             .stream()
@@ -240,14 +228,14 @@ public class AidsToNavigationService {
         final AidsToNavigation saved = this.aidsToNavigationRepo.save(aidsToNavigation);
 
         // Update the associations and aggregations links
-        saved.setAggregations(this.aggregationService.updateAidsToNavigationAggregations(saved.getIdCode(), aidsToNavigation.getAggregations()));
-        saved.setAssociations(this.associationService.updateAidsToNavigationAssociations(saved.getIdCode(), aidsToNavigation.getAssociations()));
+        saved.setPeerAtonAggregations(this.aggregationService.updateAidsToNavigationAggregations(saved.getIdCode(), aidsToNavigation.getPeerAtonAggregations()));
+        saved.setPeerAtonAssociations(this.associationService.updateAidsToNavigationAssociations(saved.getIdCode(), aidsToNavigation.getPeerAtonAssociations()));
 
         // DO NOT REMOVE: Perform a log, which also handles lazy loading!
         log.debug(String.format("Saved Aid to Navigation %s with %d aggregations and %d associations.",
                 saved.getIdCode(),
-                saved.getAggregations().size(),
-                saved.getAssociations().size()));
+                saved.getPeerAtonAggregations().size(),
+                saved.getPeerAtonAssociations().size()));
 
         // Return the saved entry
         return saved;
@@ -267,12 +255,12 @@ public class AidsToNavigationService {
                 .orElseThrow(() -> new DataNotFoundException(String.format("No Aid to Navigation found for the provided ID: %d", id)));
 
         // Update the associations and aggregations links and clean up
-        aidsToNavigation.getAggregations().stream()
+        aidsToNavigation.getPeerAtonAggregations().stream()
                 .peek(aggr -> aggr.getPeers().remove(aidsToNavigation))
                 .filter(aggr -> aggr.getPeers().isEmpty())
                 .map(AtonAggregation::getId)
                 .forEach(this.aggregationService::delete);
-        aidsToNavigation.getAssociations().stream()
+        aidsToNavigation.getPeerAtonAssociations().stream()
                 .peek(asso -> asso.getPeers().remove(aidsToNavigation))
                 .filter(asso -> asso.getPeers().isEmpty())
                 .map(AtonAssociation::getId)

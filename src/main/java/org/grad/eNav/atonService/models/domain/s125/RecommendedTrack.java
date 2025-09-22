@@ -73,7 +73,7 @@ public class RecommendedTrack extends AidsToNavigation {
             joinColumns = {@JoinColumn(name = "recommended_track_id")},
             inverseJoinColumns = {@JoinColumn(name = "navigation_line_id")}
     )
-    private final Set<NavigationLine> navigationLines = new HashSet<>();
+    final private Set<NavigationLine> navigationLines = new HashSet<>();
 
     /**
      * Gets based on fixed marks.
@@ -271,10 +271,8 @@ public class RecommendedTrack extends AidsToNavigation {
      */
     public void setNavigationLines(Set<NavigationLine> navigationLines) {
         this.navigationLines.clear();
-        if (navigationLines != null) {
-            // Set the parent correctly
-            navigationLines.forEach(fn -> fn.getNavigableTracks().add(this));
-            // And update the associations
+        if(navigationLines != null) {
+            navigationLines.forEach(navLine -> navLine.getNavigableTracks().add(this));
             this.navigationLines.addAll(navigationLines);
         }
     }

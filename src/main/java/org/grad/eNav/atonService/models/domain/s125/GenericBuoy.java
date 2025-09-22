@@ -227,10 +227,8 @@ public abstract class GenericBuoy extends StructureObject {
      */
     public void setEquipment(Set<Topmark> equipments) {
         this.equipments.clear();
-        if (equipments != null) {
-            // Set the structure correctly
-            equipments.forEach(fn -> fn.setStructure(this));
-            // And update the equipments
+        if(equipments != null) {
+            equipments.forEach(equipment -> equipment.setStructure(this));
             this.equipments.addAll(equipments);
         }
     }

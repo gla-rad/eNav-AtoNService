@@ -16,15 +16,12 @@
 
 package org.grad.eNav.atonService.models.domain.s125;
 
-import _int.iho.s_125.gml.cs0._1.ChangeTypesType;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 
 /**
- * The S-125 Positioning Information Entity Class.
+ * The S-125 Positioning Information Embeddable Class.
  * <p/>
- * This class implements the AtoN Fixing Method type of the S-125
+ * This class implements the Positioning Information type of the S-125
  * Positioning Information objects. It is modelled as an entity
  * that extends the {@link Information} super class.
  *

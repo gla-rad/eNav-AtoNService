@@ -16,9 +16,8 @@
 
 package org.grad.eNav.atonService.models.domain.s125;
 
-import _int.iho.s_125.gml.cs0._1.StatusType;
+import _int.iho.s_125.gml.cs0._1.CategoryOfSyntheticAISAidtoNavigationType;
 import _int.iho.s_125.gml.cs0._1.VirtualAISAidToNavigationTypeType;
-import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -38,7 +37,28 @@ public class SyntheticAISAidToNavigation extends ElectronicAton {
 
     // Class Variables
     @Enumerated(EnumType.STRING)
+    private CategoryOfSyntheticAISAidtoNavigationType categoryOfSyntheticAISAidtoNavigation;
+
+    @Enumerated(EnumType.STRING)
     private VirtualAISAidToNavigationTypeType virtualAISAidToNavigationType;
+
+    /**
+     * Gets category of synthetic ais aidto navigation.
+     *
+     * @return the category of synthetic ais aidto navigation
+     */
+    public CategoryOfSyntheticAISAidtoNavigationType getCategoryOfSyntheticAISAidtoNavigation() {
+        return categoryOfSyntheticAISAidtoNavigation;
+    }
+
+    /**
+     * Sets category of synthetic ais aidto navigation.
+     *
+     * @param categoryOfSyntheticAISAidtoNavigation the category of synthetic ais aidto navigation
+     */
+    public void setCategoryOfSyntheticAISAidtoNavigation(CategoryOfSyntheticAISAidtoNavigationType categoryOfSyntheticAISAidtoNavigation) {
+        this.categoryOfSyntheticAISAidtoNavigation = categoryOfSyntheticAISAidtoNavigation;
+    }
 
     /**
      * Gets virtual ais aid to navigation type.

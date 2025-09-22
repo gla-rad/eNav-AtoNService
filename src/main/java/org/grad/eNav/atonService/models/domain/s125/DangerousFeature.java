@@ -114,12 +114,38 @@ public class DangerousFeature {
     }
 
     /**
+     * Sets informations.
+     *
+     * @param informations the informations
+     */
+    public void setInformations(Set<Information> informations) {
+        this.informations.clear();
+        if(informations != null) {
+            informations.forEach(information -> information.setDangerousFeature(this));
+            this.informations.addAll(informations);
+        }
+    }
+
+    /**
      * Gets marking atons.
      *
      * @return the marking atons
      */
     public Set<AtonAssociation> getMarkingAtons() {
         return markingAtons;
+    }
+
+    /**
+     * Sets marking atons.
+     *
+     * @param markingAtons the marking atons
+     */
+    public void setMarkingAtons(Set<AtonAssociation> markingAtons) {
+        this.markingAtons.clear();
+        if(markingAtons != null) {
+            markingAtons.forEach(peer -> peer.getDangers().add(this));
+            this.markingAtons.addAll(markingAtons);
+        }
     }
 
     /**

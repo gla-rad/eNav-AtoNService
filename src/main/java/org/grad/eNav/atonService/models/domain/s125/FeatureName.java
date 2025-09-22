@@ -32,39 +32,13 @@ import java.math.BigInteger;
  * @author Nikolaos Vastardis (email: Nikolaos.Vastardis@gla-rad.org)
  * @see _int.iho.s_125.gml.cs0._1.FeatureNameType
  */
-@Entity
+@Embeddable
 public class FeatureName implements Serializable  {
 
     // Class Variables
-    @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "feature_name_generator")
-    @SequenceGenerator(name="feature_name_generator", sequenceName = "feature_name_seq", allocationSize=1)
-    private BigInteger id;
     private String name;
     private String language;
     private Boolean displayName;
-
-    @JsonBackReference
-    @ManyToOne
-    private AidsToNavigation feature;
-
-    /**
-     * Gets id.
-     *
-     * @return the id
-     */
-    public BigInteger getId() {
-        return id;
-    }
-
-    /**
-     * Sets id.
-     *
-     * @param id the id
-     */
-    public void setId(BigInteger id) {
-        this.id = id;
-    }
 
     /**
      * Gets name.
@@ -120,21 +94,4 @@ public class FeatureName implements Serializable  {
         this.displayName = displayName;
     }
 
-    /**
-     * Gets feature.
-     *
-     * @return the feature
-     */
-    public AidsToNavigation getFeature() {
-        return feature;
-    }
-
-    /**
-     * Sets feature.
-     *
-     * @param feature the feature
-     */
-    public void setFeature(AidsToNavigation feature) {
-        this.feature = feature;
-    }
 }

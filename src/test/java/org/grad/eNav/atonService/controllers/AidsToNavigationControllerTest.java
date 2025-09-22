@@ -135,7 +135,6 @@ class AidsToNavigationControllerTest {
         existingAidsToNavigation.setGeometry(factory.createPoint(new Coordinate(1, 1)));
         // Add the feature name entries
         FeatureName featureName = new FeatureName();
-        featureName.setId(BigInteger.ONE);
         featureName.setName("Aton No 1");
         existingAidsToNavigation.setFeatureNames(Collections.singleton(featureName));
         // Add the information entries

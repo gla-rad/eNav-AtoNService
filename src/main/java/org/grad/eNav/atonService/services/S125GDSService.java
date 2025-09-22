@@ -26,8 +26,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
+import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 
 import jakarta.annotation.PostConstruct;
@@ -74,7 +76,7 @@ public class S125GDSService {
      * on independent threads. All incoming messages with then be consumed by
      * the same handler, but handled based on the topic.
      */
-    @PostConstruct
+    @EventListener(ApplicationReadyEvent.class)
     public void init() {
         log.info("Geomesa Data Store Service is booting up...");
 
@@ -89,9 +91,9 @@ public class S125GDSService {
         // the station node deletions by UID. Unfortunately Geomesa does not
         // support geographic filtering in deletions, so we have to do it
         // manually.
-        this.gdsListener = this.applicationContext.getBean(S125GDSListener.class);
         try {
-            gdsListener.init(this.consumer,
+            this.gdsListener = this.applicationContext.getBean(S125GDSListener.class);
+            this.gdsListener.init(this.consumer,
                     new GeomesaS125(WKTUtils.convertWKTtoGeometry(this.geometryWKT)),
                     WKTUtils.convertWKTtoGeometry(this.geometryWKT));
         } catch (IOException | ParseException e) {
@@ -105,8 +107,6 @@ public class S125GDSService {
      */
     @PreDestroy
     public void destroy() {
-        Optional.ofNullable(gdsListener).ifPresent(S125GDSListener::destroy);
-
         // If we are just reloading, don't drop the Geomesa DataStore Consumer
         if(this.reloading) {
             return;

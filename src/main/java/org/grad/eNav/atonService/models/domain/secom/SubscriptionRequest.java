@@ -16,14 +16,12 @@
 
 package org.grad.eNav.atonService.models.domain.secom;
 
-import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
 import org.grad.eNav.atonService.models.UnLoCodeMapEntry;
 import org.grad.eNav.atonService.services.UnLoCodeService;
 import org.grad.eNav.atonService.utils.GeometryBinder;
 import org.grad.eNav.atonService.utils.GeometryUtils;
 import org.grad.eNav.atonService.utils.NullValueIndexerBridge;
-import org.grad.eNav.atonService.utils.SecomUtils;
 import org.grad.secomv2.core.models.enums.ContainerTypeEnum;
 import org.grad.secomv2.core.models.enums.SECOM_DataProductType;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
@@ -80,10 +78,12 @@ public class SubscriptionRequest {
 
     @KeywordField(sortable = Sortable.YES,
                   valueBridge = @ValueBridgeRef(type = NullValueIndexerBridge.class))
+    @Enumerated(EnumType.STRING)
     private ContainerTypeEnum containerType;
 
     @KeywordField(sortable = Sortable.YES,
                   valueBridge = @ValueBridgeRef(type = NullValueIndexerBridge.class))
+    @Enumerated(EnumType.STRING)
     private SECOM_DataProductType dataProductType;
 
     @KeywordField(sortable = Sortable.YES,

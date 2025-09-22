@@ -17,6 +17,7 @@
 package org.grad.eNav.atonService.models.domain.s125;
 
 import _int.iho.s_125.gml.cs0._1.*;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 
 import java.math.BigDecimal;
@@ -53,7 +54,119 @@ public class LightSectored extends GenericLight {
     @ElementCollection
     private Set<ObscuredSector> obscuredSectors;
 
-    @OneToMany
-    private final Set<SectorCharacteristics> sectorCharacteristics = new HashSet<>();
+    @JsonManagedReference
+    @OneToMany(mappedBy = "sectorOf", cascade = CascadeType.ALL, orphanRemoval = true)
+    final private Set<SectorCharacteristics> sectorCharacteristics = new HashSet<>();
 
+    /**
+     * Gets category of lights.
+     *
+     * @return the category of lights
+     */
+    public Set<CategoryOfLightType> getCategoryOfLights() {
+        return categoryOfLights;
+    }
+
+    /**
+     * Sets category of lights.
+     *
+     * @param categoryOfLights the category of lights
+     */
+    public void setCategoryOfLights(Set<CategoryOfLightType> categoryOfLights) {
+        this.categoryOfLights = categoryOfLights;
+    }
+
+    /**
+     * Gets exhibition condition of light.
+     *
+     * @return the exhibition condition of light
+     */
+    public ExhibitionConditionOfLightType getExhibitionConditionOfLight() {
+        return exhibitionConditionOfLight;
+    }
+
+    /**
+     * Sets exhibition condition of light.
+     *
+     * @param exhibitionConditionOfLight the exhibition condition of light
+     */
+    public void setExhibitionConditionOfLight(ExhibitionConditionOfLightType exhibitionConditionOfLight) {
+        this.exhibitionConditionOfLight = exhibitionConditionOfLight;
+    }
+
+    /**
+     * Gets marks navigational system of.
+     *
+     * @return the marks navigational system of
+     */
+    public MarksNavigationalSystemOfType getMarksNavigationalSystemOf() {
+        return marksNavigationalSystemOf;
+    }
+
+    /**
+     * Sets marks navigational system of.
+     *
+     * @param marksNavigationalSystemOf the marks navigational system of
+     */
+    public void setMarksNavigationalSystemOf(MarksNavigationalSystemOfType marksNavigationalSystemOf) {
+        this.marksNavigationalSystemOf = marksNavigationalSystemOf;
+    }
+
+    /**
+     * Gets signal generation.
+     *
+     * @return the signal generation
+     */
+    public SignalGenerationType getSignalGeneration() {
+        return signalGeneration;
+    }
+
+    /**
+     * Sets signal generation.
+     *
+     * @param signalGeneration the signal generation
+     */
+    public void setSignalGeneration(SignalGenerationType signalGeneration) {
+        this.signalGeneration = signalGeneration;
+    }
+
+    /**
+     * Gets obscured sectors.
+     *
+     * @return the obscured sectors
+     */
+    public Set<ObscuredSector> getObscuredSectors() {
+        return obscuredSectors;
+    }
+
+    /**
+     * Sets obscured sectors.
+     *
+     * @param obscuredSectors the obscured sectors
+     */
+    public void setObscuredSectors(Set<ObscuredSector> obscuredSectors) {
+        this.obscuredSectors = obscuredSectors;
+    }
+
+    /**
+     * Gets sector characteristics.
+     *
+     * @return the sector characteristics
+     */
+    public Set<SectorCharacteristics> getSectorCharacteristics() {
+        return sectorCharacteristics;
+    }
+
+    /**
+     * Sets sector characteristics.
+     *
+     * @param sectorCharacteristics the sector characteristics
+     */
+    public void setSectorCharacteristics(Set<SectorCharacteristics> sectorCharacteristics) {
+        this.sectorCharacteristics.clear();
+        if(sectorCharacteristics != null) {
+            sectorCharacteristics.forEach(sectorCharacteristic -> sectorCharacteristic.setSectorOf(this));
+            this.sectorCharacteristics.addAll(sectorCharacteristics);
+        }
+    }
 }

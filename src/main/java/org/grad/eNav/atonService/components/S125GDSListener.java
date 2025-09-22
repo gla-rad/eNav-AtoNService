@@ -15,6 +15,7 @@
  */
 
 package org.grad.eNav.atonService.components;
+
 import _int.iho.s_125.s_100.gml.profiles._5_2.AbstractGMLType;
 import _int.iho.s_125.s_100.gml.profiles._5_2.ReferenceType;
 import _int.iho.s_125.gml.cs0._1.AidsToNavigationType;
@@ -370,7 +371,7 @@ public class S125GDSListener implements FeatureListener {
                             .map(this::getInternalReference)
                             .filter(combinedAidsToNavigationMap::containsKey)
                             .map(combinedAidsToNavigationMap::get)
-                            .map(AidsToNavigation::getAggregations)
+                            .map(AidsToNavigation::getPeerAtonAggregations)
                             .forEach(aggregations -> aggregations.add(aggregationsMap.get(aggregation.getId())));
                 }
                 // Handle association members
@@ -380,7 +381,7 @@ public class S125GDSListener implements FeatureListener {
                             .map(this::getInternalReference)
                             .filter(combinedAidsToNavigationMap::containsKey)
                             .map(combinedAidsToNavigationMap::get)
-                            .map(AidsToNavigation::getAssociations)
+                            .map(AidsToNavigation::getPeerAtonAssociations)
                             .forEach(associations -> associations.add(associationsMap.get(association.getId())));
                 }
             }

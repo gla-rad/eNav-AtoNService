@@ -25,7 +25,7 @@ import java.math.BigDecimal;
  * The S-125 Radar Wave Length Embeddable Class.
  * <p>
  * This is the basic class for implementing the S-125-compatible Radar
- * WaveL ength type.
+ * WaveLength type.
  *
  * @author Nikolaos Vastardis (email: Nikolaos.Vastardis@gla-rad.org)
  * @see _int.iho.s_125.gml.cs0._1.RadarWaveLengthType
