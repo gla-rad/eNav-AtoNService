@@ -27,7 +27,6 @@ import org.grad.secomv2.core.models.SearchObjectResult;
 import org.grad.secomv2.core.models.SearchParameters;
 import org.grad.secomv2.springboot3.components.SecomClient;
 import org.grad.secomv2.springboot3.components.SecomConfigProperties;
-import org.grad.secomv2.springboot3.components.SecomClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
