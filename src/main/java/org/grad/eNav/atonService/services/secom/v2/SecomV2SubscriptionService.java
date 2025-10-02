@@ -38,6 +38,7 @@ import org.grad.eNav.atonService.models.enums.DatasetOperation;
 import org.grad.eNav.atonService.repos.SecomSubscriptionRepo;
 import org.grad.eNav.atonService.services.S100ExchangeSetService;
 import org.grad.eNav.atonService.services.UnLoCodeService;
+import org.grad.secomv2.core.base.SecomConstants;
 import org.grad.secomv2.core.exceptions.SecomNotFoundException;
 import org.grad.secomv2.core.exceptions.SecomValidationException;
 import org.grad.secomv2.core.models.EnvelopeUploadObject;
@@ -339,6 +340,7 @@ public class SecomV2SubscriptionService implements MessageHandler {
         }
 
         // Populate the subscription dataset and geometry
+        subscriptionRequest.setSecomVersion(SecomConstants.SECOM_VERSION);
         subscriptionRequest.setClientMrn(mrn);
         subscriptionRequest.updateSubscriptionGeometry(this.unLoCodeService);
 
@@ -537,6 +539,9 @@ public class SecomV2SubscriptionService implements MessageHandler {
                 .where(f -> {
                     BooleanPredicateClausesStep<?> step = f.bool()
                             .must(f.matchAll());
+                    step.must(f.match()
+                            .field("secomVersion")
+                            .matching(SecomConstants.SECOM_VERSION));
                     Optional.ofNullable(containerType).ifPresent(v -> {
                         final SearchPredicate existingValuePred = f.match()
                                 .field("containerType")

@@ -48,6 +48,7 @@ import org.grad.secom.core.models.enums.ContainerTypeEnum;
 import org.grad.secom.core.models.enums.SECOM_DataProductType;
 import org.grad.secom.core.models.enums.SubscriptionEventEnum;
 import org.grad.secom.springboot3.components.SecomClient;
+import org.grad.secom.core.base.SecomConstants;
 import org.hibernate.search.backend.lucene.LuceneExtension;
 import org.hibernate.search.backend.lucene.search.sort.dsl.LuceneSearchSortFactory;
 import org.hibernate.search.engine.search.predicate.SearchPredicate;
@@ -340,6 +341,7 @@ public class SecomV1SubscriptionService implements MessageHandler {
         }
 
         // Populate the subscription dataset and geometry
+        subscriptionRequest.setSecomVersion(SecomConstants.SECOM_VERSION);
         subscriptionRequest.setClientMrn(mrn);
         subscriptionRequest.updateSubscriptionGeometry(this.unLoCodeService);
 
@@ -511,6 +513,9 @@ public class SecomV1SubscriptionService implements MessageHandler {
                 .where(f -> {
                     BooleanPredicateClausesStep<?> step = f.bool()
                             .must(f.matchAll());
+                    step.must(f.match()
+                            .field("secomVersion")
+                            .matching(SecomConstants.SECOM_VERSION));
                     Optional.ofNullable(containerType).ifPresent(v -> {
                         final SearchPredicate existingValuePred = f.match()
                                 .field("containerType")
