@@ -23,7 +23,7 @@ import org.grad.eNav.atonService.TestingConfiguration;
 import org.grad.eNav.atonService.models.domain.secom.SubscriptionRequest;
 import org.grad.eNav.atonService.models.dtos.datatables.*;
 import org.grad.eNav.atonService.models.dtos.secom.SubscriptionRequestDto;
-import org.grad.eNav.atonService.services.secom.SecomSubscriptionService;
+import org.grad.eNav.atonService.services.secom.v2.SecomV2SubscriptionService;
 import org.grad.secomv2.core.models.enums.ContainerTypeEnum;
 import org.grad.secomv2.core.models.enums.SECOM_DataProductType;
 import org.junit.jupiter.api.BeforeEach;
@@ -76,7 +76,7 @@ class SubscriptionUIControllerTest {
      * The Dataset Service mock.
      */
     @MockitoBean
-    SecomSubscriptionService secomSubscriptionService;
+    SecomV2SubscriptionService secomV2SubscriptionService;
 
     // Test Variables
     private List<SubscriptionRequest> subscriptionList;
@@ -139,7 +139,7 @@ class SubscriptionUIControllerTest {
 
         // Created a result page to be returned by the mocked service
         Page<SubscriptionRequest> page = new PageImpl<>(this.subscriptionList.subList(0, 5), this.pageable, this.subscriptionList.size());
-        doReturn(page).when(this.secomSubscriptionService).handleDatatablesPagingRequest(any());
+        doReturn(page).when(this.secomV2SubscriptionService).handleDatatablesPagingRequest(any());
 
         // Perform the MVC request
         MvcResult mvcResult = this.mockMvc.perform(post("/api/subscriptions/dt")

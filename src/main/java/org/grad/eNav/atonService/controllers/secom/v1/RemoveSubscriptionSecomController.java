@@ -20,7 +20,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.grad.eNav.atonService.components.DomainDtoMapper;
 import org.grad.eNav.atonService.models.domain.secom.RemoveSubscription;
-import org.grad.eNav.atonService.services.secom.SecomSubscriptionService;
+import org.grad.eNav.atonService.services.secom.v1.SecomV1SubscriptionService;
 import org.grad.secom.core.exceptions.SecomNotFoundException;
 import org.grad.secom.core.interfaces.RemoveSubscriptionSecomInterface;
 import org.grad.secom.core.models.RemoveSubscriptionObject;
@@ -50,7 +50,7 @@ public class RemoveSubscriptionSecomController implements RemoveSubscriptionSeco
      * The SECOM Service.
      */
     @Autowired
-    SecomSubscriptionService secomSubscriptionService;
+    SecomV1SubscriptionService secomV1SubscriptionService;
 
     /**
      * Object Mapper from SECOM Remove Subscription DTO to Domain.
@@ -73,7 +73,7 @@ public class RemoveSubscriptionSecomController implements RemoveSubscriptionSeco
         final UUID subscriptionIdentifier = Optional.ofNullable(removeSubscriptionObject)
                 .map(dto -> this.removeSubscriptionDomainMapper.convertTo(dto, RemoveSubscription.class))
                 .map(RemoveSubscription::getSubscriptionIdentifier)
-                .map(this.secomSubscriptionService::delete)
+                .map(this.secomV1SubscriptionService::delete)
                 .orElseThrow(() -> new SecomNotFoundException(removeSubscriptionObject.getSubscriptionIdentifier().toString()));
 
         // Create the response

@@ -18,7 +18,7 @@ package org.grad.eNav.atonService.pacts.secomV2;
 
 import au.com.dius.pact.provider.junitsupport.State;
 import org.grad.eNav.atonService.models.domain.secom.SubscriptionRequest;
-import org.grad.eNav.atonService.services.secom.SecomSubscriptionService;
+import org.grad.eNav.atonService.services.secom.v2.SecomV2SubscriptionService;
 
 import java.util.Map;
 import java.util.UUID;
@@ -39,7 +39,7 @@ public interface SubscriptionSecomV2ControllerTestInterface {
      *
      * @return the mocked SECOM subscription service
      */
-    SecomSubscriptionService getSecomSubscriptionService();
+    SecomV2SubscriptionService getSecomSubscriptionService();
 
     /**
      * Test that the SECOM subscription interface will return an appropriate

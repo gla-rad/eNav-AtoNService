@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 GLA Research and Development Directorate
+ * Copyright (c) 2025 GLA Research and Development Directorate
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.grad.eNav.atonService.services.secom;
+package org.grad.eNav.atonService.services.secom.v2;
 
 import jakarta.validation.constraints.NotNull;
 import lombok.extern.slf4j.Slf4j;
@@ -43,7 +43,7 @@ import java.security.cert.CertificateException;
 import java.util.*;
 
 /**
- * The SECOM Service Class.
+ * The SECOM v2 Service Class.
  *
  * A service to handle the general SECOM requests that need additional
  * processing, not covered by the existing services, e.g signing.
@@ -52,7 +52,7 @@ import java.util.*;
  */
 @Service
 @Slf4j
-public class SecomService {
+public class SecomV2Service {
 
     /**
      * The Service Registry URL.

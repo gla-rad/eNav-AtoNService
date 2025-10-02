@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 GLA Research and Development Directorate
+ * Copyright (c) 2025 GLA Research and Development Directorate
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.grad.eNav.atonService.services.secom;
+package org.grad.eNav.atonService.services.secom.v2;
 
 import org.grad.secomv2.core.models.SubscriptionNotificationObject;
 import org.grad.secomv2.core.models.SubscriptionNotificationResponseObject;
@@ -41,20 +41,20 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-class SecomSubscriptionNotificationServiceTest {
+class SecomV2SubscriptionNotificationServiceTest {
 
     /**
      * The Tested Service.
      */
     @InjectMocks
     @Spy
-    SecomSubscriptionNotificationService secomSubscriptionNotificationService;
+    SecomV2SubscriptionNotificationService secomV2SubscriptionNotificationService;
 
     /**
      * The SECOM Service mock.
      */
     @Mock
-    SecomService secomService;
+    SecomV2Service secomV2Service;
 
     // Test Variables
     UUID subscriptionIdentifier;
@@ -85,10 +85,10 @@ class SecomSubscriptionNotificationServiceTest {
     @Test
     void testSendNotificationCreated() {
         // Mock the SECOM client generation
-        doReturn(this.secomClient).when(this.secomService).getClient(any(String.class));
+        doReturn(this.secomClient).when(this.secomV2Service).getClient(any(String.class));
 
         // Perform the service call
-        this.secomSubscriptionNotificationService.sendNotification(
+        this.secomV2SubscriptionNotificationService.sendNotification(
                 "urn:mrn:org:test",
                 this.subscriptionIdentifier,
                 SubscriptionEventEnum.SUBSCRIPTION_CREATED
@@ -114,10 +114,10 @@ class SecomSubscriptionNotificationServiceTest {
     @Test
     void testSendNotificationRemoved() {
         // Mock the SECOM client generation
-        doReturn(this.secomClient).when(this.secomService).getClient(any(String.class));
+        doReturn(this.secomClient).when(this.secomV2Service).getClient(any(String.class));
 
         // Perform the service call
-        this.secomSubscriptionNotificationService.sendNotification(
+        this.secomV2SubscriptionNotificationService.sendNotification(
                 "urn:mrn:org:test",
                 this.subscriptionIdentifier,
                 SubscriptionEventEnum.SUBSCRIPTION_REMOVED
@@ -143,10 +143,10 @@ class SecomSubscriptionNotificationServiceTest {
     @Test
     void testSendNotificationWithURLCreated() throws MalformedURLException {
         // Mock the SECOM client generation
-        doReturn(this.secomClient).when(this.secomService).getClient(any(URL.class));
+        doReturn(this.secomClient).when(this.secomV2Service).getClient(any(URL.class));
 
         // Perform the service call
-        this.secomSubscriptionNotificationService.sendNotification(
+        this.secomV2SubscriptionNotificationService.sendNotification(
                 URI.create("http://localhost").toURL(),
                 this.subscriptionIdentifier,
                 SubscriptionEventEnum.SUBSCRIPTION_CREATED
@@ -172,10 +172,10 @@ class SecomSubscriptionNotificationServiceTest {
     @Test
     void testSendNotificationWithURLRemoved() throws MalformedURLException {
         // Mock the SECOM client generation
-        doReturn(this.secomClient).when(this.secomService).getClient(any(URL.class));
+        doReturn(this.secomClient).when(this.secomV2Service).getClient(any(URL.class));
 
         // Perform the service call
-        this.secomSubscriptionNotificationService.sendNotification(
+        this.secomV2SubscriptionNotificationService.sendNotification(
                 URI.create("http://localhost").toURL(),
                 this.subscriptionIdentifier,
                 SubscriptionEventEnum.SUBSCRIPTION_REMOVED

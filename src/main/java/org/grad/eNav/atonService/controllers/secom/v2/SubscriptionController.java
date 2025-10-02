@@ -25,7 +25,7 @@ import org.apache.logging.log4j.util.Strings;
 import org.grad.eNav.atonService.components.DomainDtoMapper;
 import org.grad.eNav.atonService.controllers.secom.SecomRequestHeaders;
 import org.grad.eNav.atonService.models.domain.secom.SubscriptionRequest;
-import org.grad.eNav.atonService.services.secom.SecomSubscriptionService;
+import org.grad.eNav.atonService.services.secom.v2.SecomV2SubscriptionService;
 import org.grad.secomv2.core.exceptions.SecomNotFoundException;
 import org.grad.secomv2.core.interfaces.SubscriptionServiceInterface;
 import org.grad.secomv2.core.models.EnvelopeSubscriptionObject;
@@ -60,7 +60,7 @@ public class SubscriptionController implements SubscriptionServiceInterface {
      * The SECOM Service.
      */
     @Autowired
-    SecomSubscriptionService secomSubscriptionService;
+    SecomV2SubscriptionService secomV2SubscriptionService;
 
     /**
      * The Request Context.
@@ -91,7 +91,7 @@ public class SubscriptionController implements SubscriptionServiceInterface {
         final SubscriptionRequest subscriptionRequest = Optional.ofNullable(subscriptionRequestObject)
                 .map(SubscriptionRequestObject::getEnvelope)
                 .map(dto -> this.subscriptionRequestDomainMapper.convertTo(dto, SubscriptionRequest.class))
-                .map(subReq -> this.secomSubscriptionService.save(mrn, subReq))
+                .map(subReq -> this.secomV2SubscriptionService.save(mrn, subReq))
                 .filter(req -> Objects.nonNull(req.getUuid()))
                 .orElseThrow(() -> new SecomNotFoundException("UUID"));
 

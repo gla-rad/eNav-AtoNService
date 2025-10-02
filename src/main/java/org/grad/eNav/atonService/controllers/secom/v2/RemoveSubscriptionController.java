@@ -22,7 +22,7 @@ import jakarta.ws.rs.QueryParam;
 import lombok.extern.slf4j.Slf4j;
 import org.grad.eNav.atonService.components.DomainDtoMapper;
 import org.grad.eNav.atonService.models.domain.secom.RemoveSubscription;
-import org.grad.eNav.atonService.services.secom.SecomSubscriptionService;
+import org.grad.eNav.atonService.services.secom.v2.SecomV2SubscriptionService;
 import org.grad.secomv2.core.exceptions.SecomNotFoundException;
 import org.grad.secomv2.core.interfaces.RemoveSubscriptionServiceInterface;
 import org.grad.secomv2.core.models.RemoveSubscriptionObject;
@@ -50,7 +50,7 @@ public class RemoveSubscriptionController implements RemoveSubscriptionServiceIn
      * The SECOM Service.
      */
     @Autowired
-    SecomSubscriptionService secomSubscriptionService;
+    SecomV2SubscriptionService secomV2SubscriptionService;
 
     /**
      * Object Mapper from SECOM Remove Subscription DTO to Domain.
@@ -71,7 +71,7 @@ public class RemoveSubscriptionController implements RemoveSubscriptionServiceIn
     @Transactional
     public RemoveSubscriptionResponseObject removeSubscription(@QueryParam(value="subscriptionIdentifier") UUID subscriptionIdentifier) {
         final UUID deletedSubscriptionIdentifier = Optional.ofNullable(subscriptionIdentifier)
-                .map(this.secomSubscriptionService::delete)
+                .map(this.secomV2SubscriptionService::delete)
                 .orElseThrow(() -> new SecomNotFoundException(String.format("%s", subscriptionIdentifier)));
 
         // Create the response

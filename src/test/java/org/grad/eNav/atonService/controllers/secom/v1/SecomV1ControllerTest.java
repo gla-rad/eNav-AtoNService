@@ -30,7 +30,7 @@ import org.grad.eNav.atonService.models.domain.secom.SubscriptionRequest;
 import org.grad.eNav.atonService.services.DatasetService;
 import org.grad.eNav.atonService.services.S100ExchangeSetService;
 import org.grad.eNav.atonService.services.UnLoCodeService;
-import org.grad.eNav.atonService.services.secom.SecomSubscriptionService;
+import org.grad.eNav.atonService.services.secom.v1.SecomV1SubscriptionService;
 import org.grad.eNav.atonService.utils.S125DatasetBuilder;
 import org.grad.eNav.atonService.utils.SecomUtils;
 import org.grad.eNav.s125.utils.S125Utils;
@@ -128,7 +128,7 @@ class SecomV1ControllerTest {
      * The SECOM Subscription Service mock.
      */
     @MockitoBean
-    SecomSubscriptionService secomSubscriptionService;
+    SecomV1SubscriptionService secomV1SubscriptionService;
 
     /**
      * The Secom Certificate Provider mock.
@@ -596,7 +596,7 @@ class SecomV1ControllerTest {
      */
     @Test
     void testSubscription() {
-        doReturn(savedSubscriptionRequest).when(this.secomSubscriptionService).save(any(), any());
+        doReturn(savedSubscriptionRequest).when(this.secomV1SubscriptionService).save(any(), any());
 
         webTestClient.post()
                 .uri("/api/secom" + SUBSCRIPTION_INTERFACE_PATH)
@@ -620,7 +620,7 @@ class SecomV1ControllerTest {
      */
     @Test
     void testSubscriptionBadRequest() {
-        doThrow(SecomValidationException.class).when(this.secomSubscriptionService).save(any(), any());
+        doThrow(SecomValidationException.class).when(this.secomV1SubscriptionService).save(any(), any());
 
         webTestClient.post()
                 .uri("/api/secom" + SUBSCRIPTION_INTERFACE_PATH)
@@ -637,7 +637,7 @@ class SecomV1ControllerTest {
      */
     @Test
     void testSubscriptionMethodNotAllowed() {
-        doThrow(SecomValidationException.class).when(this.secomSubscriptionService).save(any(), any());
+        doThrow(SecomValidationException.class).when(this.secomV1SubscriptionService).save(any(), any());
 
         webTestClient.get()
                 .uri("/api/secom" + SUBSCRIPTION_INTERFACE_PATH)
@@ -652,7 +652,7 @@ class SecomV1ControllerTest {
      */
     @Test
     void testRemoveSubscription() {
-        doReturn(removeSubscriptionObject.getSubscriptionIdentifier()).when(this.secomSubscriptionService).delete(any());
+        doReturn(removeSubscriptionObject.getSubscriptionIdentifier()).when(this.secomV1SubscriptionService).delete(any());
 
         webTestClient.method(HttpMethod.DELETE)
                 .uri("/api/secom" + REMOVE_SUBSCRIPTION_INTERFACE_PATH)
@@ -675,7 +675,7 @@ class SecomV1ControllerTest {
      */
     @Test
     void testRemoveSubscriptionBadRequest() {
-        doThrow(SecomValidationException.class).when(this.secomSubscriptionService).delete(any());
+        doThrow(SecomValidationException.class).when(this.secomV1SubscriptionService).delete(any());
 
         webTestClient.post()
                 .uri("/api/secom" + SUBSCRIPTION_INTERFACE_PATH)
@@ -692,7 +692,7 @@ class SecomV1ControllerTest {
      */
     @Test
     void testRemoveSubscriptionMethodNotAllowed() {
-        doThrow(SecomValidationException.class).when(this.secomSubscriptionService).delete(any());
+        doThrow(SecomValidationException.class).when(this.secomV1SubscriptionService).delete(any());
 
         webTestClient.get()
                 .uri("/api/secom" + SUBSCRIPTION_INTERFACE_PATH)
