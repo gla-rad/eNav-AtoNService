@@ -20,6 +20,7 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.validation.constraints.NotNull;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.lucene.store.AlreadyClosedException;
 import org.grad.eNav.atonService.models.domain.DatasetContent;
 import org.grad.eNav.atonService.models.domain.DatasetContentLog;
 import org.grad.eNav.atonService.models.domain.s125.AidsToNavigation;
@@ -105,7 +106,7 @@ public class HibernateSearchInit implements ApplicationListener<ApplicationReady
                 indexer.startAndWait();
                 log.info("Hibernate Search indexing completed successfully");
                 return;
-            } catch (InterruptedException | SearchException ex) {
+            } catch (IllegalStateException | InterruptedException | SearchException ex) {
                 log.error("Indexing attempt {} failed: {}", attempt, ex.getMessage(), ex);
 
                 if (attempt >= indexingMaxRetries) {
