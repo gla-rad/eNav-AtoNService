@@ -23,6 +23,7 @@ import jakarta.validation.ValidationException;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.Pattern;
 import jakarta.ws.rs.Path;
+import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.QueryParam;
 import lombok.extern.slf4j.Slf4j;
 import org.grad.eNav.atonService.models.UnLoCodeMapEntry;

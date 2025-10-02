@@ -51,7 +51,7 @@ class SecomV2SubscriptionNotificationServiceTest {
     SecomV2SubscriptionNotificationService secomV2SubscriptionNotificationService;
 
     /**
-     * The SECOM Service mock.
+     * The SECOM v2 Service mock.
      */
     @Mock
     SecomV2Service secomV2Service;
@@ -60,6 +60,7 @@ class SecomV2SubscriptionNotificationServiceTest {
     UUID subscriptionIdentifier;
     SecomClient secomClient;
     SubscriptionNotificationResponseObject subscriptionNotificationResponseObject;
+
     /**
      * Common setup for all the tests.
      */

@@ -30,7 +30,7 @@ import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
 /**
- * The SECOM Subscription Notification Service Class.
+ * The SECOM v2 Subscription Notification Service Class.
  * <p/>
  * A service handles the subscription notifications in an asynchronous way so
  * that the responses can go back to the clients regardless of the respective
@@ -43,7 +43,7 @@ import java.util.concurrent.CompletableFuture;
 public class SecomV2SubscriptionNotificationService {
 
     /**
-     * The SECOM Service.
+     * The SECOM v2 Service.
      */
     @Autowired
     SecomV2Service secomV2Service;

@@ -43,7 +43,7 @@ import java.util.concurrent.CompletableFuture;
 public class SecomV1SubscriptionNotificationService {
 
     /**
-     * The SECOM Service.
+     * The SECOM v1 Service.
      */
     @Autowired
     SecomV1Service secomV1Service;

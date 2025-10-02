@@ -81,9 +81,9 @@ import java.util.*;
 /**
  * The SECOM v1 Subscription Service Class.
  * <p/>
- * A service to handle the incoming SECOM subscription requests. Each
+ * A service to handle the incoming SECOM v1 subscription requests. Each
  * subscription is persisted in the database and is handled appropriately
- * as specified by the SECOM standard.
+ * as specified by the SECOM v1 standard.
  *
  * @author Nikolaos Vastardis (email: Nikolaos.Vastardis@gla-rad.org)
  */
@@ -107,13 +107,13 @@ public class SecomV1SubscriptionService implements MessageHandler {
     UnLoCodeService unLoCodeService;
 
     /**
-     * The SECOM Service.
+     * The SECOM v1 Service.
      */
     @Autowired
     SecomV1Service secomV1Service;
 
     /**
-     * The SECOM Subscription Notification Service.
+     * The SECOM v1 Subscription Notification Service.
      */
     @Autowired
     SecomV1SubscriptionNotificationService secomV1SubscriptionNotificationService;
@@ -153,7 +153,7 @@ public class SecomV1SubscriptionService implements MessageHandler {
      */
     @PostConstruct
     public void init() {
-        log.info("SECOM Subscription Service is booting up...");
+        log.info("SECOM v1 Subscription Service is booting up...");
         this.entityManager = this.entityManagerFactory.createEntityManager();
         this.s125PublicationChannel.subscribe(this);
         this.s125RemovalChannel.subscribe(this);
@@ -165,7 +165,7 @@ public class SecomV1SubscriptionService implements MessageHandler {
      */
     @PreDestroy
     public void destroy() {
-        log.info("SECOM Subscription Service is shutting down...");
+        log.info("SECOM v1 Subscription Service is shutting down...");
         if(this.entityManager != null) {
             this.entityManager.close();
         }
@@ -209,7 +209,7 @@ public class SecomV1SubscriptionService implements MessageHandler {
             // Get the payload of the incoming message
 
             // A simple debug message
-            log.debug(String.format("SECOM Subscription Service received an S125 dataset %s with UUID: %s.",
+            log.debug(String.format("SECOM v1 Subscription Service received an S125 dataset %s with UUID: %s.",
                     datasetOperation.getOperation(),
                     s125Dataset.getUuid()));
 
@@ -251,7 +251,7 @@ public class SecomV1SubscriptionService implements MessageHandler {
             }
         }
         else {
-            log.warn("Aids to Navigation Service received a publish-subscribe message with erroneous format.");
+            log.warn("SECOM v1 Subscription Service received a publish-subscribe message with erroneous format.");
         }
     }
 
@@ -301,7 +301,7 @@ public class SecomV1SubscriptionService implements MessageHandler {
      */
     @Transactional(readOnly = true)
     public Page<SubscriptionRequest> handleDatatablesPagingRequest(DtPagingRequest dtPagingRequest) {
-        log.debug("Request to get SECOM Subscriptions in a Datatables pageable search");
+        log.debug("Request to get SECOM v1 Subscriptions in a Datatables pageable search");
         // Create the search query
         final SearchQuery<SubscriptionRequest> searchQuery = this.getDatasetSearchQueryByText(
                 dtPagingRequest.getSearch().getValue(),
@@ -324,7 +324,7 @@ public class SecomV1SubscriptionService implements MessageHandler {
      * @return the subscription request generated
      */
     public SubscriptionRequest save(String mrn, SubscriptionRequest subscriptionRequest) {
-        log.debug("Request from MRN {} to save SECOM subscription {}", mrn, subscriptionRequest.getUuid());
+        log.debug("Request from MRN {} to save SECOM v1 subscription {}", mrn, subscriptionRequest.getUuid());
 
         // Sanity Check
         Optional.ofNullable(mrn)
@@ -373,7 +373,7 @@ public class SecomV1SubscriptionService implements MessageHandler {
      * @return the subscription identifier UUID removed
      */
     public UUID delete(@NotNull UUID uuid) {
-        log.debug("Request to delete SECOM subscription with UUID : {}", uuid);
+        log.debug("Request to delete SECOM v1 subscription with UUID : {}", uuid);
 
         // Look for the subscription and delete it if found
         final SubscriptionRequest subscriptionRequest = Optional.of(uuid)

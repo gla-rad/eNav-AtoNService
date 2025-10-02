@@ -63,7 +63,7 @@ public class SecomV1Service {
     String discoveryServiceUrl;
 
     /**
-     * The SECOM Configuration Properties.
+     * The SECOM v1 Configuration Properties.
      */
     @Autowired
     SecomConfigProperties secomConfigProperties;
@@ -79,14 +79,14 @@ public class SecomV1Service {
      */
     @PostConstruct
     public void init() {
-        log.info("SECOM Service is booting up...");
+        log.info("SECOM v1 Service is booting up...");
         this.discoveryService = Optional.ofNullable(this.discoveryServiceUrl)
                 .filter(StringUtils::isNotBlank)
                 .map(url -> {
                     try {
                         return URI.create(url).toURL();
                     } catch (MalformedURLException ex) {
-                        log.error("Invalid SECOM discovery service URL provided...", ex);
+                        log.error("Invalid SECOM v1 discovery service URL provided...", ex);
                         return null;
                     }
                 })
@@ -96,7 +96,7 @@ public class SecomV1Service {
                     } catch (IOException | KeyStoreException |
                              NoSuchAlgorithmException | CertificateException |
                              UnrecoverableKeyException ex) {
-                        log.error("Unable to initialise the SSL context for the SECOM discovery service...", ex);
+                        log.error("Unable to initialise the SSL context for the SECOM v1 discovery service...", ex);
                         return null;
                     }
                 })
@@ -109,7 +109,7 @@ public class SecomV1Service {
      */
     @PreDestroy
     public void destroy() {
-        log.info("SECOM Service is shutting down...");
+        log.info("SECOM v1 Service is shutting down...");
         this.discoveryService = null;
     }
 

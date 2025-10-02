@@ -125,25 +125,25 @@ class SecomV1ControllerTest {
     UnLoCodeService unLoCodeService;
 
     /**
-     * The SECOM Subscription Service mock.
+     * The SECOM v1 Subscription Service mock.
      */
     @MockitoBean
     SecomV1SubscriptionService secomV1SubscriptionService;
 
     /**
-     * The Secom Certificate Provider mock.
+     * The SECOM v1 Certificate Provider mock.
      */
     @MockitoBean
     SecomV1CertificateProviderImpl secomCertificateProvider;
 
     /**
-     * The Secom Signature Provider mock.
+     * The SECOM v1 Signature Provider mock.
      */
     @MockitoBean
     SecomV1SignatureProviderImpl secomSignatureProvider;
 
     /**
-     * The Secom Signature Filter mock.
+     * The SECOM v1 Signature Filter mock.
      *
      * This will block the actual SECOM signature verification process and will
      * allow out test messages to go through the signature filter without valid

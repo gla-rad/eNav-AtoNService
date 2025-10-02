@@ -120,31 +120,31 @@ class SecomV2ControllerTest {
     S100ExchangeSetService s100ExchangeSetService;
 
     /**
-     * The UN/LOCODE Service mock.
+     * The UN/LoCode Service mock.
      */
     @MockitoBean
     UnLoCodeService unLoCodeService;
 
     /**
-     * The SECOM Subscription Service mock.
+     * The SECOM v2 Subscription Service mock.
      */
     @MockitoBean
     SecomV2SubscriptionService secomV2SubscriptionService;
 
     /**
-     * The Secom Certificate Provider mock.
+     * The SECOM v2 Certificate Provider mock.
      */
     @MockitoBean
     SecomV2CertificateProviderImpl secomCertificateProvider;
 
     /**
-     * The Secom Signature Provider mock.
+     * The SECOM v2 Signature Provider mock.
      */
     @MockitoBean
     SecomV2SignatureProviderImpl secomSignatureProvider;
 
     /**
-     * The Secom Signature Filter mock.
+     * The SECOM v2 Signature Filter mock.
      *
      * This will block the actual SECOM signature verification process and will
      * allow out test messages to go through the signature filter without valid

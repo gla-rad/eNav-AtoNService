@@ -85,7 +85,7 @@ class SecomV2SubscriptionServiceTest {
     EntityManagerFactory entityManagerFactory;
 
     /**
-     * The SECOM Service mock.
+     * The SECOM v2 Service mock.
      */
     @Mock
     SecomV2Service secomV2Service;
@@ -97,7 +97,7 @@ class SecomV2SubscriptionServiceTest {
     UnLoCodeService unLoCodeService;
 
     /**
-     * The SECOM Subscription Notification Service mock.
+     * The SECOM v2 Subscription Notification Service mock.
      */
     @Mock
     SecomV2SubscriptionNotificationService secomV2SubscriptionNotificationService;
@@ -133,6 +133,7 @@ class SecomV2SubscriptionServiceTest {
     private S125Dataset s125Dataset;
     private DatasetContent datasetContent;
     private GeometryFactory factory;
+
     /**
      * Common setup for all the tests.
      */

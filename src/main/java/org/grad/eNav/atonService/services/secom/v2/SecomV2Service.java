@@ -45,7 +45,7 @@ import java.util.*;
 /**
  * The SECOM v2 Service Class.
  *
- * A service to handle the general SECOM requests that need additional
+ * A service to handle the general SECOM v2 requests that need additional
  * processing, not covered by the existing services, e.g signing.
  *
  * @author Nikolaos Vastardis (email: Nikolaos.Vastardis@gla-rad.org)
@@ -61,7 +61,7 @@ public class SecomV2Service {
     String discoveryServiceUrl;
 
     /**
-     * The SECOM Configuration Properties.
+     * The SECOM v2 Configuration Properties.
      */
     @Autowired
     SecomConfigProperties secomConfigProperties;
@@ -75,14 +75,14 @@ public class SecomV2Service {
      */
     @PostConstruct
     public void init() {
-        log.info("SECOM Service is booting up...");
+        log.info("SECOM v2 Service is booting up...");
         this.discoveryService = Optional.ofNullable(this.discoveryServiceUrl)
                 .filter(StringUtils::isNotBlank)
                 .map(url -> {
                     try {
                         return new URL(url);
                     } catch (MalformedURLException ex) {
-                        log.error("Invalid SECOM discovery service URL provided...", ex);
+                        log.error("Invalid SECOM v2 discovery service URL provided...", ex);
                         return null;
                     }
                 })
@@ -90,7 +90,7 @@ public class SecomV2Service {
                     try {
                         return new SecomClient(url, this.secomConfigProperties);
                     } catch (IOException | KeyStoreException | NoSuchAlgorithmException | CertificateException | UnrecoverableKeyException ex) {
-                        log.error("Unable to initialise the SSL context for the SECOM discovery service...", ex);
+                        log.error("Unable to initialise the SSL context for the SECOM v2 discovery service...", ex);
                         return null;
                     }
                 })
@@ -103,7 +103,7 @@ public class SecomV2Service {
      */
     @PreDestroy
     public void destroy() {
-        log.info("SECOM Service is shutting down...");
+        log.info("SECOM v2 Service is shutting down...");
         this.discoveryService = null;
     }
 
@@ -165,7 +165,7 @@ public class SecomV2Service {
     public SecomClient getClient(@NotNull URL url) {
         // Validate the MRN
         Optional.ofNullable(url)
-                .orElseThrow(() -> new SecomValidationException("Cannot request SECOM client for an empty/invalid URL"));
+                .orElseThrow(() -> new SecomValidationException("Cannot request SECOM v2 client for an empty/invalid URL"));
 
         // Now construct and return a SECOM client for the discovered URI
         try {
