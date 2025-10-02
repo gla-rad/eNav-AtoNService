@@ -302,7 +302,7 @@ public class DatasetService {
 
         // Publish the cancelled dataset to the deleted channel
         this.s125RemovalChannel.send(MessageBuilder.withPayload(result)
-                .setHeader(MessageHeaders.CONTENT_TYPE, SECOM_DataProductType.S125)
+                .setHeader(MessageHeaders.CONTENT_TYPE, SECOM_DataProductType.S125.name())
                 .setHeader("operation", DatasetOperation.CANCELLED)
                 .build());
 
@@ -334,7 +334,7 @@ public class DatasetService {
 
         // Publish the updated dataset to the deleted channel
         this.s125RemovalChannel.send(MessageBuilder.withPayload(result)
-                .setHeader(MessageHeaders.CONTENT_TYPE, SECOM_DataProductType.S125)
+                .setHeader(MessageHeaders.CONTENT_TYPE, SECOM_DataProductType.S125.name())
                 .setHeader("operation", DatasetOperation.DELETED)
                 .build());
 
@@ -416,7 +416,7 @@ public class DatasetService {
                                 result.getUuid());
                         // Publish the updated dataset to the publication channel
                         this.s125PublicationChannel.send(MessageBuilder.withPayload(result)
-                                .setHeader(MessageHeaders.CONTENT_TYPE, SECOM_DataProductType.S125)
+                                .setHeader(MessageHeaders.CONTENT_TYPE, SECOM_DataProductType.S125.name())
                                 .setHeader("operation", result.isNew() ?
                                         DatasetOperation.CREATED : DatasetOperation.UPDATED)
                                 .build());

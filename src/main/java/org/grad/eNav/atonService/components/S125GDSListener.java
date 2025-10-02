@@ -183,7 +183,7 @@ public class S125GDSListener implements FeatureListener {
             // Publish the created/updated AtoN entries
             listOfAtons.stream()
                     .map(MessageBuilder::withPayload)
-                    .map(builder -> builder.setHeader(MessageHeaders.CONTENT_TYPE, SECOM_DataProductType.S125))
+                    .map(builder -> builder.setHeader(MessageHeaders.CONTENT_TYPE, SECOM_DataProductType.S125.name()))
                     .map(builder -> builder.setHeader("deletion", false))
                     .map(MessageBuilder::build)
                     .forEach(msg -> this.atonPublicationChannel.send(msg));
@@ -219,7 +219,7 @@ public class S125GDSListener implements FeatureListener {
             // Publish the deleted AtoN entries
             listOfAtons.stream()
                     .map(MessageBuilder::withPayload)
-                    .map(builder -> builder.setHeader(MessageHeaders.CONTENT_TYPE, SECOM_DataProductType.S125))
+                    .map(builder -> builder.setHeader(MessageHeaders.CONTENT_TYPE, SECOM_DataProductType.S125.name()))
                     .map(builder -> builder.setHeader("deletion", true))
                     .map(MessageBuilder::build)
                     .forEach(msg -> this.atonDeletionChannel.send(msg));
