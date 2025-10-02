@@ -40,7 +40,7 @@ import java.util.Objects;
 import java.util.Optional;
 
 /**
- * The SECOM Subscription Service Interface Controller.
+ * The SECOM v2 Subscription Service Interface Controller.
  *
  * @author Nikolaos Vastardis (email: Nikolaos.Vastardis@gla-rad.org)
  */
@@ -51,13 +51,13 @@ import java.util.Optional;
 public class SubscriptionController implements SubscriptionServiceInterface {
 
     /**
-     * Object Mapper from SECOM Subscription Request DTO to Domain.
+     * Object Mapper from SECOM v2 Subscription Request DTO to Domain.
      */
     @Autowired
     DomainDtoMapper<EnvelopeSubscriptionObject, SubscriptionRequest> subscriptionRequestDomainMapper;
 
     /**
-     * The SECOM Service.
+     * The SECOM v2 Service.
      */
     @Autowired
     SecomV2SubscriptionService secomV2SubscriptionService;

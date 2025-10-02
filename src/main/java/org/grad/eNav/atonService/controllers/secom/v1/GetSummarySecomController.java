@@ -56,7 +56,7 @@ import java.time.*;
 import java.util.*;
 
 /**
- * The SECOM Get Summary Interface Controller.
+ * The SECOM v1 Get Summary Interface Controller.
  *
  * @author Nikolaos Vastardis (email: Nikolaos.Vastardis@gla-rad.org)
  */

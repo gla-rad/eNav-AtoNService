@@ -36,7 +36,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 /**
- * The SECOM Remove Subscription Interface Controller.
+ * The SECOM v1 Remove Subscription Interface Controller.
  *
  * @author Nikolaos Vastardis (email: Nikolaos.Vastardis@gla-rad.org)
  */
@@ -47,16 +47,16 @@ import java.util.UUID;
 public class RemoveSubscriptionSecomController implements RemoveSubscriptionSecomInterface {
 
     /**
-     * The SECOM Service.
-     */
-    @Autowired
-    SecomV1SubscriptionService secomV1SubscriptionService;
-
-    /**
-     * Object Mapper from SECOM Remove Subscription DTO to Domain.
+     * Object Mapper from SECOM v1 Remove Subscription DTO to Domain.
      */
     @Autowired
     DomainDtoMapper<RemoveSubscriptionObject, RemoveSubscription> removeSubscriptionDomainMapper;
+
+    /**
+     * The SECOM v1 Service.
+     */
+    @Autowired
+    SecomV1SubscriptionService secomV1SubscriptionService;
 
     /**
      * DELETE /api/secom/v1/subscription : Subscription(s) can be removed either
