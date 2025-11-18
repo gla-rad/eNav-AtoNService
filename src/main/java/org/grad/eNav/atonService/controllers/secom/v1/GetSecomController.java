@@ -117,7 +117,7 @@ public class GetSecomController implements GetSecomInterface {
                                  @QueryParam("unlocode") @Pattern(regexp = "[A-Z]{5}") String unlocode,
                                  @QueryParam("validFrom") @Parameter(example = "20200101T123000", schema = @Schema(implementation = String.class, pattern = "(\\d{8})T(\\d{6})(Z|\\+\\d{4})?")) Instant validFrom,
                                  @QueryParam("validTo") @Parameter(example = "20200101T123000", schema = @Schema(implementation = String.class, pattern = "(\\d{8})T(\\d{6})(Z|\\+\\d{4})?")) Instant validTo,
-                                 @QueryParam("page") @Min(0) Integer page,
+                                 @QueryParam("page") @Min(1) Integer page,
                                  @QueryParam("pageSize") @Min(0) Integer pageSize) {
         log.debug("SECOM request to get page of Dataset");
         Optional.ofNullable(dataReference).ifPresent(v -> log.debug("Data Reference specified as: {}", dataReference));
