@@ -30,7 +30,11 @@ import org.geotools.api.data.DataStore;
 import org.geotools.api.data.FeatureEvent;
 import org.geotools.api.data.FeatureListener;
 import org.geotools.api.data.SimpleFeatureSource;
-import org.geotools.filter.FidFilterImpl;
+import org.geotools.api.feature.simple.SimpleFeature;
+import org.geotools.api.filter.Filter;
+import org.geotools.feature.simple.SimpleFeatureBuilder;
+import org.geotools.filter.*;
+import org.geotools.filter.spatial.CrossesImpl;
 import org.grad.eNav.atonService.models.GeomesaData;
 import org.grad.eNav.atonService.models.GeomesaS125;
 import org.grad.eNav.atonService.models.domain.s125.*;
@@ -43,6 +47,8 @@ import org.grad.eNav.s125.utils.S125Utils;
 import org.grad.secomv2.core.models.enums.SECOM_DataProductType;
 import org.locationtech.geomesa.kafka.utils.KafkaFeatureEvent;
 import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.GeometryFilter;
+import org.locationtech.jts.io.WKTWriter;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -197,18 +203,44 @@ public class S125GDSListener implements FeatureListener {
         }
         // For feature deletions,
         else if (featureEvent.getType() == FeatureEvent.Type.REMOVED) {
-            /// Extract the S-125 message UIDs and use it to delete all referencing nodes
-            final Set<String> idCodes = Optional.of(featureEvent)
+            // Extract the S-125 message UIDs and use it to delete all referencing nodes
+            List<Filter> filters = Optional.of(featureEvent)
                     .filter(KafkaFeatureEvent.KafkaFeatureRemoved.class::isInstance)
                     .map(KafkaFeatureEvent.KafkaFeatureRemoved.class::cast)
                     .map(KafkaFeatureEvent.KafkaFeatureRemoved::getFilter)
+                    .filter(LogicFilterImpl.class::isInstance)
+                    .map(LogicFilterImpl.class::cast)
+                    .map(LogicFilterImpl::getChildren)
+                    .orElse(Collections.singletonList(featureEvent.getFilter()));
+
+            // Get the geometry filter and if present use it to test
+            final SimpleFeature serviceFeature = new GeomesaS125().getFeatureData(Collections.singletonList(
+                    new S125Node("S125AtoNService",
+                    GeometryJSONConverter.convertFromGeometry(this.geometry),
+                    null)))
+                    .stream()
+                    .findFirst()
+                    .orElse(null);
+            if(filters.stream()
+                    .filter(GeometryFilterImpl.class::isInstance)
+                    .map(GeometryFilterImpl.class::cast)
+                    .anyMatch(f -> !f.evaluate(serviceFeature))) {
+                return;
+            }
+
+            // If all OK, get the IDs of the filter
+            final FidFilterImpl fidFilter = filters.stream()
                     .filter(FidFilterImpl.class::isInstance)
                     .map(FidFilterImpl.class::cast)
-                    .map(FidFilterImpl::getFidsSet)
-                    .orElse(Collections.emptySet());
+                    .findFirst()
+                    .orElse(null);
 
             // Now delete the selected AtoNs and collect the output
-            final List<? extends AidsToNavigation> listOfAtons = idCodes.stream()
+            final List<? extends AidsToNavigation> listOfAtons = Optional.ofNullable(fidFilter)
+                    .map(FidFilterImpl::getIDs)
+                    .orElse(Collections.emptySet())
+                    .stream()
+                    .map(String::valueOf)
                     .map(this.aidsToNavigationService::findByIdCode)
                     .filter(Optional::isPresent)
                     .map(Optional::get)
