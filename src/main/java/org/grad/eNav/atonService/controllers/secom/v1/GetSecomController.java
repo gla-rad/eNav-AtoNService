@@ -131,7 +131,7 @@ public class GetSecomController implements GetSecomInterface {
         // Init local variables
         Geometry jtsGeometry = null;
         Pageable pageable = Optional.ofNullable(page)
-                .map(p -> PageRequest.of(p, Optional.ofNullable(pageSize).orElse(Integer.MAX_VALUE)))
+                .map(p -> PageRequest.of(p - 1, Optional.ofNullable(pageSize).orElse(Integer.MAX_VALUE)))
                 .map(Pageable.class::cast)
                 .orElse(Pageable.unpaged());
         LocalDateTime validFromLdt = Optional.ofNullable(validFrom)
