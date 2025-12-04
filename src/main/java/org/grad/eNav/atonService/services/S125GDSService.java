@@ -28,6 +28,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
@@ -63,6 +64,7 @@ public class S125GDSService {
      * The Geomesa Data Store.
      */
     @Autowired
+    @Lazy
     @Qualifier("gsDataStore")
     DataStore consumer;
 
