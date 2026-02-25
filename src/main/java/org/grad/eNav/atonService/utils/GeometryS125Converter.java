@@ -259,6 +259,7 @@ public class GeometryS125Converter {
         Pos pos = new PosImpl();
 
         // Populate with the geometry data
+        pos.setSrsName("EPSG:4326");
         pos.setValue(coords);
 
         // And return the output
@@ -281,6 +282,7 @@ public class GeometryS125Converter {
 
         // Populate the elements
         surfaceType.setPatches(patches);
+        surfaceType.setSrsName("EPSG:4326");
         surfaceProperty.setSurface(surfaceType);
 
         // And return the output
@@ -300,6 +302,7 @@ public class GeometryS125Converter {
 
         // Populate the elements
         curveType.setSegments(segments);
+        curveType.setSrsName("EPSG:4326");
         curveProperty.setCurve(curveType);
 
         // And return the output
@@ -317,6 +320,7 @@ public class GeometryS125Converter {
         PointType pointType = new PointTypeImpl();
 
         // Populate the elements
+        pointType.setSrsName("EPSG:4326");
         pointProperty.setPoint(pointType);
 
         // And return the output
