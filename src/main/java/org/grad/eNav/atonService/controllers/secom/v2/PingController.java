@@ -20,6 +20,7 @@ import jakarta.ws.rs.Path;
 import lombok.extern.slf4j.Slf4j;
 import org.grad.secomv2.core.interfaces.PingServiceInterface;
 import org.grad.secomv2.core.models.PingResponseObject;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.annotation.Validated;
 
@@ -31,7 +32,6 @@ import java.time.Instant;
  * @author Lawrence Hughes (email: Lawrence.Hughes@gla-rad.org)
  */
 @Component
-@Path("/")
 @Validated
 @Slf4j
 public class PingController implements PingServiceInterface {
@@ -41,12 +41,12 @@ public class PingController implements PingServiceInterface {
      * holds the last private interaction time
      */
     @Tag(name = "SECOM")
-    public PingResponseObject ping() {
+    public ResponseEntity<PingResponseObject> ping() {
 
         PingResponseObject pingResponseObject = new PingResponseObject();
-        pingResponseObject.setLastPrivateInteractionTime(Instant.now());
+        pingResponseObject.setTimestamp(Instant.now());
         log.debug("PingSecomController called");
-        return pingResponseObject;
+        return ResponseEntity.ok(pingResponseObject);
 
     }
 }

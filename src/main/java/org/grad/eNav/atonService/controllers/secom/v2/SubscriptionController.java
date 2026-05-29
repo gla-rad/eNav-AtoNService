@@ -33,6 +33,7 @@ import org.grad.secomv2.core.models.SubscriptionRequestObject;
 import org.grad.secomv2.core.models.SubscriptionResponseObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.annotation.Validated;
 
@@ -45,7 +46,6 @@ import java.util.Optional;
  * @author Nikolaos Vastardis (email: Nikolaos.Vastardis@gla-rad.org)
  */
 @Component
-@Path("")
 @Validated
 @Slf4j
 public class SubscriptionController implements SubscriptionServiceInterface {
@@ -80,7 +80,7 @@ public class SubscriptionController implements SubscriptionServiceInterface {
     // Kept or testing
     //@CrossOrigin(originPatterns = "http://localhost:8768/*")
     @Tag(name = "SECOM")
-    public SubscriptionResponseObject subscription(@Valid SubscriptionRequestObject subscriptionRequestObject) {
+    public ResponseEntity<SubscriptionResponseObject> subscription(@Valid SubscriptionRequestObject subscriptionRequestObject) {
         // Try to access the request header if possible...
         // These should have been forwarded by the API Gateway normally and
         // contain the SSL client certificate and extra information.
@@ -101,7 +101,7 @@ public class SubscriptionController implements SubscriptionServiceInterface {
         subscriptionResponse.setMessage("Subscription successfully created");
 
         // Return the response
-        return subscriptionResponse;
+        return ResponseEntity.ok(subscriptionResponse);
     }
 
 }

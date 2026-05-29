@@ -16,8 +16,8 @@
 
 package org.grad.eNav.atonService.services;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.grad.eNav.atonService.models.UnLoCodeMapEntry;
@@ -25,7 +25,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import jakarta.annotation.PostConstruct;
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Optional;
@@ -62,7 +61,7 @@ public class UnLoCodeService {
         InputStream s = this.getClass().getClassLoader().getResourceAsStream("UnLoCodeLists.json");
         try {
             this.loadUnLoCodeMapping(s);
-        } catch (IOException e) {
+        } catch (Exception e) {
             log.error(e.getMessage());
         }
     }
@@ -85,7 +84,7 @@ public class UnLoCodeService {
      *
      * @throws Exception if the unLoCode mapping file could not be found
      */
-    private void loadUnLoCodeMapping(InputStream inStream) throws IOException {
+    private void loadUnLoCodeMapping(InputStream inStream) throws Exception {
         this.UnLoCodeMap.clear();
         final JsonNode unLoCodeJson = this.objectMapper.readTree(inStream);
         for (JsonNode entry : unLoCodeJson) {

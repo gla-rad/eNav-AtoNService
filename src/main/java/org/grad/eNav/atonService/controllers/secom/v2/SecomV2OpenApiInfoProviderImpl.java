@@ -7,7 +7,7 @@ import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.info.License;
 import io.swagger.v3.oas.models.media.Schema;
 import io.swagger.v3.oas.models.servers.Server;
-import org.grad.secomv2.springboot3.openapi.SecomV2OpenApiInfoProvider;
+import org.grad.secomv2.springboot4.openapi.SecomV2OpenApiInfoProvider;
 import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
@@ -22,13 +22,12 @@ import java.util.Arrays;
  */
 @Component
 public class SecomV2OpenApiInfoProviderImpl implements SecomV2OpenApiInfoProvider {
-
     /**
      * Returns the OpenAPI documentation details.
      *
      * @return The OpenAPI documentation details
      */
-    @Override
+//    @Override
     public OpenAPI getOpenApiInfo() {
         return new OpenAPI().schema("secom-v2", new Schema<>().$schema("openapi.json"))
                 .info(new Info().title("AtoN Service - SECOM v2.0 Interfaces")

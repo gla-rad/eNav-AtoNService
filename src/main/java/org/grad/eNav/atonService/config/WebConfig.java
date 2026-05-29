@@ -17,10 +17,11 @@
 package org.grad.eNav.atonService.config;
 
 import org.grad.eNav.atonService.components.GeoJsonStringToGeometryConverter;
+import org.grad.secomv2.core.models.enums.ContainerTypeEnum;
+import org.grad.secomv2.core.models.enums.SECOM_DataProductType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.format.FormatterRegistry;
-import org.springframework.web.servlet.config.annotation.PathMatchConfigurer;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
@@ -40,22 +41,6 @@ public class WebConfig implements WebMvcConfigurer {
      */
     @Autowired
     GeoJsonStringToGeometryConverter geoJsonStringToGeometryConverter;
-
-    /**
-     * As of Spring Framework 6.0, the trailing slash matching configuration
-     * option has been deprecated and its default value set to false. This
-     * means that previously, the following controller would match both
-     * "GET /some/greeting" and "GET /some/greeting/". To disable this
-     * functionality and mirror the previous version behaviour we need to
-     * do this. Note that this functionality has been deprecated so we need
-     * to be careful.
-     *
-     * @param pathMatchConfigurer   the path match configurer
-     */
-    @Override
-    public void configurePathMatch(PathMatchConfigurer pathMatchConfigurer) {
-        pathMatchConfigurer.setUseTrailingSlashMatch(true);
-    }
 
     /**
      * Add the static resources and webjars to the web resources.
@@ -104,6 +89,10 @@ public class WebConfig implements WebMvcConfigurer {
     @Override
     public void addFormatters(FormatterRegistry registry) {
         registry.addConverter(geoJsonStringToGeometryConverter);
+        registry.addConverter(String.class, ContainerTypeEnum.class,
+                s -> (s == null || s.isEmpty()) ? null : ContainerTypeEnum.fromValue(Integer.parseInt(s)));
+        registry.addConverter(String.class, SECOM_DataProductType.class,
+                s -> (s == null || s.isEmpty()) ? null : SECOM_DataProductType.fromString(s));
     }
 
 }

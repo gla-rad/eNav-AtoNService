@@ -20,10 +20,9 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.ValidationException;
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.Pattern;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.QueryParam;
+import org.grad.secomv2.core.base.SecomV2Param;
 import lombok.extern.slf4j.Slf4j;
 import org.grad.eNav.atonService.models.UnLoCodeMapEntry;
 import org.grad.eNav.atonService.models.domain.DatasetContent;
@@ -46,9 +45,10 @@ import org.locationtech.jts.io.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.math.BigInteger;
 import java.time.Instant;
@@ -66,8 +66,6 @@ import java.util.Optional;
  * @author Nikolaos Vastardis (email: Nikolaos.Vastardis@gla-rad.org)
  */
 @Component
-@Path("/")
-@Validated
 @Slf4j
 public class GetSummaryController implements GetSummaryServiceInterface {
 
@@ -103,15 +101,15 @@ public class GetSummaryController implements GetSummaryServiceInterface {
      */
     @Tag(name = "SECOM")
     @Transactional
-    public GetSummaryResponseObject getSummary(@QueryParam("containerType") @Parameter(schema = @Schema(description = "Data Type requested")) ContainerTypeEnum containerType,
-                                               @QueryParam("dataProductType") @Parameter(schema = @Schema(description = "Data product type name See: https://registry.iho.int/productspec/list.do (column 'Product ID')")) SECOM_DataProductType dataProductType,
-                                               @QueryParam("productVersion") @Parameter(schema = @Schema(description = "S-100 based Product specification version")) String productVersion,
-                                               @QueryParam("geometry") @Parameter(schema = @Schema(description = "Geometry condition for geo-located information objects as WKT LineString or Polygon")) String geometry,
-                                               @QueryParam("unlocode") @Parameter(schema = @Schema(description = "See UN web page")) @Pattern(regexp = "^[a-zA-Z]{2}[a-zA-Z2-9]{3}") String unlocode,
-                                               @QueryParam("validFrom") @Parameter(schema = @Schema(implementation = String.class, description = "Time related to validity period start for information object")) Instant validFrom,
-                                               @QueryParam("validTo") @Parameter(schema = @Schema(implementation = String.class, description = "Time related to validity period end for information object")) Instant validTo,
-                                               @QueryParam("page") @Min(1) @Parameter(schema = @Schema(implementation = Integer.class, description = "Requested pagination page. Must be a positive integer >= 1..", defaultValue = "1")) Integer page,
-                                               @QueryParam("pageSize") @Min(0) @Parameter(schema = @Schema(implementation = Integer.class, description = "Requested pagination page size. Must be a positive integer >= 0.", defaultValue = "100")) Integer pageSize) {
+    public ResponseEntity<GetSummaryResponseObject> getSummary(@RequestParam(value = "containerType", required = false) @Parameter(schema = @Schema(description = "Data Type requested")) @SecomV2Param ContainerTypeEnum containerType,
+                                                              @RequestParam(value = "dataProductType", required = false) @Parameter(schema = @Schema(description = "Data product type name See: https://registry.iho.int/productspec/list.do (column 'Product ID')")) SECOM_DataProductType dataProductType,
+                                                              @RequestParam(value = "productVersion", required = false) @Parameter(schema = @Schema(description = "S-100 based Product specification version")) String productVersion,
+                                                              @RequestParam(value = "geometry", required = false) @Parameter(schema = @Schema(description = "Geometry condition for geo-located information objects as WKT LineString or Polygon")) String geometry,
+                                                              @RequestParam(value = "unlocode", required = false) @Parameter(schema = @Schema(description = "See UN web page")) String unlocode,
+                                                              @RequestParam(value = "validFrom", required = false) @Parameter(schema = @Schema(implementation = String.class, description = "Time related to validity period start for information object")) Instant validFrom,
+                                                              @RequestParam(value = "validTo", required = false) @Parameter(schema = @Schema(implementation = String.class, description = "Time related to validity period end for information object")) Instant validTo,
+                                                              @RequestParam(value = "page", required = false) @Parameter(schema = @Schema(implementation = Integer.class, description = "Requested pagination page. Must be a positive integer >= 1..", defaultValue = "1")) Integer page,
+                                                              @RequestParam(value = "pageSize", required = false) @Parameter(schema = @Schema(implementation = Integer.class, description = "Requested pagination page size. Must be a positive integer >= 0.", defaultValue = "100")) Integer pageSize) {
         log.debug("SECOM request to get page of Dataset Summary");
         Optional.ofNullable(containerType).ifPresent(v -> log.debug("Container Type specified as: {}", containerType));
         Optional.ofNullable(dataProductType).ifPresent(v -> log.debug("Data Product Type specified as: {}", dataProductType));
@@ -188,13 +186,13 @@ public class GetSummaryController implements GetSummaryServiceInterface {
 
         // Start building the response
         final GetSummaryResponseObject getSummaryResponseObject = new GetSummaryResponseObject();
-        getSummaryResponseObject.setInformationSummaryObject(summaryObjectList);
+        getSummaryResponseObject.setSummaryObject(summaryObjectList);
         getSummaryResponseObject.setPagination(new PaginationObject(
                 summaryObjectList.size(),
                 Optional.ofNullable(pageSize).orElse(Integer.MAX_VALUE)));
 
         // And return the Get Summary Response Object
-        return getSummaryResponseObject;
+        return ResponseEntity.ok(getSummaryResponseObject);
     }
 
 }

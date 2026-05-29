@@ -14,17 +14,20 @@
  * limitations under the License.
  */
 
-package org.grad.eNav.atonService.pacts.secomV1;
+package org.grad.eNav.atonService.pacts.secomV2;
 
 import au.com.dius.pact.provider.junitsupport.State;
+import org.grad.eNav.atonService.models.domain.DatasetContent;
 import org.grad.eNav.atonService.models.domain.s125.S125Dataset;
 import org.grad.eNav.atonService.services.DatasetService;
 import org.grad.eNav.atonService.services.UnLoCodeService;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.GeometryFactory;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.Map;
@@ -39,7 +42,7 @@ import static org.mockito.Mockito.doReturn;
  *
  * @author Nikolaos Vastardis (email: Nikolaos.Vastardis@gla-rad.org)
  */
-public interface GetSummarySecomControllerTestInterface {
+public interface PostGetSummarySecomV2ControllerTestInterface {
 
     /**
      * Provides a geometry factory to setup test geometries.
@@ -68,8 +71,8 @@ public interface GetSummarySecomControllerTestInterface {
      *
      * @param data the request data
      */
-    @State("Test SECOM Get Summary Interface") // Method will be run before testing interactions that require "with-data" state
-    default void testSecomGetSummarySuccess(Map<?,?> data) {
+    @State("Test SECOM Get Summary POST Interface") // Method will be run before testing interactions that require "with-data" state
+    default void testSecomPostGetSummarySuccess(Map<?,?> data) throws IOException {
         // Create a new dataset for testing
         S125Dataset s125Dataset = new S125Dataset("TestDataset");
         s125Dataset.setUuid(UUID.randomUUID());

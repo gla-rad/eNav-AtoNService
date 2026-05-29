@@ -17,9 +17,10 @@
 package org.grad.eNav.atonService.services.secom.v2;
 
 import org.grad.secomv2.core.exceptions.SecomValidationException;
-import org.grad.secomv2.core.models.ResponseSearchObject;
-import org.grad.secomv2.core.models.SearchObjectResult;
-import org.grad.secomv2.springboot3.components.SecomClient;
+import org.grad.secomv2.core.models.EnvelopeSearchResultObject;
+import org.grad.secomv2.core.models.SearchResult;
+import org.grad.secomv2.core.models.ServiceInstanceObject;
+import org.grad.secomv2.springboot4.components.SecomClient;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -54,8 +55,8 @@ class SecomV2ServiceTest {
     SecomClient discoveryService;
 
     // Test Variables
-    ResponseSearchObject responseSearchObject;
-    List<SearchObjectResult> instances;
+    SearchResult searchResult;
+    List<ServiceInstanceObject> instances;
 
     /**
      * Common setup for all the tests.
@@ -63,20 +64,24 @@ class SecomV2ServiceTest {
     @BeforeEach
     void setUp() {
         // Set the discovery service URL variable
-        this.secomV2Service.discoveryServiceUrl = "http://localhost:8444/v1/searchService";
+        this.secomV2Service.discoveryServiceUrl = "http://localhost:8444/v2/searchService";
 
         // Create a set of retrieved instances
-        SearchObjectResult searchObjectResult1 = new SearchObjectResult();
-        searchObjectResult1.setVersion("0.0.1");
-        searchObjectResult1.setEndpointUri("http://localhost/");
-        SearchObjectResult searchObjectResult2 = new SearchObjectResult();
-        searchObjectResult2.setVersion("0.0.2");
-        searchObjectResult2.setEndpointUri("http://localhost/");
-        this.instances = Arrays.asList(searchObjectResult1, searchObjectResult2);
+        SearchResult searchObjectResult1 = new SearchResult();
+        ServiceInstanceObject serviceInstanceObject1 = new ServiceInstanceObject();
+        serviceInstanceObject1.setVersion("0.0.1");
+        serviceInstanceObject1.setEndpointUri("http://localhost/");
+        SearchResult searchObjectResult2 = new SearchResult();
+        ServiceInstanceObject serviceInstanceObject2 = new ServiceInstanceObject();
+        serviceInstanceObject2.setVersion("0.0.2");
+        serviceInstanceObject2.setEndpointUri("http://localhost/");
+        this.instances = Arrays.asList(serviceInstanceObject1, serviceInstanceObject2);
 
         // Create the response search object
-        this.responseSearchObject = new ResponseSearchObject();
-        this.responseSearchObject.setSearchServiceResult(this.instances);
+        this.searchResult = new SearchResult();
+        EnvelopeSearchResultObject envelopeSearchResultObject = new EnvelopeSearchResultObject();
+        envelopeSearchResultObject.setServiceInstance(this.instances);
+        this.searchResult.setEnvelope(envelopeSearchResultObject);
     }
 
     /**
@@ -114,7 +119,7 @@ class SecomV2ServiceTest {
     void testGetClient() {
         // And mock a SECOM discovery service client
         this.secomV2Service.discoveryService = mock(SecomClient.class);
-        doReturn(Optional.of(this.responseSearchObject)).when(this.secomV2Service.discoveryService).searchService(any(), any(), any());
+        doReturn(Optional.of(this.searchResult)).when(this.secomV2Service.discoveryService).searchService(any());
 
         // Perform the service call
         SecomClient result = this.secomV2Service.getClient("urn:mrn:org:test");
@@ -132,11 +137,11 @@ class SecomV2ServiceTest {
     @Test
     void testGetClientWithBrokenUrl() {
         // Break the URL of the latest instance
-        this.responseSearchObject.getSearchServiceResult().get(1).setEndpointUri("a broken URL");
+        this.searchResult.getEnvelope().getServiceInstance().get(1).setEndpointUri("a broken URL");
 
         // And mock a SECOM discovery service client
         this.secomV2Service.discoveryService = mock(SecomClient.class);
-        doReturn(Optional.of(this.responseSearchObject)).when(this.secomV2Service.discoveryService).searchService(any(), any(), any());
+        doReturn(Optional.of(this.searchResult)).when(this.secomV2Service.discoveryService).searchService(any());
 
         // Perform the service call
         assertThrows(SecomValidationException.class, () -> this.secomV2Service.getClient("urn:mrn:org:test"));

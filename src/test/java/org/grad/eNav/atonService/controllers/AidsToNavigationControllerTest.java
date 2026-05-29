@@ -16,8 +16,11 @@
 
 package org.grad.eNav.atonService.controllers;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.core.type.TypeReference;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
+import org.springframework.cloud.openfeign.support.PageJacksonModule;
+import org.springframework.cloud.openfeign.support.SortJacksonModule;
 import org.grad.eNav.atonService.TestFeignSecurityConfig;
 import org.grad.eNav.atonService.TestingConfiguration;
 import org.grad.eNav.atonService.exceptions.DataNotFoundException;
@@ -34,10 +37,8 @@ import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.PrecisionModel;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.cloud.openfeign.support.PageJacksonModule;
-import org.springframework.cloud.openfeign.support.SortJacksonModule;
+import org.springframework.boot.security.autoconfigure.SecurityAutoConfiguration;
+import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -104,8 +105,6 @@ class AidsToNavigationControllerTest {
         this.factory = new GeometryFactory(new PrecisionModel(), 4326);
 
         // Allow the object mapper to deserialize pages
-        this.objectMapper.registerModule(new PageJacksonModule());
-        this.objectMapper.registerModule(new SortJacksonModule());
 
         // Initialise the station nodes list
         this.aidsToNavigationList = new ArrayList<>();
@@ -205,8 +204,9 @@ class AidsToNavigationControllerTest {
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andReturn();
 
-        // Parse and validate the response
-        Page<AidsToNavigationDto> result = this.objectMapper.readValue(mvcResult.getResponse().getContentAsString(), new TypeReference<>() {});
+        // Parse and validate the response (Page requires PageJacksonModule)
+        ObjectMapper pageMapper = JsonMapper.builder().addModule(new PageJacksonModule()).addModule(new SortJacksonModule()).build();
+        Page<AidsToNavigationDto> result = pageMapper.readValue(mvcResult.getResponse().getContentAsString(), new TypeReference<>() {});
         assertEquals(page.getSize(), result.getContent().size());
 
         // Validate the entries one by one

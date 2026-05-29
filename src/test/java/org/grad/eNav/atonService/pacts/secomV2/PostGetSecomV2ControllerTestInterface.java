@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.grad.eNav.atonService.pacts.secomV1;
+package org.grad.eNav.atonService.pacts.secomV2;
 
 import au.com.dius.pact.provider.junitsupport.State;
 import feign.Response;
@@ -23,8 +23,9 @@ import org.grad.eNav.atonService.models.domain.DatasetContent;
 import org.grad.eNav.atonService.models.domain.s125.S125Dataset;
 import org.grad.eNav.atonService.models.dtos.SignatureCertificateDto;
 import org.grad.eNav.atonService.services.DatasetService;
+import org.grad.eNav.atonService.services.S100ExchangeSetService;
 import org.grad.eNav.atonService.services.UnLoCodeService;
-import org.grad.secom.core.utils.SecomPemUtils;
+import org.grad.secomv2.core.utils.SecomPemUtils;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.springframework.core.io.ClassPathResource;
@@ -34,6 +35,7 @@ import org.springframework.data.domain.Pageable;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.math.BigInteger;
+import jakarta.xml.bind.JAXBException;
 import java.security.cert.CertificateException;
 import java.time.LocalDateTime;
 import java.util.Collections;
@@ -50,7 +52,7 @@ import static org.mockito.Mockito.mock;
  *
  * @author Nikolaos Vastardis (email: Nikolaos.Vastardis@gla-rad.org)
  */
-public interface GetSecomControllerTestInterface {
+public interface PostGetSecomV2ControllerTestInterface {
 
     /**
      * Provides a geometry factory to setup test geometries.
@@ -74,6 +76,13 @@ public interface GetSecomControllerTestInterface {
     DatasetService getDatasetService();
 
     /**
+     * Provides the mocked S100 exchange set service to the tests.
+     *
+     * @return the mocked S100ExchangeSetService
+     */
+    S100ExchangeSetService getS100ExchangeSetService();
+
+    /**
      * Provides the mocked UnLoCode service to the tests.
      *
      * @return the mocked UnLoCode service
@@ -86,8 +95,8 @@ public interface GetSecomControllerTestInterface {
      *
      * @param data the request data
      */
-    @State("Test SECOM Get Interface") // Method will be run before testing interactions that require "with-data" state
-    default void testSecomGetSuccess(Map<?,?> data) throws IOException, CertificateException {
+    @State("Test SECOM Get POST Interface") // Method will be run before testing interactions that require "with-data" state
+    default void testSecomPostGetSuccess(Map<?,?> data) throws IOException, CertificateException, JAXBException {
         // Read some test data - Certificates should be minified without headers
         final String s125Data = new String(new ClassPathResource("s125-msg.xml").getInputStream().readAllBytes());
         final String pemData = new String(new ClassPathResource("test.pem").getInputStream().readAllBytes());
@@ -109,6 +118,9 @@ public interface GetSecomControllerTestInterface {
         doReturn(new PageImpl<>(Collections.singletonList(s125Dataset), Pageable.ofSize(1), 1))
                 .when(this.getDatasetService())
                 .findAll(any(), any(), any(), any(), any(), any());
+        doReturn("exampleofbase64encodeddata".getBytes())
+                .when(this.getS100ExchangeSetService())
+                .packageToExchangeSet(any(), any(), any());
 
         // Mock the cKeeper client behaviour
         final SignatureCertificateDto signatureCertificateDto = new SignatureCertificateDto();

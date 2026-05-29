@@ -35,7 +35,8 @@ import org.grad.eNav.atonService.utils.S125DatasetBuilder;
 import org.grad.eNav.s125.utils.S125Utils;
 import org.grad.secomv2.core.base.DigitalSignatureCertificate;
 import org.grad.secomv2.core.base.SecomConstants;
-import org.grad.secomv2.core.components.SecomSignatureFilter;
+import org.grad.secomv2.core.components.SecomReaderInterceptor;
+import org.grad.secomv2.core.components.SecomSignatureAdvice;
 import org.grad.secomv2.core.exceptions.SecomValidationException;
 import org.grad.secomv2.core.models.*;
 import org.grad.secomv2.core.models.enums.*;
@@ -49,9 +50,15 @@ import org.locationtech.jts.geom.PrecisionModel;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
+import org.springframework.boot.security.autoconfigure.SecurityAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.boot.webtestclient.autoconfigure.AutoConfigureWebTestClient;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpMethod;
@@ -92,6 +99,7 @@ import static org.mockito.Mockito.*;
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @EnableAutoConfiguration(exclude = {SecurityAutoConfiguration.class})
+@AutoConfigureWebTestClient
 @Import({TestingConfiguration.class, TestFeignSecurityConfig.class})
 class SecomV2ControllerTest {
 
@@ -144,6 +152,15 @@ class SecomV2ControllerTest {
     SecomV2SignatureProviderImpl secomSignatureProvider;
 
     /**
+     * The SECOM v2 Reader Interceptor mock.
+     *
+     * This will bypass SECOM body reading (decompression/decryption) to allow
+     * plain test payloads through.
+     */
+    @MockitoBean
+    SecomReaderInterceptor secomReaderInterceptor;
+
+    /**
      * The SECOM v2 Signature Filter mock.
      *
      * This will block the actual SECOM signature verification process and will
@@ -151,7 +168,7 @@ class SecomV2ControllerTest {
      * signatures.
      */
     @MockitoBean
-    SecomSignatureFilter secomSignatureFilter;
+    SecomSignatureAdvice secomSignatureAdvice;
 
     // Test Variables
     private UUID queryDataReference;
@@ -301,16 +318,16 @@ class SecomV2ControllerTest {
         doReturn(new PageImpl<>(Collections.singletonList(this.s125DataSet), Pageable.ofSize(this.queryPageSize), 1))
                 .when(this.datasetService).findAll(any(), any(), any(), any(), any(), any());
 
-         webTestClient.get()
+        webTestClient.get()
                 .uri(uriBuilder -> uriBuilder
                         .path("/api/secom" + GET_SUMMARY_INTERFACE_PATH)
                         .queryParam("containerType", this.queryContainerType.getValue())
-                        .queryParam("dataProductType", this.queryDataProductType)
+                        .queryParam("dataProductType", this.queryDataProductType.getValue())
                         .queryParam("productVersion", this.queryProductVersion)
                         .queryParam("geometry", this.queryGeometry)
                         .queryParam("unlocode", this.queryUnlocode)
-                        .queryParam("validFrom", DateTimeFormatter.ofPattern(SECOM_DATE_TIME_FORMAT).format(this.queryValidFrom))
-                        .queryParam("validTo", DateTimeFormatter.ofPattern(SECOM_DATE_TIME_FORMAT).format(this.queryValidTo))
+                        .queryParam("validFrom", DateTimeFormatter.ofPattern(SECOM_DATE_TIME_FORMAT).format(this.queryValidFrom) + "Z")
+                        .queryParam("validTo", DateTimeFormatter.ofPattern(SECOM_DATE_TIME_FORMAT).format(this.queryValidTo) + "Z")
                         .queryParam("page", this.queryPage)
                         .queryParam("pageSize", this.queryPageSize)
                         .build())
@@ -321,19 +338,19 @@ class SecomV2ControllerTest {
                 .consumeWith(response -> {
                     GetSummaryResponseObject getSummaryResponseObject = response.getResponseBody();
                     assertNotNull(getSummaryResponseObject);
-                    assertNotNull(getSummaryResponseObject.getInformationSummaryObject());
-                    assertEquals(1, getSummaryResponseObject.getInformationSummaryObject().size());
-                    assertEquals(ContainerTypeEnum.S100_DataSet, getSummaryResponseObject.getInformationSummaryObject().getFirst().getContainerType());
-                    assertEquals(SECOM_DataProductType.S125, getSummaryResponseObject.getInformationSummaryObject().getFirst().getDataProductType());
-                    assertEquals(Boolean.FALSE, getSummaryResponseObject.getInformationSummaryObject().getFirst().getDataCompression());
-                    assertEquals(Boolean.FALSE, getSummaryResponseObject.getInformationSummaryObject().getFirst().getDataProtection());
-                    assertEquals(this.s125DataSet.getUuid(), getSummaryResponseObject.getInformationSummaryObject().getFirst().getDataReference());
-                    assertEquals(this.s125DataSet.getDatasetIdentificationInformation().getProductEdition(), getSummaryResponseObject.getInformationSummaryObject().getFirst().getInfo_productVersion());
-                    assertEquals(this.s125DataSet.getDatasetIdentificationInformation().getDatasetFileIdentifier(), getSummaryResponseObject.getInformationSummaryObject().getFirst().getInfo_identifier());
-                    assertEquals(this.s125DataSet.getDatasetIdentificationInformation().getDatasetTitle(), getSummaryResponseObject.getInformationSummaryObject().getFirst().getInfo_name());
-                    assertEquals(InfoStatusEnum.PRESENT.getValue(), getSummaryResponseObject.getInformationSummaryObject().getFirst().getInfo_status());
-                    assertEquals(this.s125DataSet.getDatasetIdentificationInformation().getDatasetAbstract(), getSummaryResponseObject.getInformationSummaryObject().getFirst().getInfo_description());
-                    assertEquals(this.s125DataSet.getLastUpdatedAt(), getSummaryResponseObject.getInformationSummaryObject().getFirst().getInfo_lastModifiedDate());
+                    assertNotNull(getSummaryResponseObject.getSummaryObject());
+                    assertEquals(1, getSummaryResponseObject.getSummaryObject().size());
+                    assertEquals(ContainerTypeEnum.S100_DataSet, getSummaryResponseObject.getSummaryObject().getFirst().getContainerType());
+                    assertEquals(SECOM_DataProductType.S125, getSummaryResponseObject.getSummaryObject().getFirst().getDataProductType());
+                    assertEquals(Boolean.FALSE, getSummaryResponseObject.getSummaryObject().getFirst().getDataCompression());
+                    assertEquals(Boolean.FALSE, getSummaryResponseObject.getSummaryObject().getFirst().getDataProtection());
+                    assertEquals(this.s125DataSet.getUuid(), getSummaryResponseObject.getSummaryObject().getFirst().getDataReference());
+                    assertEquals(this.s125DataSet.getDatasetIdentificationInformation().getProductEdition(), getSummaryResponseObject.getSummaryObject().getFirst().getInfo_productVersion());
+                    assertEquals(this.s125DataSet.getDatasetIdentificationInformation().getDatasetFileIdentifier(), getSummaryResponseObject.getSummaryObject().getFirst().getInfo_identifier());
+                    assertEquals(this.s125DataSet.getDatasetIdentificationInformation().getDatasetTitle(), getSummaryResponseObject.getSummaryObject().getFirst().getInfo_name());
+                    assertEquals(InfoStatusEnum.PRESENT.getValue(), getSummaryResponseObject.getSummaryObject().getFirst().getInfo_status());
+                    assertEquals(this.s125DataSet.getDatasetIdentificationInformation().getDatasetAbstract(), getSummaryResponseObject.getSummaryObject().getFirst().getInfo_description());
+                    assertEquals(this.s125DataSet.getLastUpdatedAt(), getSummaryResponseObject.getSummaryObject().getFirst().getInfo_lastModifiedDate());
                     assertNotNull(getSummaryResponseObject.getPagination());
                     assertEquals(Integer.MAX_VALUE, getSummaryResponseObject.getPagination().getMaxItemsPerPage());
                     assertEquals(1, getSummaryResponseObject.getPagination().getTotalItems());
@@ -379,8 +396,8 @@ class SecomV2ControllerTest {
                         .queryParam("productVersion", this.queryProductVersion)
                         .queryParam("geometry", this.queryGeometry)
                         .queryParam("unlocode", this.queryUnlocode)
-                        .queryParam("validFrom", DateTimeFormatter.ofPattern(SECOM_DATE_TIME_FORMAT).format(this.queryValidFrom))
-                        .queryParam("validTo", DateTimeFormatter.ofPattern(SECOM_DATE_TIME_FORMAT).format(this.queryValidTo))
+                        .queryParam("validFrom", DateTimeFormatter.ofPattern(SECOM_DATE_TIME_FORMAT).format(this.queryValidFrom) + "Z")
+                        .queryParam("validTo", DateTimeFormatter.ofPattern(SECOM_DATE_TIME_FORMAT).format(this.queryValidTo) + "Z")
                         .queryParam("page", this.queryPage)
                         .queryParam("pageSize", this.queryPageSize)
                         .build())
@@ -409,6 +426,7 @@ class SecomV2ControllerTest {
         digitalSignatureCertificate.setRootCertificate(mockRootCertificate);
         doReturn(digitalSignatureCertificate).when(this.secomCertificateProvider).getDigitalSignatureCertificate();
         doReturn(DigitalSignatureAlgorithmEnum.SHA3_384_WITH_ECDSA).when(this.secomSignatureProvider).getSignatureAlgorithm();
+        doReturn("signature".getBytes()).when(this.secomSignatureProvider).generateSignature(any(), any());
         doReturn("signature".getBytes()).when(this.secomSignatureProvider).generateSignature(any(), any(), any());
 
         // Mock the rest
@@ -420,12 +438,12 @@ class SecomV2ControllerTest {
                         .path("/api/secom" + GET_INTERFACE_PATH)
                         .queryParam("dataReference", this.queryDataReference)
                         .queryParam("containerType", this.queryContainerType.getValue())
-                        .queryParam("dataProductType", this.queryDataProductType)
+                        .queryParam("dataProductType", this.queryDataProductType.getValue())
                         .queryParam("productVersion", this.queryProductVersion)
                         .queryParam("geometry", this.queryGeometry)
                         .queryParam("unlocode", this.queryUnlocode)
-                        .queryParam("validFrom", DateTimeFormatter.ofPattern(SECOM_DATE_TIME_FORMAT).format(this.queryValidFrom))
-                        .queryParam("validTo", DateTimeFormatter.ofPattern(SECOM_DATE_TIME_FORMAT).format(this.queryValidTo))
+                        .queryParam("validFrom", DateTimeFormatter.ofPattern(SECOM_DATE_TIME_FORMAT).format(this.queryValidFrom) + "Z")
+                        .queryParam("validTo", DateTimeFormatter.ofPattern(SECOM_DATE_TIME_FORMAT).format(this.queryValidTo) + "Z")
                         .queryParam("page", this.queryPage)
                         .queryParam("pageSize", this.queryPageSize)
                         .build())
@@ -490,6 +508,7 @@ class SecomV2ControllerTest {
         digitalSignatureCertificate.setRootCertificate(mockRootCertificate);
         doReturn(digitalSignatureCertificate).when(this.secomCertificateProvider).getDigitalSignatureCertificate();
         doReturn(DigitalSignatureAlgorithmEnum.SHA3_384_WITH_ECDSA).when(this.secomSignatureProvider).getSignatureAlgorithm();
+        doReturn("signature".getBytes()).when(this.secomSignatureProvider).generateSignature(any(), any());
         doReturn("signature".getBytes()).when(this.secomSignatureProvider).generateSignature(any(), any(), any());
 
         // Mock the rest
@@ -505,12 +524,12 @@ class SecomV2ControllerTest {
                         .path("/api/secom" + GET_INTERFACE_PATH)
                         .queryParam("dataReference", this.queryDataReference)
                         .queryParam("containerType", this.queryContainerType.getValue())
-                        .queryParam("dataProductType", this.queryDataProductType)
+                        .queryParam("dataProductType", this.queryDataProductType.getValue())
                         .queryParam("productVersion", this.queryProductVersion)
                         .queryParam("geometry", this.queryGeometry)
                         .queryParam("unlocode", this.queryUnlocode)
-                        .queryParam("validFrom", DateTimeFormatter.ofPattern(SECOM_DATE_TIME_FORMAT).format(this.queryValidFrom))
-                        .queryParam("validTo", DateTimeFormatter.ofPattern(SECOM_DATE_TIME_FORMAT).format(this.queryValidTo))
+                        .queryParam("validFrom", DateTimeFormatter.ofPattern(SECOM_DATE_TIME_FORMAT).format(this.queryValidFrom) + "Z")
+                        .queryParam("validTo", DateTimeFormatter.ofPattern(SECOM_DATE_TIME_FORMAT).format(this.queryValidTo) + "Z")
                         .queryParam("page", this.queryPage)
                         .queryParam("pageSize", this.queryPageSize)
                         .build())
@@ -786,5 +805,15 @@ class SecomV2ControllerTest {
                 .header(SecomRequestHeaders.MRN_HEADER, "mrn")
                 .exchange()
                 .expectStatus().isEqualTo(HttpStatus.METHOD_NOT_ALLOWED);
+    }
+
+    @TestConfiguration
+    static class TestSecurityConfig {
+        @Bean
+        SecurityFilterChain testFilterChain(HttpSecurity http) throws Exception {
+            http.authorizeHttpRequests(auth -> auth.anyRequest().permitAll());
+            http.csrf(AbstractHttpConfigurer::disable);
+            return http.build();
+        }
     }
 }

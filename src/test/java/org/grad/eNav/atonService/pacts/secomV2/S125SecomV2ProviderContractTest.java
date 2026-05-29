@@ -22,20 +22,23 @@ import au.com.dius.pact.provider.junit5.PactVerificationInvocationContextProvide
 import au.com.dius.pact.provider.junitsupport.IgnoreNoPactsToVerify;
 import au.com.dius.pact.provider.junitsupport.Provider;
 import au.com.dius.pact.provider.junitsupport.loader.PactBroker;
+import au.com.dius.pact.provider.junitsupport.loader.PactBrokerConsumerVersionSelectors;
+import au.com.dius.pact.provider.junitsupport.loader.SelectorBuilder;
 import org.grad.eNav.atonService.TestFeignSecurityConfig;
 import org.grad.eNav.atonService.TestingConfiguration;
 import org.grad.eNav.atonService.feign.CKeeperClient;
 import org.grad.eNav.atonService.services.DatasetService;
+import org.grad.eNav.atonService.services.S100ExchangeSetService;
 import org.grad.eNav.atonService.services.UnLoCodeService;
 import org.grad.eNav.atonService.services.secom.v2.SecomV2SubscriptionService;
-import org.grad.secomv2.core.components.SecomSignatureFilter;
+import org.grad.secomv2.core.components.SecomSignatureAdvice;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.TestTemplate;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.PrecisionModel;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
+import org.springframework.boot.security.autoconfigure.SecurityAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.context.annotation.Import;
@@ -69,6 +72,8 @@ public class S125SecomV2ProviderContractTest implements
         CapabilitySecomV2ControllerTestInterface,
         GetSummarySecomV2ControllerTestInterface,
         GetSecomV2ControllerTestInterface,
+        PostGetSummarySecomV2ControllerTestInterface,
+        PostGetSecomV2ControllerTestInterface,
         AcknowledgementSecomV2ControllerTestInterface,
         SubscriptionSecomV2ControllerTestInterface,
         RemoveSubscriptionSecomV2ControllerTestInterface
@@ -86,7 +91,7 @@ public class S125SecomV2ProviderContractTest implements
      * SECOM requests and will allow testing pacts, without security on.
      */
     @MockitoBean
-    SecomSignatureFilter secomSignatureFilter;
+    SecomSignatureAdvice secomSignatureAdvice;
 
     /**
      * A geometry factory to facilitate testing.
@@ -106,6 +111,12 @@ public class S125SecomV2ProviderContractTest implements
     DatasetService datasetService;
 
     /**
+     * The S100 Exchange Set Service mock.
+     */
+    @MockitoBean
+    S100ExchangeSetService s100ExchangeSetService;
+
+    /**
      * The UnLoCodeService Service mock.
      */
     @MockitoBean
@@ -116,6 +127,17 @@ public class S125SecomV2ProviderContractTest implements
      */
     @MockitoBean
     SecomV2SubscriptionService secomV2SubscriptionService;
+
+    /**
+     * Helper method to select the latest version of the pacts
+     * instead of the last ones published from the master branch
+     *
+     * @return SelectorBuilder which defaults to the latest pacts
+     */
+    @PactBrokerConsumerVersionSelectors
+    public static SelectorBuilder consumerVersionSelectors() {
+        return new SelectorBuilder().selector(null, true, null, null);
+    }
 
     /**
      * Common setup for all the tests.
@@ -176,6 +198,16 @@ public class S125SecomV2ProviderContractTest implements
     @Override
     public DatasetService getDatasetService() {
         return this.datasetService;
+    }
+
+    /**
+     * Implements the method for returning the mocked S100 Exchange Set service.
+     *
+     * @return the mocked S100ExchangeSetService
+     */
+    @Override
+    public S100ExchangeSetService getS100ExchangeSetService() {
+        return this.s100ExchangeSetService;
     }
 
     /**

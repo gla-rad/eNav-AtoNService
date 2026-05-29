@@ -16,14 +16,12 @@
 
 package org.grad.eNav.atonService.utils;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.io.ParseException;
 import org.locationtech.jts.io.geojson.GeoJsonReader;
 import org.locationtech.jts.io.geojson.GeoJsonWriter;
-
-import java.io.IOException;
 
 /**
  * The type Geometry JSON converter.
@@ -47,7 +45,7 @@ public class GeometryJSONConverter {
         try {
             JsonNode node = om.readTree(new GeoJsonWriter().write(geometry));
             return node;
-        } catch (IOException e) {
+        } catch (Exception e) {
             return om.createObjectNode();
         }
     }
@@ -59,7 +57,7 @@ public class GeometryJSONConverter {
      * @return the geometry
      */
     public static Geometry convertToGeometry(JsonNode jsonNode) {
-        if (jsonNode == null  || jsonNode.toString() == "null" || jsonNode.asText() == "null") {
+        if (jsonNode == null || jsonNode.isNull()) {
             return null;
         }
 
