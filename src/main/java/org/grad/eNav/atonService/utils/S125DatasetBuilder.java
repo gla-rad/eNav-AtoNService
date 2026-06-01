@@ -42,6 +42,7 @@ import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.Geometry;
 import org.modelmapper.ModelMapper;
 
+import java.math.BigInteger;
 import java.util.*;
 
 public class S125DatasetBuilder {
@@ -166,14 +167,15 @@ public class S125DatasetBuilder {
                 .forEach(g -> this.enclosingEnvelopeFromGeometry(envelope, g));
 
         Pos lowerCorner = new PosImpl();
-        lowerCorner.setValue(new Double[]{envelope.getMinX(), envelope.getMaxY()});
+        lowerCorner.setValue(new Double[]{envelope.getMinX(), envelope.getMinY()});
         Pos upperCorner = new PosImpl();
         upperCorner.setValue(new Double[]{envelope.getMaxX(), envelope.getMaxY()});
 
         // And create the bounding by envelope
         BoundingShapeType boundingShapeType = new BoundingShapeTypeImpl();
         EnvelopeType envelopeType = new EnvelopeTypeImpl();
-        envelopeType.setSrsName("EPSG:4326");
+        envelopeType.setSrsName("http://www.opengis.net/def/crs/EPSG/0/4326");
+        envelopeType.setSrsDimension(BigInteger.valueOf(2));
         envelopeType.setLowerCorner(lowerCorner);
         envelopeType.setUpperCorner(upperCorner);
         boundingShapeType.setEnvelope(envelopeType);

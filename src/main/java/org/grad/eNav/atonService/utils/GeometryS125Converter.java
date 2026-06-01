@@ -34,6 +34,7 @@ import org.grad.eNav.atonService.models.domain.s125.S125AtonTypes;
 import org.grad.eNav.s125.utils.S125Utils;
 import org.locationtech.jts.geom.*;
 
+import java.math.BigInteger;
 import java.util.*;
 
 /**
@@ -259,6 +260,7 @@ public class GeometryS125Converter {
         Pos pos = new PosImpl();
 
         // Populate with the geometry data
+        pos.setSrsName("EPSG:4326");
         pos.setValue(coords);
 
         // And return the output
@@ -281,6 +283,8 @@ public class GeometryS125Converter {
 
         // Populate the elements
         surfaceType.setPatches(patches);
+        surfaceType.setSrsName("http://www.opengis.net/def/crs/EPSG/0/4326");
+        surfaceType.setSrsDimension(BigInteger.valueOf(2));
         surfaceProperty.setSurface(surfaceType);
 
         // And return the output
@@ -300,6 +304,8 @@ public class GeometryS125Converter {
 
         // Populate the elements
         curveType.setSegments(segments);
+        curveType.setSrsName("http://www.opengis.net/def/crs/EPSG/0/4326");
+        curveType.setSrsDimension(BigInteger.valueOf(2));
         curveProperty.setCurve(curveType);
 
         // And return the output
@@ -317,6 +323,8 @@ public class GeometryS125Converter {
         PointType pointType = new PointTypeImpl();
 
         // Populate the elements
+        pointType.setSrsName("http://www.opengis.net/def/crs/EPSG/0/4326");
+        pointType.setSrsDimension(BigInteger.valueOf(2));
         pointProperty.setPoint(pointType);
 
         // And return the output

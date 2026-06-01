@@ -28,6 +28,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import jakarta.persistence.EntityManager;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.*;
 
@@ -56,8 +57,6 @@ class HibernateSearchInitTest {
      */
     @BeforeEach
     void setup() {
-        this.hibernateSearchInit.indexingMaxRetries = 2;
-        this.hibernateSearchInit.indexingBackOffMillis = 100;
         this.searchSession = mock(SearchSession.class);
         this.massIndexer = mock(MassIndexer.class);
     }
@@ -97,11 +96,9 @@ class HibernateSearchInitTest {
             doThrow(InterruptedException.class).when(this.massIndexer).startAndWait();
 
             // Perform the component call
-            this.hibernateSearchInit.onApplicationEvent(mock(ApplicationReadyEvent.class));
+            assertThrows(InterruptedException.class, () ->
+                    this.hibernateSearchInit.onApplicationEvent(mock(ApplicationReadyEvent.class)));
         }
-
-        // Verify the indexing initialisation was performed
-        verify(massIndexer, times(2)).startAndWait();
     }
 
 }
