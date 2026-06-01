@@ -16,6 +16,7 @@
 
 package org.grad.eNav.atonService.controllers.secom.v2;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.ValidationException;
 import jakarta.xml.bind.JAXBException;
@@ -42,6 +43,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 
 import java.io.IOException;
@@ -88,7 +90,8 @@ public class PostGetController implements PostGetServiceInterface {
      *
      * @return The S-125 data set
     **/
-
+    @Tag(name = "SECOM")
+    @Transactional
     @Override
     public ResponseEntity<GetResponseObject> get(@Valid GetFilterObject getFilterObject) {
         log.debug("SECOM request to get page of Dataset");
