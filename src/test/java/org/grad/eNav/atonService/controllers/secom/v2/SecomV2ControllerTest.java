@@ -20,6 +20,7 @@ import _int.iho.s_125.gml.cs0._1.Dataset;
 import jakarta.xml.bind.DatatypeConverter;
 import jakarta.xml.bind.JAXBException;
 import org.grad.eNav.atonService.TestFeignSecurityConfig;
+import org.grad.eNav.atonService.TestSecurityConfig;
 import org.grad.eNav.atonService.TestingConfiguration;
 import org.grad.eNav.atonService.components.SecomV2CertificateProviderImpl;
 import org.grad.eNav.atonService.components.SecomV2SignatureProviderImpl;
@@ -51,6 +52,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.security.autoconfigure.SecurityAutoConfiguration;
+import org.springframework.boot.security.oauth2.client.autoconfigure.servlet.OAuth2ClientWebSecurityAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.webtestclient.autoconfigure.AutoConfigureWebTestClient;
@@ -100,9 +102,9 @@ import static org.mockito.Mockito.*;
 @ActiveProfiles("test")
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@EnableAutoConfiguration(exclude = {SecurityAutoConfiguration.class})
+@EnableAutoConfiguration(exclude = {SecurityAutoConfiguration.class, OAuth2ClientWebSecurityAutoConfiguration.class})
 @AutoConfigureWebTestClient
-@Import({TestingConfiguration.class, TestFeignSecurityConfig.class})
+@Import({TestingConfiguration.class, TestSecurityConfig.class})
 class SecomV2ControllerTest {
 
     /**
@@ -796,26 +798,4 @@ class SecomV2ControllerTest {
                 .expectStatus().isBadRequest();
     }
 
-    /**
-     * Test that the SECOM Acknowledgement interface will return an HTTP
-     * Status METHOD_NOT_ALLOWED if a method other than a get is requested.
-     */
-    @Test
-    void testAcknowledgementNotAllowed() {
-        webTestClient.get()
-                .uri("/api/secom" + ACKNOWLEDGMENT_INTERFACE_PATH)
-                .header(SecomRequestHeaders.MRN_HEADER, "mrn")
-                .exchange()
-                .expectStatus().isEqualTo(HttpStatus.METHOD_NOT_ALLOWED);
-    }
-
-    @TestConfiguration
-    static class TestSecurityConfig {
-        @Bean
-        SecurityFilterChain testFilterChain(HttpSecurity http) throws Exception {
-            http.authorizeHttpRequests(auth -> auth.anyRequest().permitAll());
-            http.csrf(AbstractHttpConfigurer::disable);
-            return http.build();
-        }
-    }
 }

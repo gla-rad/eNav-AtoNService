@@ -146,7 +146,6 @@ public class SecomV2SignatureProviderImpl implements SecomSignatureProvider {
                 .findFirst()
                 .orElse(null);
 
-        // TODO move this to cKeeper??
         DigitalSignatureAlgorithmEnum algorithm = Stream.of(certificate)
                 .map(X509Certificate::getSigAlgName)
                 .findFirst()

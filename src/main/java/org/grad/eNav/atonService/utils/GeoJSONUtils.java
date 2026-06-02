@@ -16,6 +16,7 @@
 
 package org.grad.eNav.atonService.utils;
 
+import tools.jackson.core.JacksonException;
 import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.ObjectMapper;
 import org.locationtech.jts.geom.*;
@@ -80,7 +81,7 @@ public class GeoJSONUtils {
         ObjectMapper om = new ObjectMapper();
         try {
             return om.readTree(new GeoJsonWriter().write(point));
-        } catch (Exception e) {
+        } catch (JacksonException e) {
             return null;
         }
     }
@@ -149,7 +150,7 @@ public class GeoJSONUtils {
         }
         JsonNode type = point.get("type");
         JsonNode coordinates = point.get("coordinates");
-        if(Objects.nonNull(type) && type.asText().equals("Point") && Objects.nonNull(coordinates) && coordinates.isArray()) {
+        if(Objects.nonNull(type) && type.asString().equals("Point") && Objects.nonNull(coordinates) && coordinates.isArray()) {
             final StringBuilder stringBuilder = new StringBuilder();
             stringBuilder.append("POINT (");
             stringBuilder.append(coordinates.get(0).toString());
@@ -178,7 +179,7 @@ public class GeoJSONUtils {
         }
         JsonNode type = lineString.get("type");
         JsonNode coordinates = lineString.get("coordinates");
-        if(Objects.nonNull(type) && type.asText().equals("LineString") && Objects.nonNull(coordinates) && coordinates.isArray()) {
+        if(Objects.nonNull(type) && type.asString().equals("LineString") && Objects.nonNull(coordinates) && coordinates.isArray()) {
             final StringBuilder stringBuilder = new StringBuilder();
             final AtomicBoolean startFlag = new AtomicBoolean(true);
             stringBuilder.append("LINESTRING (");
@@ -213,7 +214,7 @@ public class GeoJSONUtils {
         }
         JsonNode type = polygon.get("type");
         JsonNode coordinates = polygon.get("coordinates");
-        if(Objects.nonNull(type) && type.asText().equals("Polygon") && Objects.nonNull(coordinates) && coordinates.isArray()) {
+        if(Objects.nonNull(type) && type.asString().equals("Polygon") && Objects.nonNull(coordinates) && coordinates.isArray()) {
             final StringBuilder stringBuilder = new StringBuilder();
             final AtomicBoolean startFlag = new AtomicBoolean(true);
             stringBuilder.append("POLYGON ((");

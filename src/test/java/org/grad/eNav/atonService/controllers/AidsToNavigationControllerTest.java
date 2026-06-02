@@ -16,11 +16,9 @@
 
 package org.grad.eNav.atonService.controllers;
 
+import org.grad.eNav.atonService.TestSecurityConfig;
 import tools.jackson.core.type.TypeReference;
 import tools.jackson.databind.ObjectMapper;
-import tools.jackson.databind.json.JsonMapper;
-import org.springframework.cloud.openfeign.support.PageJacksonModule;
-import org.springframework.cloud.openfeign.support.SortJacksonModule;
 import org.grad.eNav.atonService.TestFeignSecurityConfig;
 import org.grad.eNav.atonService.TestingConfiguration;
 import org.grad.eNav.atonService.exceptions.DataNotFoundException;
@@ -204,9 +202,8 @@ class AidsToNavigationControllerTest {
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andReturn();
 
-        // Parse and validate the response (Page requires PageJacksonModule)
-        ObjectMapper pageMapper = JsonMapper.builder().addModule(new PageJacksonModule()).addModule(new SortJacksonModule()).build();
-        Page<AidsToNavigationDto> result = pageMapper.readValue(mvcResult.getResponse().getContentAsString(), new TypeReference<>() {});
+        // Parse and validate the response
+        Page<AidsToNavigationDto> result = this.objectMapper.readValue(mvcResult.getResponse().getContentAsString(), new TypeReference<>() {});
         assertEquals(page.getSize(), result.getContent().size());
 
         // Validate the entries one by one

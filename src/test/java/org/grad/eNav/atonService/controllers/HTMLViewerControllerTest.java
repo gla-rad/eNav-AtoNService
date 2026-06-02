@@ -17,6 +17,7 @@
 package org.grad.eNav.atonService.controllers;
 
 import org.grad.eNav.atonService.TestFeignSecurityConfig;
+import org.grad.eNav.atonService.TestSecurityConfig;
 import org.grad.eNav.atonService.TestingConfiguration;
 import org.grad.eNav.atonService.models.domain.s100.ServiceInformationConfig;
 import org.junit.jupiter.api.BeforeEach;
