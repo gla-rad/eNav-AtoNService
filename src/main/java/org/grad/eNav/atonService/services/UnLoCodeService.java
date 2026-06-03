@@ -62,7 +62,7 @@ public class UnLoCodeService {
         InputStream s = this.getClass().getClassLoader().getResourceAsStream("UnLoCodeLists.json");
         try {
             this.loadUnLoCodeMapping(s);
-        } catch (Exception e) {
+        } catch (JacksonException e) {
             log.error(e.getMessage());
         }
     }

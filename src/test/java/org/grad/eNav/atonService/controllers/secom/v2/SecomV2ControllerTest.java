@@ -20,7 +20,6 @@ import _int.iho.s_125.gml.cs0._1.Dataset;
 import jakarta.xml.bind.DatatypeConverter;
 import jakarta.xml.bind.JAXBException;
 import org.grad.eNav.atonService.TestFeignSecurityConfig;
-import org.grad.eNav.atonService.TestSecurityConfig;
 import org.grad.eNav.atonService.TestingConfiguration;
 import org.grad.eNav.atonService.components.SecomV2CertificateProviderImpl;
 import org.grad.eNav.atonService.components.SecomV2SignatureProviderImpl;
@@ -54,13 +53,8 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.security.autoconfigure.SecurityAutoConfiguration;
 import org.springframework.boot.security.oauth2.client.autoconfigure.servlet.OAuth2ClientWebSecurityAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.webtestclient.autoconfigure.AutoConfigureWebTestClient;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
-import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
-import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpMethod;
@@ -104,7 +98,7 @@ import static org.mockito.Mockito.*;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @EnableAutoConfiguration(exclude = {SecurityAutoConfiguration.class, OAuth2ClientWebSecurityAutoConfiguration.class})
 @AutoConfigureWebTestClient
-@Import({TestingConfiguration.class, TestSecurityConfig.class})
+@Import({TestingConfiguration.class, TestFeignSecurityConfig.class})
 class SecomV2ControllerTest {
 
     /**

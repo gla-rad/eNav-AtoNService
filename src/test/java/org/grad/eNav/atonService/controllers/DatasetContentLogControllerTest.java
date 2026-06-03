@@ -16,7 +16,6 @@
 
 package org.grad.eNav.atonService.controllers;
 
-import org.grad.eNav.atonService.TestSecurityConfig;
 import tools.jackson.core.type.TypeReference;
 import tools.jackson.databind.ObjectMapper;
 import org.grad.eNav.atonService.TestFeignSecurityConfig;

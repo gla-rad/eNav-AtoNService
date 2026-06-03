@@ -131,7 +131,7 @@ public class GeoJSONUtils {
         ObjectMapper om = new ObjectMapper();
         try {
             return om.readTree(new GeoJsonWriter().write(geometry));
-        } catch (Exception e) {
+        } catch (JacksonException e) {
             return null;
         }
     }
