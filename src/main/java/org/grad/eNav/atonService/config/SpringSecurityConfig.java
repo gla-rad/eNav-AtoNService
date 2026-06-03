@@ -247,13 +247,13 @@ class SpringSecurityConfig {
 
         // Add an exception handler to add a permission response
         http.exceptionHandling(handler ->
-                handler.accessDeniedHandler((req, res, ex) -> {
-                    res.setStatus(403);
-                    res.addHeader(
-                            "X-atonService-error",
-                            "You don't seem to have the appropriate permissions to perform this action."
-                    );
-                })
+            handler.accessDeniedHandler((req, res, ex) -> {
+                res.setStatus(403);
+                res.addHeader(
+                        "X-atonService-error",
+                        "You don't seem to have the appropriate permissions to perform this action."
+                );
+            })
         );
 
         // Explicitly allow the browser to send the origin as Referer for cross-origin
