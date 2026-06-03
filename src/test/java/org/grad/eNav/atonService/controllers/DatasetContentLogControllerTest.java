@@ -95,8 +95,6 @@ class DatasetContentLogControllerTest {
         // Create a temp geometry factory to get a test geometries
         this.factory = new GeometryFactory(new PrecisionModel(), 4326);
 
-        // Allow the object mapper to deserialize pages
-
         // Create a pageable definition
         this.pageable = PageRequest.of(0, 5);
 

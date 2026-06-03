@@ -124,7 +124,9 @@ public class TestingConfiguration {
 	 */
 	@Bean
 	public JsonMapperBuilderCustomizer addPageJacksonModules() {
-		return builder -> builder.addModule(new PageJacksonModule()).addModule(new SortJacksonModule());
+		return builder -> builder
+				.addModule(new PageJacksonModule())
+				.addModule(new SortJacksonModule());
 	}
 
 }
