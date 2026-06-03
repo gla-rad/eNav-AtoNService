@@ -256,6 +256,9 @@ class SpringSecurityConfig {
                 })
         );
 
+        // Explicitly allow the browser to send the origin as Referer for cross-origin
+        // HTTPS requests (e.g. Leaflet fetching OSM tiles). Without this the reverse
+        // proxy's restrictive Referrer-Policy causes OSM to reject tile requests with 403.
         http.headers(headers -> headers
                         .referrerPolicy(referrer -> referrer
                                 .policy(ReferrerPolicyHeaderWriter.ReferrerPolicy.STRICT_ORIGIN_WHEN_CROSS_ORIGIN)
