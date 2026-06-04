@@ -25,8 +25,12 @@ import org.grad.secomv2.core.exceptions.SecomValidationException;
 import org.grad.secomv2.core.interfaces.AcknowledgementServiceInterface;
 import org.grad.secomv2.core.models.AcknowledgementObject;
 import org.grad.secomv2.core.models.AcknowledgementResponseObject;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.Objects;
 import java.util.Optional;
@@ -37,7 +41,6 @@ import java.util.Optional;
  * @author Nikolaos Vastardis (email: Nikolaos.Vastardis@gla-rad.org)
  */
 @Component
-@Path("/")
 @Validated
 @Slf4j
 public class AcknowledgementController implements AcknowledgementServiceInterface {
@@ -54,7 +57,8 @@ public class AcknowledgementController implements AcknowledgementServiceInterfac
      * @return the acknowledgement response object
      */
     @Tag(name = "SECOM")
-    public AcknowledgementResponseObject acknowledgment(@Valid AcknowledgementObject acknowledgementObject) {
+    @Override
+    public ResponseEntity<AcknowledgementResponseObject> acknowledgment(@Valid AcknowledgementObject acknowledgementObject) {
         log.debug("SECOM acknowledgement received");
 
         // Handle errors - dummy field check
@@ -68,7 +72,7 @@ public class AcknowledgementController implements AcknowledgementServiceInterfac
 
         // Process the incoming request - for now just log
         // TODO: We need to actually check for active transactions and log acks
-        Optional.ofNullable(acknowledgementObject)
+        Optional.of(acknowledgementObject)
                 .map(AcknowledgementObject::getEnvelope)
                 .ifPresent(e -> log.debug("Acknowledgement of type {} for transaction {} received at {}",
                         e.getAckType(), e.getTransactionIdentifier(), e.getCreatedAt()));
@@ -79,7 +83,7 @@ public class AcknowledgementController implements AcknowledgementServiceInterfac
         acknowledgementResponseObject.setSECOM_ResponseCode(null);
 
         // Return the response
-        return acknowledgementResponseObject;
+        return ResponseEntity.ok(acknowledgementResponseObject);
     }
 
 }

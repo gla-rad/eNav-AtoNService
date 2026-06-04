@@ -17,8 +17,8 @@
 package org.grad.eNav.atonService.models.dtos.s125;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import tools.jackson.databind.annotation.JsonDeserialize;
+import tools.jackson.databind.annotation.JsonSerialize;
 import org.grad.eNav.atonService.models.domain.s125.S125Dataset;
 import org.grad.eNav.atonService.utils.GeometryJSONDeserializer;
 import org.grad.eNav.atonService.utils.GeometryJSONSerializer;

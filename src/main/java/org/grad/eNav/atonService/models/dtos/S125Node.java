@@ -16,7 +16,7 @@
 
 package org.grad.eNav.atonService.models.dtos;
 
-import com.fasterxml.jackson.databind.JsonNode;
+import tools.jackson.databind.JsonNode;
 
 import java.util.Objects;
 
