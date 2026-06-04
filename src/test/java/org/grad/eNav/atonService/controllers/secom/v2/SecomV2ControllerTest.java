@@ -96,7 +96,7 @@ import static org.mockito.Mockito.*;
 @ActiveProfiles("test")
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@EnableAutoConfiguration(exclude = {SecurityAutoConfiguration.class, OAuth2ClientWebSecurityAutoConfiguration.class})
+@EnableAutoConfiguration(exclude = {SecurityAutoConfiguration.class})
 @AutoConfigureWebTestClient
 @Import({TestingConfiguration.class, TestFeignSecurityConfig.class})
 class SecomV2ControllerTest {
