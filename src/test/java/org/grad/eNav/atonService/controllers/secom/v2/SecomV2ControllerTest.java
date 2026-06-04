@@ -792,4 +792,17 @@ class SecomV2ControllerTest {
                 .expectStatus().isBadRequest();
     }
 
+    /**
+     * Test that the SECOM Acknowledgement interface will return an HTTP
+     * Status METHOD_NOT_ALLOWED if a method other than a get is requested.
+     */
+    @Test
+    void testAcknowledgementNotAllowed() {
+        webTestClient.get()
+                .uri("/api/secom" + ACKNOWLEDGMENT_INTERFACE_PATH)
+                .header(SecomRequestHeaders.MRN_HEADER, "mrn")
+                .exchange()
+                .expectStatus().isEqualTo(HttpStatus.METHOD_NOT_ALLOWED);
+    }
+
 }
