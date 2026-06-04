@@ -22,8 +22,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.ValidationException;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.Pattern;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.QueryParam;
 import jakarta.xml.bind.JAXBException;
 import lombok.extern.slf4j.Slf4j;
 import org.grad.eNav.atonService.models.UnLoCodeMapEntry;
@@ -49,9 +47,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.io.IOException;
 import java.time.Instant;
@@ -65,7 +65,6 @@ import java.util.*;
  * @author Nikolaos Vastardis (email: Nikolaos.Vastardis@gla-rad.org)
  */
 @Component
-@Path("/")
 @Validated
 @Slf4j
 public class GetController implements GetServiceInterface {
@@ -109,16 +108,16 @@ public class GetController implements GetServiceInterface {
      */
     @Tag(name = "SECOM")
     @Transactional
-    public GetResponseObject get(@QueryParam("dataReference") @Parameter(schema = @Schema(implementation = String.class, pattern = "^[{(]?[0-9a-fA-F]{8}[-]?[0-9a-fA-F]{4}[-]?[0-9a-fA-F]{4}[-]?[0-9a-fA-F]{4}[-]?[0-9a-fA-F]{12}[)}]?$")) UUID dataReference,
-                                 @QueryParam("containerType") @Parameter(schema = @Schema(description = "Data Type requested")) ContainerTypeEnum containerType,
-                                 @QueryParam("dataProductType") @Parameter(schema = @Schema(description = "Data product type name See: https://registry.iho.int/productspec/list.do (column 'Product ID')")) SECOM_DataProductType dataProductType,
-                                 @QueryParam("productVersion") @Parameter(schema = @Schema(description = "S-100 based Product specification version")) String productVersion,
-                                 @QueryParam("geometry") @Parameter(schema = @Schema(description = "Geometry condition for geo-located information objects as WKT LineString or Polygon")) String geometry,
-                                 @QueryParam("unlocode") @Parameter(schema = @Schema(description = "See UN web page")) @Pattern(regexp = "^[a-zA-Z]{2}[a-zA-Z2-9]{3}") String unlocode,
-                                 @QueryParam("validFrom") @Parameter(schema = @Schema(implementation = String.class, description = "Time related to validity period start for information object")) Instant validFrom,
-                                 @QueryParam("validTo") @Parameter(schema = @Schema(implementation = String.class, description = "Time related to validity period end for information object")) Instant validTo,
-                                 @QueryParam("page") @Min(1) @Parameter(schema = @Schema(implementation = Integer.class, description = "Requested pagination page. Must be a positive integer >= 1..", defaultValue = "1")) Integer page,
-                                 @QueryParam("pageSize") @Min(0) @Parameter(schema = @Schema(implementation = Integer.class, description = "Requested pagination page size. Must be a positive integer >= 0.", defaultValue = "100")) Integer pageSize) {
+    public ResponseEntity<GetResponseObject> get(@RequestParam(value = "dataReference", required = false) @Parameter(schema = @Schema(implementation = String.class, pattern = "^[{(]?[0-9a-fA-F]{8}[-]?[0-9a-fA-F]{4}[-]?[0-9a-fA-F]{4}[-]?[0-9a-fA-F]{4}[-]?[0-9a-fA-F]{12}[)}]?$")) UUID dataReference,
+                                                @RequestParam(value = "containerType", required = false) @Parameter(schema = @Schema(description = "Data Type requested")) ContainerTypeEnum containerType,
+                                                @RequestParam(value = "dataProductType", required = false) @Parameter(schema = @Schema(description = "Data product type name See: https://registry.iho.int/productspec/list.do (column 'Product ID')")) SECOM_DataProductType dataProductType,
+                                                @RequestParam(value = "productVersion", required = false) @Parameter(schema = @Schema(description = "S-100 based Product specification version")) String productVersion,
+                                                @RequestParam(value = "geometry", required = false) @Parameter(schema = @Schema(description = "Geometry condition for geo-located information objects as WKT LineString or Polygon")) String geometry,
+                                                @RequestParam(value = "unlocode", required = false) @Parameter(schema = @Schema(description = "See UN web page")) @Pattern(regexp = "^[a-zA-Z]{2}[a-zA-Z2-9]{3}") String unlocode,
+                                                @RequestParam(value = "validFrom", required = false) @Parameter(schema = @Schema(implementation = String.class, description = "Time related to validity period start for information object")) Instant validFrom,
+                                                @RequestParam(value = "validTo", required = false) @Parameter(schema = @Schema(implementation = String.class, description = "Time related to validity period end for information object")) Instant validTo,
+                                                @RequestParam(value = "page", required = false) @Min(1) @Parameter(schema = @Schema(implementation = Integer.class, description = "Requested pagination page. Must be a positive integer >= 1..", defaultValue = "1")) Integer page,
+                                                @RequestParam(value = "pageSize", required = false) @Min(0) @Parameter(schema = @Schema(implementation = Integer.class, description = "Requested pagination page size. Must be a positive integer >= 0.", defaultValue = "100")) Integer pageSize) {
         log.debug("SECOM request to get page of Dataset");
         Optional.ofNullable(dataReference).ifPresent(v -> log.debug("Data Reference specified as: {}", dataReference));
         Optional.ofNullable(containerType).ifPresent(v -> log.debug("Container Type specified as: {}", containerType));
@@ -220,7 +219,7 @@ public class GetController implements GetServiceInterface {
                 Optional.ofNullable(pageSize).orElse(Integer.MAX_VALUE)));
 
         // And final return the Get Response Object
-        return getResponseObject;
+        return ResponseEntity.ok(getResponseObject);
 
     }
 

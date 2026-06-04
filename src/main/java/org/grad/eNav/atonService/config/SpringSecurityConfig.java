@@ -21,8 +21,8 @@ import org.grad.eNav.atonService.config.keycloak.KeycloakGrantedAuthoritiesMappe
 import org.grad.eNav.atonService.config.keycloak.KeycloakJwtAuthenticationConverter;
 import org.grad.eNav.atonService.config.keycloak.KeycloakLogoutHandler;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.actuate.autoconfigure.security.servlet.EndpointRequest;
-import org.springframework.boot.actuate.health.HealthEndpoint;
+import org.springframework.boot.health.actuate.endpoint.HealthEndpoint;
+import org.springframework.boot.security.autoconfigure.actuate.web.servlet.EndpointRequest;
 import org.springframework.boot.actuate.info.InfoEndpoint;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
@@ -247,23 +247,22 @@ class SpringSecurityConfig {
 
         // Add an exception handler to add a permission response
         http.exceptionHandling(handler ->
-                handler.accessDeniedHandler((req, res, ex) -> {
-                    res.setStatus(403);
-                    res.addHeader(
-                            "X-atonService-error",
-                            "You don't seem to have the appropriate permissions to perform this action."
-                    );
-                })
+            handler.accessDeniedHandler((req, res, ex) -> {
+                res.setStatus(403);
+                res.addHeader(
+                        "X-atonService-error",
+                        "You don't seem to have the appropriate permissions to perform this action."
+                );
+            })
         );
 
         // Explicitly allow the browser to send the origin as Referer for cross-origin
         // HTTPS requests (e.g. Leaflet fetching OSM tiles). Without this the reverse
         // proxy's restrictive Referrer-Policy causes OSM to reject tile requests with 403.
         http.headers(headers -> headers
-                .referrerPolicy(referrer -> referrer
-                        .policy(ReferrerPolicyHeaderWriter.ReferrerPolicy.STRICT_ORIGIN_WHEN_CROSS_ORIGIN)
-                )
-        );
+                    .referrerPolicy(referrer -> referrer
+                            .policy(ReferrerPolicyHeaderWriter.ReferrerPolicy.STRICT_ORIGIN_WHEN_CROSS_ORIGIN)
+                    ));
 
         // Build and return
         return http.cors(AbstractHttpConfigurer::disable).build();

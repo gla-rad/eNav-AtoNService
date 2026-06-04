@@ -17,12 +17,12 @@
 package org.grad.eNav.atonService.models.dtos;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.annotation.JsonSerialize;
 import org.grad.eNav.atonService.models.IJsonSerializable;
 import org.grad.eNav.atonService.utils.GeometryJSONConverter;
+import org.grad.eNav.atonService.utils.GeometryJSONSerializer;
 import org.locationtech.jts.geom.Geometry;
-import org.locationtech.spatial4j.io.jackson.GeometryAsGeoJSONSerializer;
 
 import java.util.Objects;
 
@@ -38,7 +38,7 @@ import java.util.Objects;
 public abstract class S100AbstractNode implements IJsonSerializable {
 
     // Class Variables
-    @JsonSerialize(using = GeometryAsGeoJSONSerializer.class)
+    @JsonSerialize(using = GeometryJSONSerializer.class)
     private Geometry geometry;
     private String content;
 

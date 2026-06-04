@@ -54,6 +54,7 @@ import java.util.UUID;
 @Cacheable
 @Indexed
 @org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
+@Table(name = "s125dataset")
 public class S125Dataset {
 
     // Class Variables

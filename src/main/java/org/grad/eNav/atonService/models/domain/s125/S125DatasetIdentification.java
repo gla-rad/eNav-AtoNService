@@ -43,6 +43,7 @@ import java.util.Set;
 @Cacheable
 @Indexed
 @org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
+@Table(name = "s125dataset_identification")
 public class S125DatasetIdentification {
 
     // Class Variables
@@ -89,6 +90,8 @@ public class S125DatasetIdentification {
 
     @Enumerated(EnumType.STRING)
     @ElementCollection(targetClass = MDTopicCategoryCode.class, fetch = FetchType.EAGER)
+    @CollectionTable(name = "s125dataset_identification_dataset_topic_categories",
+                     joinColumns = @JoinColumn(name = "s125dataset_identification_id"))
     private Set<MDTopicCategoryCode> datasetTopicCategories;
 
     /**
