@@ -326,7 +326,7 @@ class SecomV2ControllerTest {
                      assertNotNull(getSummaryResponseObject.getSummaryObject());
                      assertEquals(1, getSummaryResponseObject.getSummaryObject().size());
                      assertEquals(ContainerTypeEnum.S100_DataSet, getSummaryResponseObject.getSummaryObject().getFirst().getContainerType());
-                     assertEquals(SECOM_DataProductType.S201, getSummaryResponseObject.getSummaryObject().getFirst().getDataProductType());
+                     assertEquals(SECOM_DataProductType.S125, getSummaryResponseObject.getSummaryObject().getFirst().getDataProductType());
                      assertEquals(Boolean.FALSE, getSummaryResponseObject.getSummaryObject().getFirst().getDataCompression());
                      assertEquals(Boolean.FALSE, getSummaryResponseObject.getSummaryObject().getFirst().getDataProtection());
                      assertEquals(this.s125DataSet.getUuid(), getSummaryResponseObject.getSummaryObject().getFirst().getDataReference());
