@@ -50,11 +50,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigInteger;
 import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 /**
  * The Aids to Navigation Service.
@@ -221,8 +219,35 @@ public class AidsToNavigationService {
                             .stream()
                             .filter(inf -> informationCounter.get() < informationIds.size())
                             .forEach(inf -> inf.setId(informationIds.get(informationCounter.getAndIncrement())));
-                });
 
+                    // For structures, we also need to delete all removed child equipment entries
+                    if(aton instanceof StructureObject structure) {
+                        // Get all the equipment of the updated entry
+                        final Set<String> equipmentIdsCodes = ((StructureObject)aidsToNavigation).getChildren()
+                                        .stream()
+                                        .map(Equipment::getIdCode)
+                                        .collect(Collectors.toSet());
+                        // Now find all equipment from the old entry that are not included and delete them
+                        structure.getChildren()
+                                .stream()
+                                .filter(equipment -> !equipmentIdsCodes.contains(equipment.getIdCode()))
+                                .map(Equipment::getId)
+                                .forEach(this::delete);
+                    }e
+
+                    // Re-sure the object ID for sectored light characteristics
+                    if(aton instanceof LightSectored light) {
+                        // Re-use the existing sector characteristic IDs
+                        final AtomicInteger sectorCharacteristicCounter = new AtomicInteger();
+                        final List<BigInteger> sectorCharacteristicIds = light.getSectorCharacteristics()
+                                .stream().map(SectorCharacteristics::getId)
+                                .toList();
+                        ((LightSectored)aidsToNavigation).getSectorCharacteristics()
+                                .stream()
+                                .filter(sc -> sectorCharacteristicCounter.get() < sectorCharacteristicIds.size())
+                                .forEach(sc -> sc.setId(sectorCharacteristicIds.get(sectorCharacteristicCounter.getAndIncrement())));
+                    }
+                });
 
         // Now save for each type
         final AidsToNavigation saved = this.aidsToNavigationRepo.save(aidsToNavigation);

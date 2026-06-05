@@ -63,10 +63,6 @@ public abstract class GenericBuoy extends StructureObject {
     @ElementCollection(targetClass = StatusType.class)
     private Set<StatusType> statuses;
 
-    @JsonManagedReference
-    @OneToMany(mappedBy = "structure", cascade = CascadeType.REMOVE, orphanRemoval = true)
-    final private Set<Topmark> equipments = new HashSet<>();
-
     /**
      * Gets buoy shape.
      *
@@ -211,25 +207,4 @@ public abstract class GenericBuoy extends StructureObject {
         this.statuses = statuses;
     }
 
-    /**
-     * Gets equipments.
-     *
-     * @return the equipments
-     */
-    public Set<Topmark> getEquipments() {
-        return equipments;
-    }
-
-    /**
-     * Sets equipment.
-     *
-     * @param equipments the equipments
-     */
-    public void setEquipment(Set<Topmark> equipments) {
-        this.equipments.clear();
-        if(equipments != null) {
-            equipments.forEach(equipment -> equipment.setStructure(this));
-            this.equipments.addAll(equipments);
-        }
-    }
 }

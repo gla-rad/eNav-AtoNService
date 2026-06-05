@@ -36,7 +36,7 @@ import java.util.Set;
  * @see _int.iho.s_125.gml.cs0._1.Topmark
  */
 @Entity
-public class Topmark extends AidsToNavigation {
+public class Topmark extends Equipment {
 
     // Class Variables
     @Enumerated(EnumType.STRING)
