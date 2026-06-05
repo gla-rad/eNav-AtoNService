@@ -233,7 +233,7 @@ public class AidsToNavigationService {
                                 .filter(equipment -> !equipmentIdsCodes.contains(equipment.getIdCode()))
                                 .map(Equipment::getId)
                                 .forEach(this::delete);
-                    }e
+                    }
 
                     // Re-sure the object ID for sectored light characteristics
                     if(aton instanceof LightSectored light) {
