@@ -150,7 +150,7 @@ public class SecomV2SignatureProviderImpl implements SecomSignatureProvider {
                 .map(X509Certificate::getSigAlgName)
                 .findFirst()
                 .map(DigitalSignatureAlgorithmEnum::fromValue)
-                .orElse(null);
+                .orElse(getSignatureAlgorithm());
 
 
         // Construct the signature verification object

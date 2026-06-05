@@ -22,6 +22,7 @@ import io.swagger.v3.oas.models.info.Contact;
 import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.info.License;
 import io.swagger.v3.oas.models.media.Schema;
+import lombok.extern.slf4j.Slf4j;
 import org.grad.secomv2.springboot4.openapi.SecomV2OpenApiInfoProvider;
 import org.springframework.stereotype.Component;
 
@@ -34,6 +35,7 @@ import org.springframework.stereotype.Component;
  * @author - Nikolaos Vastardis (email: Nikolaos.Vastardis@gla-rad.org)
  */
 @Component
+@Slf4j
 public class SecomV2OpenApiInfoProviderImpl implements SecomV2OpenApiInfoProvider {
 
     /**
