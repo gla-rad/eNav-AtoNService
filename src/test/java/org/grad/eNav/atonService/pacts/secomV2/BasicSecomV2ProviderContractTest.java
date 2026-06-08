@@ -22,6 +22,8 @@ import au.com.dius.pact.provider.junit5.PactVerificationInvocationContextProvide
 import au.com.dius.pact.provider.junitsupport.IgnoreNoPactsToVerify;
 import au.com.dius.pact.provider.junitsupport.Provider;
 import au.com.dius.pact.provider.junitsupport.loader.PactBroker;
+import au.com.dius.pact.provider.junitsupport.loader.PactBrokerConsumerVersionSelectors;
+import au.com.dius.pact.provider.junitsupport.loader.SelectorBuilder;
 import org.grad.eNav.atonService.TestFeignSecurityConfig;
 import org.grad.eNav.atonService.TestingConfiguration;
 import org.grad.eNav.atonService.feign.CKeeperClient;
@@ -71,6 +73,8 @@ public class BasicSecomV2ProviderContractTest implements
         CapabilitySecomV2ControllerTestInterface,
         GetSummarySecomV2ControllerTestInterface,
         GetSecomV2ControllerTestInterface,
+        PostGetSecomV2ControllerTestInterface,
+        PostGetSummarySecomV2ControllerTestInterface,
         AcknowledgementSecomV2ControllerTestInterface,
         SubscriptionSecomV2ControllerTestInterface,
         RemoveSubscriptionSecomV2ControllerTestInterface
@@ -125,6 +129,17 @@ public class BasicSecomV2ProviderContractTest implements
     @BeforeEach
     void setup() {
         this.geometryFactory = new GeometryFactory(new PrecisionModel(), 4326);
+    }
+
+    /**
+     * Helper method to select the latest version of the pacts
+     * instead of the last ones published from the master branch
+     *
+     * @return SelectorBuilder which defaults to the latest pacts
+     */
+    @PactBrokerConsumerVersionSelectors
+    public static SelectorBuilder consumerVersionSelectors() {
+        return new SelectorBuilder().selector(null, true, null, null);
     }
 
     /**

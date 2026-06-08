@@ -16,14 +16,9 @@
 
 package org.grad.eNav.atonService.controllers.secom.v2;
 
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.ValidationException;
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.Pattern;
 import jakarta.ws.rs.Path;
-import jakarta.ws.rs.QueryParam;
 import lombok.extern.slf4j.Slf4j;
 import org.grad.eNav.atonService.models.UnLoCodeMapEntry;
 import org.grad.eNav.atonService.models.domain.DatasetContent;
@@ -32,11 +27,8 @@ import org.grad.eNav.atonService.services.DatasetService;
 import org.grad.eNav.atonService.services.UnLoCodeService;
 import org.grad.eNav.atonService.utils.GeometryUtils;
 import org.grad.eNav.atonService.utils.WKTUtils;
-import org.grad.secomv2.core.base.SecomV2Param;
-import org.grad.secomv2.core.interfaces.GetSummaryServiceInterface;
-import org.grad.secomv2.core.models.GetSummaryResponseObject;
-import org.grad.secomv2.core.models.PaginationObject;
-import org.grad.secomv2.core.models.SummaryObject;
+import org.grad.secomv2.core.interfaces.PostGetSummaryServiceInterface;
+import org.grad.secomv2.core.models.*;
 import org.grad.secomv2.core.models.enums.ContainerTypeEnum;
 import org.grad.secomv2.core.models.enums.InfoStatusEnum;
 import org.grad.secomv2.core.models.enums.SECOM_DataProductType;
@@ -52,7 +44,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 
 import java.math.BigInteger;
-import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -70,7 +61,7 @@ import java.util.Optional;
 @Path("/")
 @Validated
 @Slf4j
-public class GetSummaryController implements GetSummaryServiceInterface {
+public class PostGetSummaryController implements PostGetSummaryServiceInterface {
 
     /**
      * The Dataset Service.
@@ -88,66 +79,51 @@ public class GetSummaryController implements GetSummaryServiceInterface {
     private final GeometryFactory geometryFactory = new GeometryFactory(new PrecisionModel(),4326);
 
     /**
-     * GET /api/secom/v2/dataset/summary : Returns the S-125 dataset summary
+     * POST /api/secom/v2/object/search/summary : Returns the S-125 dataset summary
      * information, as specified by the SECOM standard.
      *
-     * @param containerType the object data container type
-     * @param dataProductType the object data product type
-     * @param productVersion the object data product version
-     * @param geometry the object geometry
-     * @param unlocode the object UNLOCODE
-     * @param validFrom the object valid from time
-     * @param validTo the object valid to time
-     * @param page the page number to be retrieved
-     * @param pageSize the maximum page size
+     * @param getSummaryFilterObject the summary filter criteria
      * @return the S-125 dataset summary information
      */
     @Tag(name = "SECOM")
     @Transactional
-    public GetSummaryResponseObject getSummary(@QueryParam("containerType") @Parameter(schema = @Schema(description = "Data Type requested")) @SecomV2Param ContainerTypeEnum containerType,
-                                               @QueryParam("dataProductType") @Parameter(schema = @Schema(description = "Data product type name See: https://registry.iho.int/productspec/list.do (column 'Product ID')")) @SecomV2Param SECOM_DataProductType dataProductType,
-                                               @QueryParam("productVersion") @Parameter(schema = @Schema(description = "S-100 based Product specification version")) String productVersion,
-                                               @QueryParam("geometry") @Parameter(schema = @Schema(description = "Geometry condition for geo-located information objects as WKT LineString or Polygon")) String geometry,
-                                               @QueryParam("unlocode") @Pattern(regexp = "^[a-zA-Z]{2}[a-zA-Z2-9]{3}") @Parameter(schema = @Schema(description = "See UN web page")) String unlocode,
-                                               @QueryParam("validFrom") @Parameter(schema = @Schema(implementation = String.class, description = "Time related to validity period start for information object")) @SecomV2Param Instant validFrom,
-                                               @QueryParam("validTo") @Parameter(schema = @Schema(implementation = String.class, description = "Time related to validity period end for information object")) @SecomV2Param Instant validTo,
-                                               @QueryParam("page") @Min(1) @Parameter(schema = @Schema(implementation = Integer.class, description = "Requested pagination page. Must be a positive integer >= 1..", defaultValue = "1")) Integer page,
-                                               @QueryParam("pageSize") @Min(0) @Parameter(schema = @Schema(implementation = Integer.class, description = "Requested pagination page size. Must be a positive integer >= 0.", defaultValue = "100")) Integer pageSize) {
+    public GetSummaryResponseObject getSummary(GetSummaryFilterObject getSummaryFilterObject) {
+        EnvelopeGetSummaryFilterObject envelopeGetSummaryFilterObject = getSummaryFilterObject.getEnvelope();
         log.debug("SECOM request to get page of Dataset Summary");
-        Optional.ofNullable(containerType).ifPresent(v -> log.debug("Container Type specified as: {}", containerType));
-        Optional.ofNullable(dataProductType).ifPresent(v -> log.debug("Data Product Type specified as: {}", dataProductType));
-        Optional.ofNullable(geometry).ifPresent(v -> log.debug("Geometry specified as: {}", geometry));
-        Optional.ofNullable(unlocode).ifPresent(v -> log.debug("UNLOCODE specified as: {}", unlocode));
-        Optional.ofNullable(validFrom).ifPresent(v -> log.debug("Valid From time specified as: {}", validFrom));
-        Optional.ofNullable(validTo).ifPresent(v -> log.debug("Valid To time specified as: {}", validTo));
+        Optional.ofNullable(envelopeGetSummaryFilterObject.getContainerType()).ifPresent(v -> log.debug("Container Type specified as: {}", envelopeGetSummaryFilterObject.getContainerType()));
+        Optional.ofNullable(envelopeGetSummaryFilterObject.getDataProductType()).ifPresent(v -> log.debug("Data Product Type specified as: {}", envelopeGetSummaryFilterObject.getDataProductType()));
+        Optional.ofNullable(envelopeGetSummaryFilterObject.getGeometry()).ifPresent(v -> log.debug("Geometry specified as: {}", envelopeGetSummaryFilterObject.getGeometry()));
+        Optional.ofNullable(envelopeGetSummaryFilterObject.getUnlocode()).ifPresent(v -> log.debug("UNLOCODE specified as: {}", envelopeGetSummaryFilterObject.getUnlocode()));
+        Optional.ofNullable(envelopeGetSummaryFilterObject.getValidFrom()).ifPresent(v -> log.debug("Valid From time specified as: {}", envelopeGetSummaryFilterObject.getValidFrom()));
+        Optional.ofNullable(envelopeGetSummaryFilterObject.getValidTo()).ifPresent(v -> log.debug("Valid To time specified as: {}", envelopeGetSummaryFilterObject.getValidTo()));
 
         // Init local variables
         Geometry jtsGeometry = null;
-        Pageable pageable = Optional.ofNullable(page)
-                .map(p -> PageRequest.of(p-1, Optional.ofNullable(pageSize).orElse(Integer.MAX_VALUE)))
+        Pageable pageable = Optional.ofNullable(envelopeGetSummaryFilterObject.getPage())
+                .map(p -> PageRequest.of(p-1, Optional.ofNullable(envelopeGetSummaryFilterObject.getPageSize()).orElse(Integer.MAX_VALUE)))
                 .map(Pageable.class::cast)
                 .orElse(Pageable.unpaged());
-        LocalDateTime validFromLdt = Optional.ofNullable(validFrom)
+        LocalDateTime validFromLdt = Optional.ofNullable(envelopeGetSummaryFilterObject.getValidFrom())
                 .map(i -> LocalDateTime.ofInstant(i, ZoneId.systemDefault()))
                 .orElse(null);
-        LocalDateTime validToLdt = Optional.ofNullable(validTo)
+        LocalDateTime validToLdt = Optional.ofNullable(envelopeGetSummaryFilterObject.getValidTo())
                 .map(i -> LocalDateTime.ofInstant(i, ZoneId.systemDefault()))
                 .orElse(null);
 
         // Parse the arguments
-        final ContainerTypeEnum reqContainerType = Optional.ofNullable(containerType)
+        final ContainerTypeEnum reqContainerType = Optional.ofNullable(envelopeGetSummaryFilterObject.getContainerType())
                 .orElse(ContainerTypeEnum.S100_DataSet);
-        final SECOM_DataProductType reqDataProductType = Optional.ofNullable(dataProductType)
+        final SECOM_DataProductType reqDataProductType = Optional.ofNullable(envelopeGetSummaryFilterObject.getDataProductType())
                 .orElse(SECOM_DataProductType.S125);
-        if(Objects.nonNull(geometry)) {
+        if(Objects.nonNull(envelopeGetSummaryFilterObject.getGeometry())) {
             try {
-                jtsGeometry = WKTUtils.convertWKTtoGeometry(geometry);
+                jtsGeometry = WKTUtils.convertWKTtoGeometry(envelopeGetSummaryFilterObject.getGeometry());
             } catch (ParseException ex) {
                 throw new ValidationException(ex.getMessage());
             }
         }
-        if(Objects.nonNull(unlocode)) {
-            jtsGeometry = GeometryUtils.joinGeometries(jtsGeometry, Optional.ofNullable(unlocode)
+        if(Objects.nonNull(envelopeGetSummaryFilterObject.getUnlocode())) {
+            jtsGeometry = GeometryUtils.joinGeometries(jtsGeometry, Optional.ofNullable(envelopeGetSummaryFilterObject.getUnlocode())
                     .map(this.unLoCodeService::getUnLoCodeMapEntry)
                     .map(UnLoCodeMapEntry::getGeometry)
                     .orElseGet(() -> this.geometryFactory.createEmpty(0)));
@@ -192,7 +168,7 @@ public class GetSummaryController implements GetSummaryServiceInterface {
         getSummaryResponseObject.setSummaryObject(summaryObjectList);
         getSummaryResponseObject.setPagination(new PaginationObject(
                 summaryObjectList.size(),
-                Optional.ofNullable(pageSize).orElse(Integer.MAX_VALUE)));
+                Optional.ofNullable(envelopeGetSummaryFilterObject.getPageSize()).orElse(Integer.MAX_VALUE)));
 
         // And return the Get Summary Response Object
         return getSummaryResponseObject;
