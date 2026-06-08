@@ -17,7 +17,6 @@
 package org.grad.eNav.atonService.controllers.secom.v2;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.ws.rs.Path;
 import lombok.extern.slf4j.Slf4j;
 import org.grad.eNav.atonService.models.domain.s100.ServiceInformationConfig;
 import org.grad.secomv2.core.interfaces.CapabilityServiceInterface;

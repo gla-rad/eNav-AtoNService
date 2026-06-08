@@ -16,8 +16,6 @@
 
 package org.grad.eNav.atonService.controllers.secom.v2;
 
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.ValidationException;
@@ -29,8 +27,6 @@ import org.grad.eNav.atonService.services.DatasetService;
 import org.grad.eNav.atonService.services.UnLoCodeService;
 import org.grad.eNav.atonService.utils.GeometryUtils;
 import org.grad.eNav.atonService.utils.WKTUtils;
-import org.grad.secomv2.core.base.SecomV2Param;
-import org.grad.secomv2.core.interfaces.GetSummaryServiceInterface;
 import org.grad.secomv2.core.interfaces.PostGetSummaryServiceInterface;
 import org.grad.secomv2.core.models.*;
 import org.grad.secomv2.core.models.enums.ContainerTypeEnum;
@@ -46,10 +42,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import java.math.BigInteger;
-import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;

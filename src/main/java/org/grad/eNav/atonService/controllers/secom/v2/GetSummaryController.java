@@ -20,8 +20,6 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.ValidationException;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.QueryParam;
 import org.grad.secomv2.core.base.SecomV2Param;
 import lombok.extern.slf4j.Slf4j;
 import org.grad.eNav.atonService.models.UnLoCodeMapEntry;

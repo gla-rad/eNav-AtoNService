@@ -17,7 +17,6 @@ package org.grad.eNav.atonService.controllers.secom.v2;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import jakarta.ws.rs.Path;
 import lombok.extern.slf4j.Slf4j;
 import org.grad.secomv2.core.exceptions.SecomInvalidCertificateException;
 import org.grad.secomv2.core.exceptions.SecomSignatureVerificationException;
@@ -25,12 +24,9 @@ import org.grad.secomv2.core.exceptions.SecomValidationException;
 import org.grad.secomv2.core.interfaces.AcknowledgementServiceInterface;
 import org.grad.secomv2.core.models.AcknowledgementObject;
 import org.grad.secomv2.core.models.AcknowledgementResponseObject;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.Objects;
 import java.util.Optional;
