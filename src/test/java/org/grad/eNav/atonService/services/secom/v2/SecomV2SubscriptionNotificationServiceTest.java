@@ -128,6 +128,7 @@ class SecomV2SubscriptionNotificationServiceTest {
             ArgumentCaptor<SubscriptionNotificationObject> subscriptionNotificationObjectArgument = ArgumentCaptor.forClass(SubscriptionNotificationObject.class);
             verify(this.secomClient).subscriptionNotification(subscriptionNotificationObjectArgument.capture());
             assertNotNull(subscriptionNotificationObjectArgument.getValue());
+            assertNotNull(subscriptionNotificationObjectArgument.getValue().getEnvelope());
             assertEquals(this.subscriptionIdentifier, subscriptionNotificationObjectArgument.getValue().getEnvelope().getSubscriptionIdentifier());
             assertEquals(SubscriptionEventEnum.SUBSCRIPTION_REMOVED, subscriptionNotificationObjectArgument.getValue().getEnvelope().getEventEnum());
 
@@ -157,6 +158,7 @@ class SecomV2SubscriptionNotificationServiceTest {
             ArgumentCaptor<SubscriptionNotificationObject> subscriptionNotificationObjectArgument = ArgumentCaptor.forClass(SubscriptionNotificationObject.class);
             verify(this.secomClient).subscriptionNotification(subscriptionNotificationObjectArgument.capture());
             assertNotNull(subscriptionNotificationObjectArgument.getValue());
+            assertNotNull(subscriptionNotificationObjectArgument.getValue().getEnvelope());
             assertEquals(this.subscriptionIdentifier, subscriptionNotificationObjectArgument.getValue().getEnvelope().getSubscriptionIdentifier());
             assertEquals(SubscriptionEventEnum.SUBSCRIPTION_CREATED, subscriptionNotificationObjectArgument.getValue().getEnvelope().getEventEnum());
 
@@ -186,6 +188,7 @@ class SecomV2SubscriptionNotificationServiceTest {
             ArgumentCaptor<SubscriptionNotificationObject> subscriptionNotificationObjectArgument = ArgumentCaptor.forClass(SubscriptionNotificationObject.class);
             verify(this.secomClient).subscriptionNotification(subscriptionNotificationObjectArgument.capture());
             assertNotNull(subscriptionNotificationObjectArgument.getValue());
+            assertNotNull(subscriptionNotificationObjectArgument.getValue().getEnvelope());
             assertEquals(this.subscriptionIdentifier, subscriptionNotificationObjectArgument.getValue().getEnvelope().getSubscriptionIdentifier());
             assertEquals(SubscriptionEventEnum.SUBSCRIPTION_REMOVED, subscriptionNotificationObjectArgument.getValue().getEnvelope().getEventEnum());
 

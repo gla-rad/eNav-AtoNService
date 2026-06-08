@@ -85,7 +85,7 @@ class SecomV2ServiceTest {
     }
 
     /**
-     * That that during its initialisation the SECOM service will construct the
+     * Test that during its initialisation the SECOM service will construct the
      * SECOM discovery service client.
      */
     @Test
@@ -98,7 +98,7 @@ class SecomV2ServiceTest {
     }
 
     /**
-     * That that during its termination the SECOM service will destroy the
+     * Test that during its termination the SECOM service will destroy the
      * SECOM discovery service client.
      */
     @Test
