@@ -333,6 +333,7 @@ class AidsToNavigationServiceTest {
         verify(this.aggregationService, times(1)).updateAidsToNavigationAggregations(eq(this.newAidsToNavigation.getIdCode()), eq(Collections.emptySet()));
         verify(this.associationService, times(1)).updateAidsToNavigationAssociations(eq(this.newAidsToNavigation.getIdCode()), eq(Collections.emptySet()));
     }
+
     /**
      * Test that we can update correctly a new or existing Aids to Navigation
      * entry if all the validation checks are successful. In this case we also
