@@ -37,8 +37,8 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 
 /**
- * The interface for testing the SECOM GetSummary controller using the Pacts
- * consumer driver contracts.
+ * The interface for testing the SECOM POST GetSummary controller using the
+ * Pacts consumer driver contracts.
  *
  * @author Nikolaos Vastardis (email: Nikolaos.Vastardis@gla-rad.org)
  */
@@ -86,7 +86,7 @@ public interface PostGetSummarySecomV2ControllerTestInterface {
                 .findAll(any(), any(), any(), any(), any(), any());
 
         // And proceed with the testing
-        System.out.println("Service now checking the get summary interface with " + data);
+        System.out.println("Service now checking the POST get summary interface with " + data);
     }
 
 }

@@ -23,6 +23,7 @@ import org.grad.eNav.atonService.models.domain.DatasetContent;
 import org.grad.eNav.atonService.models.domain.s125.S125Dataset;
 import org.grad.eNav.atonService.models.dtos.SignatureCertificateDto;
 import org.grad.eNav.atonService.services.DatasetService;
+import org.grad.eNav.atonService.services.S100ExchangeSetService;
 import org.grad.eNav.atonService.services.UnLoCodeService;
 import org.grad.secomv2.core.utils.SecomPemUtils;
 import org.locationtech.jts.geom.Coordinate;
@@ -74,6 +75,13 @@ public interface GetSecomV2ControllerTestInterface {
     DatasetService getDatasetService();
 
     /**
+     * Provides the mocked S100 exchange set service to the tests.
+     *
+     * @return the mocked S100ExchangeSetService
+     */
+    S100ExchangeSetService getS100ExchangeSetService();
+
+    /**
      * Provides the mocked UnLoCode service to the tests.
      *
      * @return the mocked UnLoCode service
@@ -87,7 +95,7 @@ public interface GetSecomV2ControllerTestInterface {
      * @param data the request data
      */
     @State("Test SECOM Get Interface") // Method will be run before testing interactions that require "with-data" state
-    default void testSecomGetSuccess(Map<?,?> data) throws IOException, CertificateException {
+    default void testSecomGetSuccess(Map<?,?> data) throws IOException {
         // Read some test data - Certificates should be minified without headers
         final String s125Data = new String(new ClassPathResource("s125-msg.xml").getInputStream().readAllBytes());
         final String pemData = new String(new ClassPathResource("test.pem").getInputStream().readAllBytes());
