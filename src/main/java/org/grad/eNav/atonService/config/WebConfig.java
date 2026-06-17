@@ -17,8 +17,6 @@
 package org.grad.eNav.atonService.config;
 
 import org.grad.eNav.atonService.components.GeoJsonStringToGeometryConverter;
-import org.grad.secomv2.core.models.enums.ContainerTypeEnum;
-import org.grad.secomv2.core.models.enums.SECOM_DataProductType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.format.FormatterRegistry;
