@@ -44,8 +44,8 @@ import java.util.Arrays;
 /**
  * The HibernateSearchInit Component Class
  *
- * This component initialises the Lucence search indexes for the database. This
- * is a persistent content that will remain available through the whole
+ * This component initialises the Elasticsearch search indexes for the database.
+ * This is a persistent content that will remain available through the whole
  * application.
  *
  * @author Nikolaos Vastardis (email: Nikolaos.Vastardis@gla-rad.org)

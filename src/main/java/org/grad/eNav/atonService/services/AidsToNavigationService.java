@@ -18,29 +18,20 @@ package org.grad.eNav.atonService.services;
 
 import jakarta.persistence.EntityManager;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.lucene.search.Query;
-import org.apache.lucene.search.Sort;
-import org.apache.lucene.search.SortField;
-import org.apache.lucene.search.SortedNumericSortField;
-import org.apache.lucene.spatial.prefix.RecursivePrefixTreeStrategy;
-import org.apache.lucene.spatial.prefix.tree.GeohashPrefixTree;
-import org.apache.lucene.spatial.prefix.tree.SpatialPrefixTree;
-import org.apache.lucene.spatial.query.SpatialArgs;
-import org.apache.lucene.spatial.query.SpatialOperation;
 import org.grad.eNav.atonService.exceptions.DataNotFoundException;
 import org.grad.eNav.atonService.models.domain.s125.*;
 import org.grad.eNav.atonService.models.dtos.datatables.DtPagingRequest;
+import org.grad.eNav.atonService.models.dtos.datatables.DtSortField;
 import org.grad.eNav.atonService.repos.AidsToNavigationRepo;
-import org.hibernate.search.backend.lucene.LuceneExtension;
-import org.hibernate.search.backend.lucene.search.sort.dsl.LuceneSearchSortFactory;
+import org.grad.eNav.atonService.utils.GeometryUtils;
+import org.grad.eNav.atonService.utils.SearchSortUtils;
+import org.hibernate.search.backend.elasticsearch.ElasticsearchExtension;
 import org.hibernate.search.engine.search.query.SearchFetchable;
 import org.hibernate.search.engine.search.query.SearchQuery;
 import org.hibernate.search.mapper.orm.Search;
 import org.hibernate.search.mapper.orm.scope.SearchScope;
 import org.hibernate.search.mapper.orm.session.SearchSession;
 import org.locationtech.jts.geom.Geometry;
-import org.locationtech.spatial4j.context.jts.JtsSpatialContext;
-import org.locationtech.spatial4j.shape.jts.JtsGeometry;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -120,7 +111,7 @@ public class AidsToNavigationService {
                 geometry,
                 fromTime,
                 toTime,
-                new Sort(new SortedNumericSortField("id_sort", SortField.Type.LONG, true))
+                List.of(new DtSortField("id_sort", true))
         );
 
         // Map the results to a paged response
@@ -151,7 +142,7 @@ public class AidsToNavigationService {
                 geometry,
                 fromTime,
                 toTime,
-                new Sort(new SortedNumericSortField("id_sort", SortField.Type.LONG, true))
+                List.of(new DtSortField("id_sort", true))
         );
 
         // Map the results to a paged response
@@ -173,7 +164,7 @@ public class AidsToNavigationService {
         // Create the search query
         SearchQuery searchQuery = this.getSearchAidsToNavigationQueryByText(
                 dtPagingRequest.getSearch().getValue(),
-                dtPagingRequest.getLucenceSort(Arrays.asList(searchFieldsWithSort))
+                dtPagingRequest.getSearchSortFields(Arrays.asList(searchFieldsWithSort))
         );
 
         // Map the results to a paged response
@@ -323,18 +314,17 @@ public class AidsToNavigationService {
      * - Message
      *
      * @param searchText the text to be searched
-     * @param sort the sorting selection for the search query
+     * @param sortFields the sorting selection for the search query
      * @return the full text query
      */
-    protected SearchQuery<AidsToNavigation> getSearchAidsToNavigationQueryByText(String searchText, Sort sort) {
+    protected SearchQuery<AidsToNavigation> getSearchAidsToNavigationQueryByText(String searchText, List<DtSortField> sortFields) {
         SearchSession searchSession = Search.session( this.entityManager );
         SearchScope<AidsToNavigation> scope = searchSession.scope( AidsToNavigation.class );
         return searchSession.search( scope )
-                .extension(LuceneExtension.get())
                 .where(f -> f.wildcard()
                         .fields( this.searchFields )
                         .matching( Optional.ofNullable(searchText).map(st -> "*"+st).orElse("") + "*" ))
-                .sort(f -> f.fromLuceneSort(sort))
+                .sort(f -> SearchSortUtils.buildSort(f, sortFields))
                 .toQuery();
     }
 
@@ -351,14 +341,14 @@ public class AidsToNavigationService {
      * @param geometry the geometry that the results should intersect with
      * @param geometry the geometry that the results should intersect with
      * @param fromTime the date-time the results should match from
-     * @param sort the sorting selection for the search query
+     * @param sortFields the sorting selection for the search query
      * @return the full text query
      */
     protected SearchQuery<AidsToNavigation> getAidsToNavigationSearchQuery(String idCode,
                                                                            Geometry geometry,
                                                                            LocalDateTime fromTime,
                                                                            LocalDateTime toTime,
-                                                                           Sort sort) {
+                                                                           List<DtSortField> sortFields) {
         // Then build and return the hibernate-search query
         SearchSession searchSession = Search.session( this.entityManager );
         SearchScope<AidsToNavigation> scope = searchSession.scope( AidsToNavigation.class );
@@ -368,8 +358,8 @@ public class AidsToNavigationService {
                             Optional.ofNullable(idCode).ifPresent(v -> b.must(f.match()
                                     .field("id_code")
                                     .matching(v)));
-                            Optional.ofNullable(geometry).ifPresent(g-> b.must(f.extension(LuceneExtension.get())
-                                    .fromLuceneQuery(createGeoSpatialQuery(g))));
+                            Optional.ofNullable(geometry).ifPresent(g-> b.must(f.extension(ElasticsearchExtension.get())
+                                    .fromJson(GeometryUtils.geoShapeIntersectsQuery("geometry", g))));
                             Optional.ofNullable(fromTime).ifPresent(v -> b.must(f.range()
                                     .field("dateEnd")
                                     .atLeast(fromTime.toLocalDate())));
@@ -378,32 +368,8 @@ public class AidsToNavigationService {
                                     .atMost(toTime.toLocalDate())));
                         })
                 )
-                .sort(f -> ((LuceneSearchSortFactory)f).fromLuceneSort(sort))
+                .sort(f -> SearchSortUtils.buildSort(f, sortFields))
                 .toQuery();
     }
-
-
-    /**
-     * Creates a Lucene geo-spatial query based on the provided geometry. The
-     * query isa recursive one based on the maxLevels defined (in this case 12,
-     * which result in a sub-meter precision).
-     *
-     * @param geometry      The geometry to generate the spatial query for
-     * @return The Lucene geo-spatial query constructed
-     */
-    protected Query createGeoSpatialQuery(Geometry geometry) {
-        // Initialise the spatial strategy
-        JtsSpatialContext ctx = JtsSpatialContext.GEO;
-        int maxLevels = 12; //results in sub-meter precision for geo-hash
-        SpatialPrefixTree grid = new GeohashPrefixTree(ctx, maxLevels);
-        RecursivePrefixTreeStrategy strategy = new RecursivePrefixTreeStrategy(grid,"geometry");
-
-        // Create the Lucene GeoSpatial Query
-        return Optional.ofNullable(geometry)
-                .map(g -> new SpatialArgs(SpatialOperation.Intersects, new JtsGeometry(g, ctx, false , true)))
-                .map(strategy::makeQuery)
-                .orElse(null);
-    }
-
 
 }
