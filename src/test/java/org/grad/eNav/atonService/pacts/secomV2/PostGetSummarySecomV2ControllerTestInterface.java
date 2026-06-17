@@ -17,17 +17,14 @@
 package org.grad.eNav.atonService.pacts.secomV2;
 
 import au.com.dius.pact.provider.junitsupport.State;
-import org.grad.eNav.atonService.models.domain.DatasetContent;
 import org.grad.eNav.atonService.models.domain.s125.S125Dataset;
 import org.grad.eNav.atonService.services.DatasetService;
 import org.grad.eNav.atonService.services.UnLoCodeService;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.GeometryFactory;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 
-import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.Map;
@@ -72,7 +69,7 @@ public interface PostGetSummarySecomV2ControllerTestInterface {
      * @param data the request data
      */
     @State("Test SECOM POST Get Summary Interface") // Method will be run before testing interactions that require "with-data" state
-    default void testSecomPostGetSummarySuccess(Map<?,?> data) throws IOException {
+    default void testSecomPostGetSummarySuccess(Map<?,?> data) {
         // Create a new dataset for testing
         S125Dataset s125Dataset = new S125Dataset("TestDataset");
         s125Dataset.setUuid(UUID.randomUUID());
