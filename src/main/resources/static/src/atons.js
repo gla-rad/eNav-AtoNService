@@ -27,11 +27,13 @@ var nodesColumnDefs = [
      title: "Type",
      hoverMsg: "The AtoN Type",
      placeholder: "The AtoN Type",
+     sortable: false
  }, {
     data: ( row, type, val, meta ) => row.featureNames && row.featureNames.length > 0 ? row.featureNames.find(fn => fn.displayName).name : '',
     title: "Name",
     hoverMsg: "The AtoN Name",
     placeholder: "The AtoN Name",
+    sortable: false
  }, {
     data: "dateStart",
     title: "Start Date",
@@ -51,7 +53,7 @@ var nodesColumnDefs = [
     placeholder: "The AtoN Geometry",
     visible: false,
     searchable: false
- },{
+ }, {
     data: "content",
     title: "Content",
     type: "textarea",

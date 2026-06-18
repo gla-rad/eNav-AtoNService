@@ -86,7 +86,6 @@ public class DatasetContentLogService {
             "datasetType",
             "operation"
     };
-    private final String[] searchFieldsWithSort = new String[] { };
 
     /**
      * Get all the dataset content logs in a pageable search.
@@ -210,7 +209,7 @@ public class DatasetContentLogService {
         // Create the search query
         final SearchQuery<DatasetContentLog> searchQuery = this.getDatasetContentLogSearchQueryByText(
                 dtPagingRequest.getSearch().getValue(),
-                dtPagingRequest.getSearchSortFields(Arrays.asList(this.searchFieldsWithSort))
+                dtPagingRequest.getSearchSortFields()
         );
 
         // Map the results to a paged response

@@ -179,18 +179,13 @@ public class DtPagingRequest {
      * Hibernate Search portable sort definition, supported by the Elasticsearch
      * backend.
      *
-     * @param diffSortFields the fields that are indexed under a dedicated "_sort" field
      * @return the list of search sort fields
      */
-    public List<DtSortField> getSearchSortFields(List<String> diffSortFields) {
+    public List<DtSortField> getSearchSortFields() {
         return this.getOrder().stream()
-                .map(dtOrder -> {
-                    String field = this.getColumns().get(dtOrder.getColumn()).getData();
-                    field = Optional.ofNullable(diffSortFields)
-                            .orElse(Collections.emptyList())
-                            .contains(field) ? field + "_sort" : field;
-                    return new DtSortField(field, dtOrder.getDir() == DtDirection.desc);
-                })
+                .map(dtOrder -> new DtSortField(
+                        this.getColumns().get(dtOrder.getColumn()).getData(),
+                        dtOrder.getDir() == DtDirection.desc))
                 .collect(Collectors.toList());
     }
 

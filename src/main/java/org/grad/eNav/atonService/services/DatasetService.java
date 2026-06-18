@@ -128,9 +128,6 @@ public class DatasetService {
             "datasetIdentificationInformation.datasetFileIdentifier",
             "datasetIdentificationInformation.datasetAbstract"
     };
-    private final String[] searchFieldsWithSort = new String[] {
-
-    };
 
     /**
      * Find one dataset by UUID.
@@ -172,7 +169,7 @@ public class DatasetService {
                 fromTime,
                 toTime,
                 includeCancelled,
-                List.of(new DtSortField("uuid", false))
+                Collections.singletonList(new DtSortField("uuid", false))
         );
 
         // Map the results to a paged response
@@ -199,7 +196,7 @@ public class DatasetService {
         final SearchQuery<S125Dataset> searchQuery = this.getDatasetSearchQueryByText(
                 dtPagingRequest.getSearch().getValue(),
                 dtPagingRequest.getSearch().getIncludeCancelled(),
-                dtPagingRequest.getSearchSortFields(Arrays.asList(searchFieldsWithSort))
+                dtPagingRequest.getSearchSortFields()
         );
 
         // Map the results to a paged response

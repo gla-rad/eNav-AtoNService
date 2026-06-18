@@ -82,10 +82,7 @@ public class AidsToNavigationService {
 
     // Service Variables
     private final String[] searchFields = new String[] {
-            "id_code"
-    };
-    private final String[] searchFieldsWithSort = new String[] {
-            "id"
+            "idCode"
     };
 
     /**
@@ -111,7 +108,7 @@ public class AidsToNavigationService {
                 geometry,
                 fromTime,
                 toTime,
-                List.of(new DtSortField("id_sort", true))
+                Collections.singletonList(new DtSortField("id", true))
         );
 
         // Map the results to a paged response
@@ -142,7 +139,7 @@ public class AidsToNavigationService {
                 geometry,
                 fromTime,
                 toTime,
-                List.of(new DtSortField("id_sort", true))
+                Collections.singletonList(new DtSortField("id", true))
         );
 
         // Map the results to a paged response
@@ -164,7 +161,7 @@ public class AidsToNavigationService {
         // Create the search query
         SearchQuery searchQuery = this.getSearchAidsToNavigationQueryByText(
                 dtPagingRequest.getSearch().getValue(),
-                dtPagingRequest.getSearchSortFields(Arrays.asList(searchFieldsWithSort))
+                dtPagingRequest.getSearchSortFields()
         );
 
         // Map the results to a paged response
@@ -356,7 +353,7 @@ public class AidsToNavigationService {
                 .where( f -> f.bool(b -> {
                             b.must(f.matchAll());
                             Optional.ofNullable(idCode).ifPresent(v -> b.must(f.match()
-                                    .field("id_code")
+                                    .field("idCode")
                                     .matching(v)));
                             Optional.ofNullable(geometry).ifPresent(g-> b.must(f.extension(ElasticsearchExtension.get())
                                     .fromJson(GeometryUtils.geoShapeIntersectsQuery("geometry", g))));

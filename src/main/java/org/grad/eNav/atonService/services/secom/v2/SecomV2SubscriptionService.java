@@ -296,7 +296,7 @@ public class SecomV2SubscriptionService implements MessageHandler {
         // Create the search query
         final SearchQuery<SubscriptionRequest> searchQuery = this.getDatasetSearchQueryByText(
                 dtPagingRequest.getSearch().getValue(),
-                dtPagingRequest.getSearchSortFields(List.of())
+                dtPagingRequest.getSearchSortFields()
         );
 
         // Map the results to a paged response
