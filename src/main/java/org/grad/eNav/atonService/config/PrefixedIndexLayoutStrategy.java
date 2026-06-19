@@ -61,7 +61,7 @@ public class PrefixedIndexLayoutStrategy implements IndexLayoutStrategy {
      * to an empty string so that, when unset, the layout matches the default
      * Hibernate Search {@code simple} strategy.
      */
-    @Value("${gla.rad.aton-service.search.index-prefix:aton-service}")
+    @Value("${gla.rad.aton-service.search.index-prefix:aton-service-}")
     String indexPrefix;
 
     /**
