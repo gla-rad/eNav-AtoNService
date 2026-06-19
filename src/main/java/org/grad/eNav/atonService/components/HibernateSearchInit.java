@@ -40,6 +40,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Arrays;
+import java.util.List;
 
 /**
  * The HibernateSearchInit Component Class
@@ -62,13 +63,33 @@ public class HibernateSearchInit implements ApplicationListener<ApplicationReady
     EntityManager em;
 
     /**
+     * The list of entity classes managed by Hibernate Search that need to be
+     * indexed into Elasticsearch.
+     */
+    private static final List<Class<?>> INDEXED_ENTITIES = Arrays.asList(
+            S125Dataset.class,
+            S125DatasetIdentification.class,
+            DatasetContent.class,
+            AidsToNavigation.class,
+            SubscriptionRequest.class,
+            DatasetContentLog.class);
+
+    /**
      * Override the application event handler to index the database.
      *
      * @param event the context refreshed event
      */
     @Override
-    @Transactional
+    @Async
+    @Transactional(readOnly = true)
     public void onApplicationEvent(@NotNull ApplicationReadyEvent event) {
+        // Skip the (potentially expensive) mass indexing if the indexes have
+        // already been populated in a previous run.
+        if (this.isIndexInitialised()) {
+            log.info("Hibernate Search indexes already initialised - skipping mass indexing");
+            return;
+        }
+
         // Log the indexing process commencing
         log.info("Hibernate Search indexing commencing...");
 
@@ -77,23 +98,40 @@ public class HibernateSearchInit implements ApplicationListener<ApplicationReady
     }
 
     /**
+     * Determines whether the Elasticsearch indexes have already been
+     * initialised, i.e. they exist and contain at least one document. If the
+     * indexes are missing (e.g. on a fresh deployment) a {@link SearchException}
+     * is thrown by the backend, which we treat as "not initialised".
+     *
+     * @return whether the search indexes are already populated
+     */
+    private boolean isIndexInitialised() {
+        try {
+            return Search.session(em)
+                    .search(INDEXED_ENTITIES)
+                    .where(f -> f.matchAll())
+                    .fetchTotalHitCount() > 0;
+        } catch (SearchException ex) {
+            // The indexes do not exist yet, so they are not initialised
+            log.debug("Could not determine search index state, assuming not initialised", ex);
+            return false;
+        }
+    }
+
+    /**
      * Running the actual indexing operation asynchronously to
      * allow the service to continue.
      */
-    @SneakyThrows
-    @Async
-    @Transactional
-    public void runMassIndex() {
-        Search.session(em)
-                .massIndexer(Arrays.asList(
-                        S125Dataset.class,
-                        S125DatasetIdentification.class,
-                        DatasetContent.class,
-                        AidsToNavigation.class,
-                        SubscriptionRequest.class,
-                        DatasetContentLog.class))
-                .threadsToLoadObjects(7)
-                .startAndWait();
+    private void runMassIndex() {
+        try {
+            Search.session(em)
+                    .massIndexer(INDEXED_ENTITIES)
+                    .threadsToLoadObjects(7)
+                    .startAndWait();
+        } catch (InterruptedException ex) {
+            // The indexing process got interrupted... nothing we can do so just log
+            log.error("Could not start the Hibernate Search mass indexer", ex);
+        }
 
         // And log the result
         log.info("Hibernate Search indexing completed successfully");
