@@ -273,7 +273,7 @@ public class SecomV2SubscriptionService implements MessageHandler {
                 dataReference,
                 geometry,
                 timestamp,
-                List.of(new DtSortField("uuid", false))
+                Collections.singletonList(new DtSortField("uuid", false))
         );
 
         // Map the results to a paged response
@@ -480,7 +480,7 @@ public class SecomV2SubscriptionService implements MessageHandler {
      * @param sortFields the sorting selection for the search query
      * @return the full text query
      */
-    protected SearchQuery<SubscriptionRequest> getDatasetSearchQueryByText(String searchText, List<DtSortField> sortFields) {
+    protected SearchQuery<SubscriptionRequest> getDatasetSearchQueryByText(String searchText, Collection<DtSortField> sortFields) {
         SearchSession searchSession = Search.session( this.entityManager );
         SearchScope<SubscriptionRequest> scope = searchSession.scope( SubscriptionRequest.class );
         return searchSession.search( scope )
@@ -512,7 +512,7 @@ public class SecomV2SubscriptionService implements MessageHandler {
      * @param dataReference         the UUID data reference matched by the requested subscriptions
      * @param geometry              the geometry intersecting with the requested subscriptions
      * @param timestamp             the timestamp for which the requested subscriptions are valid
-     * @param sort the sorting selection for the search query
+     * @param sortFields the sorting selection for the search query
      * @return the full text query
      */
     protected SearchQuery<SubscriptionRequest> getSubscriptionRequestSearchQuery(ContainerTypeEnum containerType,
@@ -521,7 +521,7 @@ public class SecomV2SubscriptionService implements MessageHandler {
                                                                                  UUID dataReference,
                                                                                  Geometry geometry,
                                                                                  LocalDateTime timestamp,
-                                                                                 List<DtSortField> sortFields) {
+                                                                                 Collection<DtSortField> sortFields) {
         // Then build and return the hibernate-search query
         SearchSession searchSession = Search.session( this.entityManager );
         SearchScope<SubscriptionRequest> scope = searchSession.scope( SubscriptionRequest.class );

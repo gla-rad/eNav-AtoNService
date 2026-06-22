@@ -332,7 +332,7 @@ public class DatasetContentLogService {
      * @param sortFields the sorting selection for the search query
      * @return the full text query
      */
-    protected SearchQuery<DatasetContentLog> getDatasetContentLogSearchQueryByText(String searchText, List<DtSortField> sortFields) {
+    protected SearchQuery<DatasetContentLog> getDatasetContentLogSearchQueryByText(String searchText, Collection<DtSortField> sortFields) {
         SearchSession searchSession = Search.session( this.entityManager );
         SearchScope<DatasetContentLog> scope = searchSession.scope( DatasetContentLog.class );
         return searchSession.search( scope )

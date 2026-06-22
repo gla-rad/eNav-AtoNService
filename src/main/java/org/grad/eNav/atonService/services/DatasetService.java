@@ -434,7 +434,7 @@ public class DatasetService {
      * @param sortFields the sorting selection for the search query
      * @return the full text query
      */
-    protected SearchQuery<S125Dataset> getDatasetSearchQueryByText(String searchText, Boolean includeCancelled, List<DtSortField> sortFields) {
+    protected SearchQuery<S125Dataset> getDatasetSearchQueryByText(String searchText, Boolean includeCancelled, Collection<DtSortField> sortFields) {
         SearchSession searchSession = Search.session( this.entityManager );
         SearchScope<S125Dataset> scope = searchSession.scope( S125Dataset.class );
         return searchSession.search( scope )
@@ -481,7 +481,7 @@ public class DatasetService {
                                                              LocalDateTime fromTime,
                                                              LocalDateTime toTime,
                                                              Boolean includeCancelled,
-                                                             List<DtSortField> sortFields) {
+                                                             Collection<DtSortField> sortFields) {
         // Then build and return the hibernate-search query
         SearchSession searchSession = Search.session( this.entityManager );
         SearchScope<S125Dataset> scope = searchSession.scope( S125Dataset.class );

@@ -21,7 +21,7 @@ import org.hibernate.search.engine.search.sort.dsl.CompositeSortComponentsStep;
 import org.hibernate.search.engine.search.sort.dsl.SearchSortFactory;
 import org.hibernate.search.engine.search.sort.dsl.SortFinalStep;
 
-import java.util.List;
+import java.util.Collection;
 
 /**
  * The Search Sort Utils Class.
@@ -45,7 +45,7 @@ public class SearchSortUtils {
      * @param sortFields the list of sort fields to apply
      * @return the resulting sort definition
      */
-    public static SortFinalStep buildSort(SearchSortFactory factory, List<DtSortField> sortFields) {
+    public static SortFinalStep buildSort(SearchSortFactory factory, Collection<DtSortField> sortFields) {
         if (sortFields == null || sortFields.isEmpty()) {
             return factory.score();
         }

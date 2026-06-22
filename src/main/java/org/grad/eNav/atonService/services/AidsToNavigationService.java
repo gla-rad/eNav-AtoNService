@@ -314,7 +314,7 @@ public class AidsToNavigationService {
      * @param sortFields the sorting selection for the search query
      * @return the full text query
      */
-    protected SearchQuery<AidsToNavigation> getSearchAidsToNavigationQueryByText(String searchText, List<DtSortField> sortFields) {
+    protected SearchQuery<AidsToNavigation> getSearchAidsToNavigationQueryByText(String searchText, Collection<DtSortField> sortFields) {
         SearchSession searchSession = Search.session( this.entityManager );
         SearchScope<AidsToNavigation> scope = searchSession.scope( AidsToNavigation.class );
         return searchSession.search( scope )
@@ -345,7 +345,7 @@ public class AidsToNavigationService {
                                                                            Geometry geometry,
                                                                            LocalDateTime fromTime,
                                                                            LocalDateTime toTime,
-                                                                           List<DtSortField> sortFields) {
+                                                                           Collection<DtSortField> sortFields) {
         // Then build and return the hibernate-search query
         SearchSession searchSession = Search.session( this.entityManager );
         SearchScope<AidsToNavigation> scope = searchSession.scope( AidsToNavigation.class );
