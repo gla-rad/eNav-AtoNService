@@ -89,7 +89,7 @@ public class GeometryS125Converter {
                                 .map(PointProperty.class::cast)
                                 .map(PointProperty::getPoint)
                                 .map(PointType::getPos)
-                                .map(pos -> new Coordinate(pos.getValue()[0], pos.getValue()[1]))
+                                .map(pos -> new Coordinate(pos.getValue()[1], pos.getValue()[0]))
                                 .map(geometryFactory::createPoint)
                                 .map(Geometry.class::cast)
                                 .orElse(geometryFactory.createEmpty(0));
@@ -334,6 +334,10 @@ public class GeometryS125Converter {
     /**
      * A simple utility function that splits the position list values by two
      * and generates JTS geometry coordinates by them.
+     * </p>
+     * This function will effectively generate Geometry GeoJSON objects which
+     * require the order of the coordicates to be [longitude, latitude] or
+     * [x, y] and unlike the GML-based electronic charts.
      *
      * @param posList the provided position list
      * @return the respective coordinates
@@ -341,7 +345,7 @@ public class GeometryS125Converter {
     protected Coordinate[] gmlPosListToCoordinates(PosList posList) {
         final List<Coordinate> result = new ArrayList<>();
         for(int i=0; i<posList.getValue().length; i=i+2) {
-            result.add(new Coordinate(posList.getValue()[i], posList.getValue()[i+1]));
+            result.add(new Coordinate(posList.getValue()[i+1], posList.getValue()[i]));
         }
         return result.toArray(new Coordinate[]{});
     }
@@ -349,6 +353,9 @@ public class GeometryS125Converter {
     /**
      * A simple utility function that receives JTS geometry coordinates and
      * constructs a position list object.
+     * <p/>
+     * In GML and charts in general the order of the coordinates should
+     * always be [latitude, longitude] and not like the GeoJSON one.
      *
      * @param coordinates the provided coordinates
      * @return the respective position list
@@ -359,7 +366,7 @@ public class GeometryS125Converter {
                 .map(Arrays::asList)
                 .orElse(Collections.emptyList())
                 .stream()
-                .map(c -> Arrays.asList(c.getX(), c.getY()))
+                .map(c -> Arrays.asList(c.getY(), c.getX()))
                 .flatMap(List::stream).toList();
 
         // Then create the list and return
