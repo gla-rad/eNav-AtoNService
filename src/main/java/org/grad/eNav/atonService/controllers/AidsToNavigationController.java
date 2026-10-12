@@ -104,7 +104,7 @@ public class AidsToNavigationController {
                 geometry.orElse(null),
                 startDate.orElse(null),
                 endDate.orElse(null),
-                PageRequest.of(0, Integer.MAX_VALUE)
+                Pageable.unpaged()
         );
         return ResponseEntity.ok()
                 .body(this.aidsToNavigationToDtoMapper.convertToList(atonPage.getContent(), AidsToNavigationDto.class));
