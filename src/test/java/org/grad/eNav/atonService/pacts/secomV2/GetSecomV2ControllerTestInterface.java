@@ -35,7 +35,6 @@ import org.springframework.data.domain.Pageable;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.math.BigInteger;
-import java.security.cert.CertificateException;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.Map;
@@ -121,7 +120,7 @@ public interface GetSecomV2ControllerTestInterface {
         // Mock the cKeeper client behaviour
         final SignatureCertificateDto signatureCertificateDto = new SignatureCertificateDto();
         signatureCertificateDto.setCertificateId(BigInteger.ONE);
-        signatureCertificateDto.setCertificate(minPemData);
+        signatureCertificateDto.setCertificates(new String[]{minPemData});
         signatureCertificateDto.setPublicKey("publicKey");
         signatureCertificateDto.setRootCertificate(minPemData);
         doReturn(signatureCertificateDto)

@@ -41,7 +41,9 @@ import org.grad.eNav.s100.enums.TelephoneType;
 import org.grad.eNav.s100.utils.S100ExchangeCatalogueBuilder;
 import org.grad.eNav.s100.utils.S100ExchangeSetUtils;
 import org.grad.eNav.s125.utils.GIRegistryInfo;
+import org.grad.secomv2.core.exceptions.SecomInvalidCertificateException;
 import org.grad.secomv2.core.models.enums.DigitalSignatureAlgorithmEnum;
+import org.grad.secomv2.core.utils.SecomPemUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
@@ -149,7 +151,7 @@ public class S100ExchangeSetService {
         );
         // Get the certificate into an X.509 format
         final BigInteger certificateId = signatureCertificate.getCertificateId();
-        final String certificatePem = signatureCertificate.getCertificate();
+        final String[] certificatesPem = signatureCertificate.getCertificates();
 
         // Create a temporary directory for constructing the exchange set
         final String timestampSuffix = LocalDateTime.now()
@@ -198,7 +200,7 @@ public class S100ExchangeSetService {
                         datasetFile.getName(),
                         new DatasetData(datasetFile,
                                 certificateId,
-                                certificatePem,
+                                certificatesPem,
                                 dataset,
                                 delta)
                 );
@@ -284,9 +286,19 @@ public class S100ExchangeSetService {
                         this.serviceInformationConfig.organization(),
                         LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)
                 ))
-                .setComment("This exchange set has been generated exclusively for testing. Please do not use in production!!!")
+                .setComment("This exchange set has been generated exclusively for testing. Please DO NOT USE in production!!!")
                 .setProductSpecification(Collections.singletonList(GIRegistryInfo.getProductSpecification()))
-                .setCertificatesByPem(Collections.singletonMap(String.format("cer%d", signatureCertificate.getCertificateId()), signatureCertificate.getCertificate()));
+                .setCertificatesByPem(Arrays.stream(signatureCertificate.getCertificates()).
+                        collect(Collectors.toMap(
+                                cert -> {
+                                    try {
+                                        return String.format("cer%d", SecomPemUtils.getCertFromPem(cert).getSerialNumber());
+                                    } catch (CertificateException e) {
+                                        throw new SecomInvalidCertificateException(e.getMessage());
+                                    }
+                                },
+                                cert -> cert))
+                );
 
         // Now append all the metadata for all the involved dataset/delta pairs
         for(final DatasetData data : datasetDataMap.values()) {
@@ -422,14 +434,14 @@ public class S100ExchangeSetService {
      *
      * @param datasetFile the dataset file to be packaged
      * @param certificateId the ID of the certificate to be used for signing
-     * @param certificatePem the PEM of the certificate to be used for signing
+     * @param certificatesPem the PEM of the certificates to be used for signing
      * @param dataset the S-125 dataset to be packaged
      * @param delta the delta information to be packaged
      * @author Nikolaos Vastardis (email: Nikolaos.Vastardis@gla-rad.org)
      */
     protected record DatasetData(File datasetFile,
                                BigInteger certificateId,
-                               String certificatePem,
+                               String[] certificatesPem,
                                S125Dataset dataset,
                                DatasetContentLog delta) {}
 
