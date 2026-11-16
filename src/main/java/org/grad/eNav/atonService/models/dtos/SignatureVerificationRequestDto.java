@@ -16,6 +16,7 @@
 
 package org.grad.eNav.atonService.models.dtos;
 
+import java.security.cert.X509Certificate;
 import java.util.Objects;
 
 /**
@@ -28,6 +29,7 @@ import java.util.Objects;
 public class SignatureVerificationRequestDto {
 
     // Class Variables
+    private X509Certificate[] certificates;
     private String content;
     private String signature;
     private String algorithm;
@@ -36,6 +38,24 @@ public class SignatureVerificationRequestDto {
      * Instantiates a new Signature verification request.
      */
     public SignatureVerificationRequestDto() {
+    }
+
+    /**
+     * Get certificates x 509 certificate [ ].
+     *
+     * @return the x 509 certificate [ ]
+     */
+    public X509Certificate[] getCertificates() {
+        return certificates;
+    }
+
+    /**
+     * Sets certificates.
+     *
+     * @param certificates the certificates
+     */
+    public void setCertificates(X509Certificate[] certificates) {
+        this.certificates = certificates;
     }
 
     /**

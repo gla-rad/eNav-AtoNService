@@ -127,14 +127,14 @@ public class SecomV2SignatureProviderImpl implements SecomSignatureProvider {
     @Override
     public boolean validateSignature(String[] signatureCertificates, byte[] signature, byte[] content) {
         // Get the X.509 certificate from the request
-        X509Certificate[] certificate = null;
+        X509Certificate[] certificates = null;
         try {
-            certificate = SecomPemUtils.getCertsFromPem(signatureCertificates);
+            certificates = SecomPemUtils.getCertsFromPem(signatureCertificates);
         } catch (CertificateException ex) {
             log.error(ex.getMessage());
         }
         // Now try to get the MRN out of the certificate principals
-        final String mrn = Stream.of(certificate)
+        final String mrn = Stream.of(certificates)
                 .map(X509Certificate::getSubjectX500Principal)
                 .map(p -> p.getName(X500Principal.RFC2253))
                 .map(X500Name::new)
@@ -146,7 +146,7 @@ public class SecomV2SignatureProviderImpl implements SecomSignatureProvider {
                 .findFirst()
                 .orElse(null);
 
-        DigitalSignatureAlgorithmEnum algorithm = Stream.of(certificate)
+        DigitalSignatureAlgorithmEnum algorithm = Stream.of(certificates)
                 .map(X509Certificate::getSigAlgName)
                 .findFirst()
                 .map(DigitalSignatureAlgorithmEnum::fromValue)
@@ -155,6 +155,7 @@ public class SecomV2SignatureProviderImpl implements SecomSignatureProvider {
 
         // Construct the signature verification object
         final SignatureVerificationRequestDto verificationRequest = new SignatureVerificationRequestDto();
+        verificationRequest.setCertificates(certificates);
         verificationRequest.setContent(Base64.getEncoder().encodeToString(content));
         verificationRequest.setSignature(Base64.getEncoder().encodeToString(signature));
         verificationRequest.setAlgorithm(algorithm.getValue());
