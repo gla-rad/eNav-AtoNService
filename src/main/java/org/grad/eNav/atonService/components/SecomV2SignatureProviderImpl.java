@@ -155,7 +155,7 @@ public class SecomV2SignatureProviderImpl implements SecomSignatureProvider {
 
         // Construct the signature verification object
         final SignatureVerificationRequestDto verificationRequest = new SignatureVerificationRequestDto();
-        verificationRequest.setCertificates(certificates);
+        verificationRequest.setCertificates(signatureCertificates);
         verificationRequest.setContent(Base64.getEncoder().encodeToString(content));
         verificationRequest.setSignature(Base64.getEncoder().encodeToString(signature));
         verificationRequest.setAlgorithm(algorithm.getValue());

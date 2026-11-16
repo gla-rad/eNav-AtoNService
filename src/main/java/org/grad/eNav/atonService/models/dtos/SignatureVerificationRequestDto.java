@@ -29,7 +29,7 @@ import java.util.Objects;
 public class SignatureVerificationRequestDto {
 
     // Class Variables
-    private X509Certificate[] certificates;
+    private String[] certificates;
     private String content;
     private String signature;
     private String algorithm;
@@ -45,7 +45,7 @@ public class SignatureVerificationRequestDto {
      *
      * @return the x 509 certificate [ ]
      */
-    public X509Certificate[] getCertificates() {
+    public String[] getCertificates() {
         return certificates;
     }
 
@@ -54,7 +54,7 @@ public class SignatureVerificationRequestDto {
      *
      * @param certificates the certificates
      */
-    public void setCertificates(X509Certificate[] certificates) {
+    public void setCertificates(String[] certificates) {
         this.certificates = certificates;
     }
 
